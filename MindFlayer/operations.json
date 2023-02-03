@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Spelling",
+    "prompt": "Correct spelling.",
+    "endpoint": "edit"
+  },
+  {
+    "name": "Proper",
+    "prompt": "Posh english.",
+    "endpoint": "edit"
+  },
+  {
+    "name": "Basic Completion",
+    "prompt": "<{input}>",
+    "endpoint": "completion"
+  },
+  {
+    "name": "Emoji",
+    "prompt": "Summerize this with emoji. \n <{input}> \n Emoji:",
+    "endpoint": "completion"
+  },
+  {
+    "name": "Chat response: friend",
+    "prompt": "The following is a conversation between two london geezers. They like to banter. \n <{input}> \n",
+    "endpoint": "completion"
+  },
+  {
+    "name": "Chat response: work",
+    "prompt": "The following is a conversation between software achitects. They are both helpful, creative, clever, and very friendly. \n <{input}> \n",
+    "endpoint": "completion"
+  },
+  {
+    "name": "Code review",
+    "prompt": "Please review, refactor and optimize this code: \n <{input}> \n Review notes: \n ",
+    "endpoint": "completion"
+  }
+]
