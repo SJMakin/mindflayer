@@ -33,5 +33,10 @@
     "name": "Code review",
     "prompt": "Please review, refactor and optimize this code: \n <{input}> \n Review notes: \n ",
     "endpoint": "completion"
+  },
+  {
+    "name": "Reword: Architect",
+    "prompt": " Please rewrite this using clean business english, written in the style of an expert software achitect. \n Original: <{input}> \n Corrected: ",
+    "endpoint": "completion"
   }
 ]
