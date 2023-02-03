@@ -2,9 +2,9 @@
 A dotnet 6 c# tool that leverages the OpenAI API to edit and complete data on your clipboard with ease. Simply press Ctrl + Alt + G to unleash its power!
 
 ## Features
-Edit and completion API support
-Easily configurable prompts
-Keyboard shortcut for quick access (Ctrl + Alt + G)
+* Edit and completion API support
+* Easily configurable prompts
+* Keyboard shortcut for quick access (Ctrl + Alt + G)
 
 ## Installation
 Simply run the app and you are good to go.
