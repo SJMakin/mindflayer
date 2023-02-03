@@ -10,9 +10,9 @@ Keyboard shortcut for quick access (Ctrl + Alt + G)
 Simply run the app and you are good to go.
 
 ## Usage
-Ctrl + Alt + P to choose operation
-Ctrl + Alt + G to replace clipboard
-Ctrl + Alt + T to generate more
+* Ctrl + Alt + P to choose operation
+* Ctrl + Alt + G to replace clipboard
+* Ctrl + Alt + T to generate more
 
 ## Configuration
 Set API key as env variable.
