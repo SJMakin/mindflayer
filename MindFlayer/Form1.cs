@@ -21,14 +21,15 @@ namespace MindFlayer
             comboBox1.Items.AddRange(operations.ToArray());
             comboBox1.DisplayMember = nameof(Operation.Name);
             comboBox1.SelectedIndex = -1;
-            HotkeyManager.Current.AddOrReplace("Increment", Keys.Control | Keys.Alt | Keys.G, OnIncrement);
+            HotkeyManager.Current.AddOrReplace("Increment", Keys.Control | Keys.Alt | Keys.G, OnHotKeyPress);
         }
 
-        private void OnIncrement(object sender, HotkeyEventArgs e)
+        private void OnHotKeyPress(object sender, HotkeyEventArgs e)
         { 
             Replace();
             e.Handled = true;
         }
+
         private void button1_Click(object sender, EventArgs e)
         {
             Replace();
@@ -39,35 +40,39 @@ namespace MindFlayer
             if (comboBox1.SelectedItem == null) return;
 
             var op = comboBox1.SelectedItem as Operation;
-
             var input = Clipboard.GetText();
 
-            Text = "Replacing...";
+            Text = "Working...";
 
             string resultText;
-            if (op.Endpoint == "edit")
+            switch (op.Endpoint)
             {
-                var request = new EditRequest(input, op.Prompt);
-                var result = Client.EditsEndpoint.CreateEditAsync(request).Result;
-                resultText = result.Choices[0].Text;
+                case "edit":
+                {
+                    var request = new EditRequest(input, op.Prompt);
+                    var result = Client.EditsEndpoint.CreateEditAsync(request).Result;
+                    resultText = result.Choices[0].Text;
+                    break;
+                }
+                case "completion":
+                {
+                    var result = Client.CompletionsEndpoint.CreateCompletionAsync(
+                        op.Prompt.Replace("<{input}>", input),
+                        temperature: 0.1,
+                        model: Model.Davinci,
+                        max_tokens: 256).Result;
+                    resultText = result.Completions[0].Text;
+                    break;
+                }
+                default:
+                    throw new InvalidOperationException();
             }
-            else if (op.Endpoint == "completion")
-            {
-                var result = Client.CompletionsEndpoint.CreateCompletionAsync(
-                    op.Prompt.Replace("<{input}>", input),
-                    temperature: 0.1,
-                    model: Model.Davinci,
-                    max_tokens: 256).Result;
-                resultText = result.Completions[0].Text;
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+
+
 
             Clipboard.SetText(resultText);
 
-            Text = "Done";
+            Text = "Done!";
         }
     }
 }
