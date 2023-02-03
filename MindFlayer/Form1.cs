@@ -40,7 +40,6 @@ namespace MindFlayer
             if (comboBox1.SelectedItem == null) return;
 
             var op = comboBox1.SelectedItem as Operation;
-
             var input = Clipboard.GetText();
 
             Text = "Working...";
@@ -73,7 +72,7 @@ namespace MindFlayer
 
             Clipboard.SetText(resultText);
 
-            Text = "Done";
+            Text = "Done!";
         }
     }
 }
