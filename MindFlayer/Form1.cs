@@ -43,32 +43,36 @@ namespace MindFlayer
             var input = Clipboard.GetText();
 
             Text = "Working...";
-
             string resultText;
-            switch (op.Endpoint)
+            try
             {
-                case "edit":
+                switch (op.Endpoint)
                 {
-                    var request = new EditRequest(input, op.Prompt);
-                    var result = Client.EditsEndpoint.CreateEditAsync(request).Result;
-                    resultText = result.Choices[0].Text;
-                    break;
+                    case "edit":
+                    {
+                        var request = new EditRequest(input, op.Prompt);
+                        var result = Client.EditsEndpoint.CreateEditAsync(request).Result;
+                        resultText = result.Choices[0].Text;
+                        break;
+                    }
+                    case "completion":
+                    {
+                        var result = Client.CompletionsEndpoint.CreateCompletionAsync(
+                            op.Prompt.Replace("<{input}>", input),
+                            temperature: 0.1,
+                            model: Model.Davinci,
+                            max_tokens: 256).Result;
+                        resultText = result.Completions[0].Text;
+                        break;
+                    }
+                    default:
+                        throw new InvalidOperationException();
                 }
-                case "completion":
-                {
-                    var result = Client.CompletionsEndpoint.CreateCompletionAsync(
-                        op.Prompt.Replace("<{input}>", input),
-                        temperature: 0.1,
-                        model: Model.Davinci,
-                        max_tokens: 256).Result;
-                    resultText = result.Completions[0].Text;
-                    break;
-                }
-                default:
-                    throw new InvalidOperationException();
             }
-
-
+            catch (Exception e)
+            {
+                resultText = e.ToString();
+            }
 
             Clipboard.SetText(resultText);
 

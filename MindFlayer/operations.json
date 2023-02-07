@@ -38,5 +38,10 @@
     "name": "Reword: Architect",
     "prompt": " Please rewrite this using clean business english, written in the style of an expert software achitect. \n Original: <{input}> \n Corrected: ",
     "endpoint": "completion"
+  },
+  {
+    "name": "Reword: Code review",
+    "prompt": "Please check/clean this code review comment. Please ensure its using clean business english, written in the style/tone of an expert software code reviewer. Ensure it is courteous. Please add reasoning if it is lacking. \n Original: <{input}> \n Corrected: ",
+    "endpoint": "completion"
   }
 ]
