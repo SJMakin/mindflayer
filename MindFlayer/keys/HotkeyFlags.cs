@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NHotkey
+﻿namespace NHotkey
 {
     [Flags]
     internal enum HotkeyFlags : uint

@@ -1,6 +1,4 @@
-﻿using System.Windows.Forms;
-
-namespace NHotkey.WindowsForms
+﻿namespace NHotkey.WindowsForms
 {
     static class Extensions
     {

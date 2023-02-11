@@ -1,50 +1,70 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace MindFlayer;
 
-namespace MindFlayer
+public class Toast : Form
 {
+    System.Windows.Forms.Timer? timer;
+    private readonly Label _label;
 
-    public class Toast : Form
+    public Toast(string text)
     {
-        System.Windows.Forms.Timer timer;
+        FormBorderStyle = FormBorderStyle.None;
+        StartPosition = FormStartPosition.Manual;
+        ShowInTaskbar = false;
+        BackColor = Color.LightYellow;
+        Size = new Size(300, 50);
 
-        public Toast(string text)
+        _label = new Label
         {
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.StartPosition = FormStartPosition.Manual;
-            this.TopMost = true;
-            this.ShowInTaskbar = false;
-            this.BackColor = Color.LightYellow;
-            this.Size = new Size(300, 50);
+            Text = text,
+            Dock = DockStyle.Fill,
+            TextAlign = ContentAlignment.MiddleCenter,
+            Font = new Font("Arial", 12, FontStyle.Regular)
+        };
+        Controls.Add(_label);          
+    }
 
-            Label label = new Label();
-            label.Text = text;
-            label.Dock = DockStyle.Fill;
-            label.TextAlign = ContentAlignment.MiddleCenter;
-            label.Font = new Font("Arial", 12, FontStyle.Regular);
-            this.Controls.Add(label);
+    protected override bool ShowWithoutActivation
+    {
+        get { return true; }
+    }
 
-            timer = new System.Windows.Forms.Timer();
-            timer.Interval = 3000;
-            timer.Tick += Timer_Tick;
-            timer.Start();
-        }
-
-        private void Timer_Tick(object sender, EventArgs e)
+    private const int WS_EX_TOPMOST = 0x00000008;
+    protected override CreateParams CreateParams
+    {
+        get
         {
-            timer.Stop();
-            this.Close();
+            CreateParams createParams = base.CreateParams;
+            createParams.ExStyle |= WS_EX_TOPMOST;
+            return createParams;
         }
+    }
 
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-            int x = Screen.PrimaryScreen.WorkingArea.Right - this.Width;
-            int y = Screen.PrimaryScreen.WorkingArea.Bottom - this.Height;
-            this.Location = new Point(x, y);
-        }
+    private void Timer_Tick(object? sender, EventArgs e)
+    {
+        timer?.Stop();
+        Close();
+    }
+
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+        int x = Screen.PrimaryScreen.WorkingArea.Right - Width;
+        int y = Screen.PrimaryScreen.WorkingArea.Bottom - Height;
+        Location = new Point(x, y);
+    }
+
+    public void SetText(string text, Color backColor)
+    {
+        _label.Text = text;
+        _label.BackColor = backColor;
+        Refresh();
+    }
+
+    public void UpdateThenClose(string text, Color backColor, int closeAfter)
+    {
+        SetText(text, backColor);
+        timer = new () { Interval = closeAfter };
+        timer.Tick += Timer_Tick;
+        timer.Start();
     }
 }
