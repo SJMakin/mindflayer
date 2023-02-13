@@ -26,7 +26,7 @@
   },
   {
     "name": "Chat response: work",
-    "prompt": "The following is a conversation between software achitects. They are both helpful, creative, clever, and very friendly. \n <{input}> \n",
+    "prompt": "The following is a conversation between software architects. They are both helpful, creative, clever, and very friendly. \n <{input}> \n",
     "endpoint": "completion"
   },
   {
@@ -35,13 +35,18 @@
     "endpoint": "completion"
   },
   {
-    "name": "Reword: Architect",
-    "prompt": " Please rewrite this using clean business english, written in the style of an expert software achitect. \n Original: <{input}> \n Corrected: ",
+    "name": "Reword: Dev",
+    "prompt": "Please check/clean this text. Please ensure its using clear, concise, and straightforward voice, written in the style/tone of an expert software (C#/golang) developer (eg. Jon Skeet). \n Original: <{input}> \n Corrected: ",
     "endpoint": "completion"
   },
   {
     "name": "Reword: Code review",
-    "prompt": "Please check/clean this code review comment. Please ensure its using clean business english, written in the style/tone of an expert software code reviewer. Ensure it is courteous. Please add reasoning if it is lacking. \n Original: <{input}> \n Corrected: ",
+    "prompt": "Please check/clean this code review comment. Please ensure its using clean business english, written in the style/tone of an expert software code reviewer (eg. Jon Skeet). Ensure it is courteous. Please add reasoning if it is lacking. \n Original: <{input}> \n Corrected: ",
+    "endpoint": "completion"
+  },
+  {
+    "name": "C# Generator",
+    "prompt": "Please write some C# code to <{input}>.",
     "endpoint": "completion"
   }
 ]
