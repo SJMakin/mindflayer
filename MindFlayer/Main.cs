@@ -91,7 +91,7 @@ public partial class Main : Form
         }
     }
 
-    private static Dictionary<string, Func<string, Operation, string>> EndpointActions = new()
+    private static readonly Dictionary<string, Func<string, Operation, string>> EndpointActions = new()
     {
         { "edit", Edit },
         { "completion", Completion }
