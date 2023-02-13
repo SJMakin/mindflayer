@@ -1,10 +1,5 @@
 ﻿using OpenAI.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace OpenAI.Completions
 {
@@ -110,7 +105,7 @@ namespace OpenAI.Completions
                 return DeserializeResult(response, await response.Content.ReadAsStringAsync().ConfigureAwait(false));
             }
 
-            throw new HttpRequestException($"{nameof(CreateCompletionAsync)} Failed! HTTP status code: {response.StatusCode}. Request body: {jsonContent} Response: {response.Content.ReadAsStringAsync().Result}");
+            throw new HttpRequestException($"{nameof(CreateCompletionAsync)} Failed! HTTP status code: {response.StatusCode}. Request body: {jsonContent}");
         }
 
         #endregion Non-Streaming

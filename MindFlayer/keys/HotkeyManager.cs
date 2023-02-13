@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
-
-namespace NHotkey.WindowsForms
+﻿namespace NHotkey.WindowsForms
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Microsoft.Design",
