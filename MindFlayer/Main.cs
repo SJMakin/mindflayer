@@ -11,22 +11,22 @@ namespace MindFlayer;
 public partial class Main : Form
 {
     // [Environment]::SetEnvironmentVariable('OPENAI_KEY', 'sk-here', 'Machine')
-    private static OpenAIClient Client = new(OpenAIAuthentication.LoadFromEnv());
+    private static readonly OpenAIClient Client = new(OpenAIAuthentication.LoadFromEnv());
 
-    private string Continuation = "";
+    private string _continuation = "";
 
     public Main()
     {
         var operations = System.Text.Json.JsonSerializer.Deserialize<List<Operation>>(File.ReadAllText("operations.json"));
         if (operations == null) throw new Exception("Unable to parse operations.");
-        SetupUI(operations);
+        SetupUi(operations);
         CreateKeyBindings();
     }
 
-    private void SetupUI(List<Operation> operations)
+    private void SetupUi(List<Operation> operations)
     {
         InitializeComponent();
-        comboBox1.Items.AddRange(operations.ToArray());
+        comboBox1.Items.AddRange(operations.Cast<object>().ToArray());
         comboBox1.DisplayMember = nameof(Operation.Name);
         comboBox1.SelectedIndex = -1;
     }
@@ -49,7 +49,7 @@ public partial class Main : Form
 
     private void ContinueText(object? sender, HotkeyEventArgs e)
     {
-        Replace(Continuation);
+        Replace(_continuation);
         e.Handled = true;
     }
 
@@ -59,7 +59,7 @@ public partial class Main : Form
         e.Handled = true;
     }
 
-    private void button1_Click(object? sender, EventArgs e)
+    private void Button1_Click(object? sender, EventArgs e)
     {
         Replace();
     }
@@ -72,17 +72,16 @@ public partial class Main : Form
 
     private void Replace(string input)
     {
-        if (comboBox1.SelectedItem == null) return;
-        var op = comboBox1.SelectedItem as Operation;
+        var toast = new Toast("Working...");
 
-        Toast toast = new Toast("Working...");
-        toast.Show();
+        if (comboBox1.SelectedItem is not Operation op) return;
 
         try
         {
             var result = EndpointActions[op.Endpoint](input, op);
-            Continuation = input + result;
+            _continuation = input + result;
             SetText(result);
+
             toast.UpdateThenClose("Huzzah!", Color.LightGreen, 1500);
         }
         catch (Exception ex)
@@ -90,7 +89,6 @@ public partial class Main : Form
             Debug.WriteLine(ex);
             toast.UpdateThenClose("Oh no! Something went wrong.", Color.OrangeRed, 3000);
         }
-
     }
 
     private static Dictionary<string, Func<string, Operation, string>> EndpointActions = new()

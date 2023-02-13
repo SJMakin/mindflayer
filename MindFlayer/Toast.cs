@@ -2,7 +2,7 @@
 
 public class Toast : Form
 {
-    System.Windows.Forms.Timer? timer;
+    private System.Windows.Forms.Timer? _timer;
     private readonly Label _label;
 
     public Toast(string text)
@@ -20,40 +20,44 @@ public class Toast : Form
             TextAlign = ContentAlignment.MiddleCenter,
             Font = new Font("Arial", 12, FontStyle.Regular)
         };
-        Controls.Add(_label);          
+        Controls.Add(_label);    
+        Show();
     }
 
-    protected override bool ShowWithoutActivation
+    public sealed override Color BackColor
     {
-        get { return true; }
+        get => base.BackColor;
+        set => base.BackColor = value;
     }
 
-    private const int WS_EX_TOPMOST = 0x00000008;
+    protected override bool ShowWithoutActivation => true;
+
+    private const int WsExTopmost = 0x00000008;
     protected override CreateParams CreateParams
     {
         get
         {
-            CreateParams createParams = base.CreateParams;
-            createParams.ExStyle |= WS_EX_TOPMOST;
+            var createParams = base.CreateParams;
+            createParams.ExStyle |= WsExTopmost;
             return createParams;
         }
     }
 
     private void Timer_Tick(object? sender, EventArgs e)
     {
-        timer?.Stop();
+        _timer?.Stop();
         Close();
     }
 
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
-        int x = Screen.PrimaryScreen.WorkingArea.Right - Width;
-        int y = Screen.PrimaryScreen.WorkingArea.Bottom - Height;
+        var x = Screen.PrimaryScreen.WorkingArea.Right - Width;
+        var y = Screen.PrimaryScreen.WorkingArea.Bottom - Height;
         Location = new Point(x, y);
     }
 
-    public void SetText(string text, Color backColor)
+    private void SetText(string text, Color backColor)
     {
         _label.Text = text;
         _label.BackColor = backColor;
@@ -63,8 +67,8 @@ public class Toast : Form
     public void UpdateThenClose(string text, Color backColor, int closeAfter)
     {
         SetText(text, backColor);
-        timer = new () { Interval = closeAfter };
-        timer.Tick += Timer_Tick;
-        timer.Start();
+        _timer = new () { Interval = closeAfter };
+        _timer.Tick += Timer_Tick;
+        _timer.Start();
     }
 }
