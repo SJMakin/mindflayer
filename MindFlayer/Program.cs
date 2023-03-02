@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace MindFlayer;
 
 internal static class Program
@@ -13,5 +15,17 @@ internal static class Program
         ApplicationConfiguration.Initialize();
         Application.Run(new Main());
 
+
     }
+    public static string EscapePipe(string input)
+    {
+        return input.Replace(@"\", @"\\").Replace("¦", @"\¦").Replace("|", "¦");
+    }
+
+    public static string UnescapePipe(string input)
+    {
+        return input.Replace(@"\\", @"\").Replace(@"\¦", @"¦").Replace("¦", "¦"); ;
+    }
+
+
 }

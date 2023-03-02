@@ -124,10 +124,15 @@ public partial class Main : Form
     private static string Completion(string input, Operation op)
     {
         var result = Client.CompletionsEndpoint.CreateCompletionAsync(
-                   op.Prompt.Replace("<{input}>", input),
+            ReplacePlaceholders(op.Prompt.Replace("<{input}>", input)),
                    temperature: 0.1,
                    model: Model.Davinci,
                    max_tokens: 256).Result;
         return result.Completions[0].Text;
+    }
+
+    private static string ReplacePlaceholders(string input)
+    {
+        return input.Replace("<{time}>", DateTime.Now.ToString("HH:SS"));
     }
 }

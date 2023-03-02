@@ -26,7 +26,7 @@
   },
   {
     "name": "Chat response: work",
-    "prompt": "The following is a conversation between software architects. They are both helpful, creative, clever, and very friendly. \n <{input}> \n",
+    "prompt": "The following is a conversation on MS Teams between two team mates at a large tech company. \n <{input}> \n [<{time}>] Samuel Makin\n",
     "endpoint": "completion"
   },
   {
@@ -42,6 +42,11 @@
   {
     "name": "Reword: Code review",
     "prompt": "Please check/clean this code review comment. Please ensure its using clean business english, written in the style/tone of an expert software code reviewer (eg. Jon Skeet). Ensure it is courteous. Please add reasoning if it is lacking. \n Original: <{input}> \n Corrected: ",
+    "endpoint": "completion"
+  },
+  {
+    "name": "Reword: Email",
+    "prompt": "Please check/clean this email comment. Please ensure its using clean business english, written in the style/tone of an expert. Ensure it is courteous. g. \n Original: <{input}> \n Corrected: ",
     "endpoint": "completion"
   },
   {
