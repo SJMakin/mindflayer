@@ -69,6 +69,12 @@ namespace OpenAI.Models
         public static Model Default => Davinci;
 
         /// <summary>
+        /// Because gpt-3.5-turbo performs at a similar capability to text-davinci-003 but at 10%
+        /// the price per token, we recommend gpt-3.5-turbo for most use cases.
+        /// </summary>
+        public static Model GPT3_5_Turbo => new Model("gpt-3.5-turbo") { OwnedBy = "openai" };
+
+        /// <summary>
         /// The most powerful, largest engine available, although the speed is quite slow.<para/>
         /// Good at: Complex intent, cause and effect, summarization for audience
         /// </summary>

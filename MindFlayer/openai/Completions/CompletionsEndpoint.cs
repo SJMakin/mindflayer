@@ -105,7 +105,7 @@ namespace OpenAI.Completions
                 return DeserializeResult(response, await response.Content.ReadAsStringAsync().ConfigureAwait(false));
             }
 
-            throw new HttpRequestException($"{nameof(CreateCompletionAsync)} Failed! HTTP status code: {response.StatusCode}. Request body: {jsonContent}");
+            throw new HttpRequestException($"{nameof(CreateCompletionAsync)} Failed! HTTP status code: {response.StatusCode}. Request body: {jsonContent} Response body: {response.Content.ReadAsStringAsync().Result}");
         }
 
         #endregion Non-Streaming
