@@ -1,19 +1,12 @@
 using NHotkey;
 using NHotkey.WindowsForms;
-using OpenAI;
-using OpenAI.Edits;
-using OpenAI.Models;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using OpenAI.Chat;
 
 namespace MindFlayer;
 
 public partial class Main : Form
 {
-    // [Environment]::SetEnvironmentVariable('OPENAI_KEY', 'sk-here', 'Machine')
-    private static readonly OpenAIClient Client = new(OpenAIAuthentication.LoadFromEnv());
-
     private string _continuation = "";
 
     public Main()
@@ -94,9 +87,9 @@ public partial class Main : Form
 
     private static readonly Dictionary<string, Func<string, Operation, string>> EndpointActions = new()
     {
-        { "edit", Edit },
-        { "completion", Completion },
-        { "chat", Chat }
+        { "edit", Engine.Edit },
+        { "completion", Engine.Completion },
+        { "chat", Engine.Chat }
     };
 
     private static string NormalizeLineEndings(string input) => Regex.Replace(input, @"\r\n|\n\r|\n|\r", "\r\n");
@@ -116,36 +109,4 @@ public partial class Main : Form
         SendKeys.SendWait("^{v}");
     }
 
-    private static string Edit(string input, Operation op)
-    {
-        var request = new EditRequest(input, op.Prompt);
-        var result = Client.EditsEndpoint.CreateEditAsync(request).Result;
-        return result.Choices[0].Text;
-    }
-
-    private static string Completion(string input, Operation op)
-    {
-        var result = Client.CompletionsEndpoint.CreateCompletionAsync(
-                   prompt:ReplacePlaceholders(op.Prompt, input),
-                   temperature: 0.1,
-                   model: Model.Davinci,
-                   max_tokens: 256).Result;
-        return result.Completions[0].Text;
-    }
-
-    private static string Chat(string input, Operation op)
-    {
-        var prompt = op.Messages.Select(prompt => new ChatPrompt(prompt.Role, ReplacePlaceholders(prompt.Content, input))).ToList();
-        var result = Client.ChatEndpoint.GetCompletionAsync(
-            new ChatRequest(
-                messages: prompt, 
-                model: Model.GPT3_5_Turbo)).Result;
-        return result.FirstChoice.Message.Content;
-    }
-
-    private static string ReplacePlaceholders(string template, string input)
-    {
-        return template.Replace("<{time}>", DateTime.Now.ToString("HH:SS"))
-                       .Replace("<{input}>", input);
-    }
 }
