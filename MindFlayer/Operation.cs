@@ -7,7 +7,7 @@ namespace MindFlayer;
 public class Operation
 {
     [JsonConstructor]
-    public Operation(string endpoint, string prompt, string name, List<Message> messages)
+    public Operation(string endpoint, string prompt, string name, List<ChatPrompt> messages)
     {
         Endpoint = endpoint;
         Prompt = prompt;
