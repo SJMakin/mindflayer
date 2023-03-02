@@ -5,6 +5,7 @@ using OpenAI.Edits;
 using OpenAI.Models;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using OpenAI.Chat;
 
 namespace MindFlayer;
 
@@ -94,7 +95,8 @@ public partial class Main : Form
     private static readonly Dictionary<string, Func<string, Operation, string>> EndpointActions = new()
     {
         { "edit", Edit },
-        { "completion", Completion }
+        { "completion", Completion },
+        { "chat", Chat }
     };
 
     private static string NormalizeLineEndings(string input) => Regex.Replace(input, @"\r\n|\n\r|\n|\r", "\r\n");
@@ -124,15 +126,26 @@ public partial class Main : Form
     private static string Completion(string input, Operation op)
     {
         var result = Client.CompletionsEndpoint.CreateCompletionAsync(
-            ReplacePlaceholders(op.Prompt.Replace("<{input}>", input)),
+                   prompt:ReplacePlaceholders(op.Prompt, input),
                    temperature: 0.1,
                    model: Model.Davinci,
                    max_tokens: 256).Result;
         return result.Completions[0].Text;
     }
 
-    private static string ReplacePlaceholders(string input)
+    private static string Chat(string input, Operation op)
     {
-        return input.Replace("<{time}>", DateTime.Now.ToString("HH:SS"));
+        var prompt = op.Messages.Select(prompt => new ChatPrompt(prompt.Role, ReplacePlaceholders(prompt.Content, input))).ToList();
+        var result = Client.ChatEndpoint.GetCompletionAsync(
+            new ChatRequest(
+                messages: prompt, 
+                model: Model.GPT3_5_Turbo)).Result;
+        return result.FirstChoice.Message.Content;
+    }
+
+    private static string ReplacePlaceholders(string template, string input)
+    {
+        return template.Replace("<{time}>", DateTime.Now.ToString("HH:SS"))
+                       .Replace("<{input}>", input);
     }
 }

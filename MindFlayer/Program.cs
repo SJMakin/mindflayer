@@ -14,18 +14,5 @@ internal static class Program
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
         Application.Run(new Main());
-
-
     }
-    public static string EscapePipe(string input)
-    {
-        return input.Replace(@"\", @"\\").Replace("¦", @"\¦").Replace("|", "¦");
-    }
-
-    public static string UnescapePipe(string input)
-    {
-        return input.Replace(@"\\", @"\").Replace(@"\¦", @"¦").Replace("¦", "¦"); ;
-    }
-
-
 }
