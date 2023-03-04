@@ -11,48 +11,60 @@
             <RowDefinition Height="5*" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-        <ScrollViewer Grid.Row="0">
-            <StackPanel x:Name="MessageContainer">
-                <ItemsControl ItemsSource="{Binding ChatMessages}" >
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Background="LightGray" Padding="5" Margin="3">
-                                <Grid VerticalAlignment="Bottom">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="80" />
-                                        <ColumnDefinition Width="10*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Role}" FontWeight="Bold" Grid.Column="0" />
-                                    <TextBox Background="Transparent" BorderThickness="0" TextWrapping="Wrap" Text="{Binding Content}"
-                                 Grid.Column="1">
-                                        <TextBox.Style>
-                                            <Style TargetType="TextBox">
-                                                <Setter Property="SpellCheck.IsEnabled" Value="False"/>
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsFocused" Value="True">
-                                                        <Setter Property="SpellCheck.IsEnabled" Value="True"/>
-                                                    </Trigger>
-                                                    <Trigger Property="IsFocused" Value="False">
-                                                        <Setter Property="SpellCheck.IsEnabled" Value="False"/>
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBox.Style>
-                                    </TextBox>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </ScrollViewer>
+        <TabControl Grid.Row="0"  ItemsSource="{Binding Conversations}" SelectedItem="{Binding ActiveConversation}">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"/>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <ScrollViewer>
+                        <StackPanel x:Name="MessageContainer">
+                            <ItemsControl ItemsSource="{Binding ChatMessages}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="LightGray" Padding="5" Margin="3">
+                                            <Grid VerticalAlignment="Bottom">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="80" />
+                                                    <ColumnDefinition Width="10*" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Role}" FontWeight="Bold" Grid.Column="0" />
+                                                <TextBox Background="Transparent" BorderThickness="0" TextWrapping="Wrap" Text="{Binding Content}"
+                                                         Grid.Column="1">
+                                                    <TextBox.Style>
+                                                        <Style TargetType="TextBox">
+                                                            <Setter Property="SpellCheck.IsEnabled" Value="False" />
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsFocused" Value="True">
+                                                                    <Setter Property="SpellCheck.IsEnabled" Value="True" />
+                                                                </Trigger>
+                                                                <Trigger Property="IsFocused" Value="False">
+                                                                    <Setter Property="SpellCheck.IsEnabled" Value="False" />
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBox.Style>
+                                                </TextBox>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
         <Grid Margin="5" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="5*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            <TextBox x:Name="MessageInput" Text="{Binding NewMessageContent}" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True"/>
-            <Button Content="Send" Command="{Binding SendMessageCommand}" Margin="5" Grid.Column="1"/>
+            <TextBox x:Name="MessageInput" Text="{Binding NewMessageContent}" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" />
+            <Button Content="Send" Command="{Binding SendMessageCommand}" Margin="5" Grid.Column="1" />
+            <Button Content="New Conversation" Command="{Binding CreateConversationCommand}" Margin="5" Grid.Column="1" VerticalAlignment="Top" />
         </Grid>
     </Grid>
 </Window>

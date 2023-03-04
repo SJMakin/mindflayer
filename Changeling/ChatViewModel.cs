@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using MindFlayer;
 
@@ -14,22 +9,14 @@ namespace Changeling
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private ObservableCollection<ChatMessage> chatMessages = new ObservableCollection<ChatMessage>();
-
         public ChatViewModel()
         {
-            ChatMessages.Add(new ChatMessage { Role = "system", Content = "You are a helpful assistant." });
+            Conversations.Add(new Conversation() { Name = "Chat 1"});
         }
 
-        public ObservableCollection<ChatMessage> ChatMessages
-        {
-            get { return chatMessages; }
-            set
-            {
-                chatMessages = value;
-                OnPropertyChanged(nameof(ChatMessages));
-            }
-        }
+        public ObservableCollection<Conversation> Conversations { get; set; } = new ObservableCollection<Conversation>();
+
+        public Conversation ActiveConversation { get; set; }
 
         private string newMessageContent;
 
@@ -58,17 +45,82 @@ namespace Changeling
             }
         }
 
+        private ICommand createConversationCommand;
+
+        public ICommand CreateConversationCommand
+        {
+            get
+            {
+                if (createConversationCommand == null)
+                {
+                    createConversationCommand = new RelayCommand(() => true, CreateConversation);
+                }
+
+                return createConversationCommand;
+            }
+        }
+
         private void SendMessage()
         {
-            ChatMessages.Add(new ChatMessage { Role = "user", Content = NewMessageContent });
-            // (Assuming some logic here to process the message and send a response.)
-            ChatMessages.Add(new ChatMessage { Role = "assistant", Content = Engine.Chat(NewMessageContent, chatMessages) });
+            ActiveConversation.ChatMessages.Add(new ChatMessage
+            {
+                Role = "user",
+                Content = NewMessageContent
+            });
+            ActiveConversation.ChatMessages.Add(new ChatMessage
+            {
+                Role = "assistant",
+                Content = Engine.Chat(NewMessageContent, ActiveConversation.ChatMessages)
+            });
             NewMessageContent = string.Empty;
+        }
+
+        private void CreateConversation()
+        {
+            Conversations.Add(new Conversation() { Name = $"Chat {Conversations.Count + 1}" });
         }
 
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+    }
+
+    public class Conversation : INotifyPropertyChanged
+    {
+        private ObservableCollection<ChatMessage> chatMessages = new ObservableCollection<ChatMessage>();
+        private string name;
+
+        public Conversation()
+        {
+            ChatMessages.Add(new ChatMessage { Role = "system", Content = "You are a helpful assistant." });
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public ObservableCollection<ChatMessage> ChatMessages
+        {
+            get { return chatMessages; }
+            set
+            {
+                chatMessages = value;
+                OnPropertyChanged(nameof(ChatMessages));
+            }
+        }
+        public string Name
+        {
+            get { return name; }
+            set
+            {
+                name = value;
+                OnPropertyChanged(nameof(Name));
+            }
+        }
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
     }
 }
