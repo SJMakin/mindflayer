@@ -23,6 +23,7 @@ namespace Changeling
         public MainWindow()
         {
             InitializeComponent();
+            AppContext.SetSwitch(@"Switch.System.Windows.Controls.DoNotAugmentWordBreakingUsingSpeller", true);
         }
     }
 }

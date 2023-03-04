@@ -1,21 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Operations.json" />
-  </ItemGroup>
+	<ItemGroup>
+	  <Compile Remove="Main.cs" />
+	  <Compile Remove="Main.Designer.cs" />
+	  <Compile Remove="Toast.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="operations.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Remove="Main.resx" />
+	</ItemGroup>
 
+	<ItemGroup>
+		<None Remove="Operations.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="operations.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="ui\" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="log4net" Version="2.0.15" />
+	</ItemGroup>
 </Project>

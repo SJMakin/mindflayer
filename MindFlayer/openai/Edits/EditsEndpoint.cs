@@ -1,4 +1,5 @@
 ﻿using OpenAI.Models;
+using System.Net.Http;
 using System.Text.Json;
 
 namespace OpenAI.Edits

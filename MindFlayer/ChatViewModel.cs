@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Input;
 using MindFlayer;
 
@@ -11,7 +12,7 @@ namespace Changeling
 
         public ChatViewModel()
         {
-            Conversations.Add(new Conversation() { Name = "Chat 1"});
+            Conversations.Add(NewConversation());
         }
 
         public ObservableCollection<Conversation> Conversations { get; set; } = new ObservableCollection<Conversation>();
@@ -45,21 +46,6 @@ namespace Changeling
             }
         }
 
-        private ICommand createConversationCommand;
-
-        public ICommand CreateConversationCommand
-        {
-            get
-            {
-                if (createConversationCommand == null)
-                {
-                    createConversationCommand = new RelayCommand(() => true, CreateConversation);
-                }
-
-                return createConversationCommand;
-            }
-        }
-
         private void SendMessage()
         {
             ActiveConversation.ChatMessages.Add(new ChatMessage
@@ -75,9 +61,26 @@ namespace Changeling
             NewMessageContent = string.Empty;
         }
 
+        private ICommand createConversationCommand;
+
+        public ICommand CreateConversationCommand
+        {
+            get
+            {
+                if (createConversationCommand == null)
+                {
+                    createConversationCommand = new RelayCommand(() => true, CreateConversation);
+                }
+
+                return createConversationCommand;
+            }
+        }
+
+        private Conversation NewConversation() => new Conversation(this) { Name = $"Chat {Conversations.Count + 1}" };
+
         private void CreateConversation()
         {
-            Conversations.Add(new Conversation() { Name = $"Chat {Conversations.Count + 1}" });
+            Conversations.Add(NewConversation());
         }
 
         protected void OnPropertyChanged(string propertyName)
@@ -90,10 +93,12 @@ namespace Changeling
     {
         private ObservableCollection<ChatMessage> chatMessages = new ObservableCollection<ChatMessage>();
         private string name;
+        private readonly ChatViewModel parent;
 
-        public Conversation()
+        public Conversation(ChatViewModel parent)
         {
-            ChatMessages.Add(new ChatMessage { Role = "system", Content = "You are a helpful assistant." });
+            this.parent = parent;
+            ChatMessages.Add(new ChatMessage { Role = "system", Content = "You are a helpful assistant." });            
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -122,5 +127,24 @@ namespace Changeling
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private ICommand closeTabCommand;
+
+        public ICommand CloseTabCommand
+        {
+            get
+            {
+                if (closeTabCommand == null)
+                {
+                    closeTabCommand = new RelayCommand(() => true, CloseTab);
+                }
+
+                return closeTabCommand;
+            }
+        }
+
+        private void CloseTab()
+        {
+            parent.Conversations.Remove(this);
+        }
     }
 }
