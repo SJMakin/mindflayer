@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
 using MindFlayer;
 
@@ -73,13 +72,13 @@ namespace MindFlayer
 
         private void SendMessage()
         {
-            ActiveConversation.ChatMessages.Add(new ChatMessage
+            ActiveConversation.ChatMessages.Add(new ChatMessage(ActiveConversation)
             {
                 Role = "user",
                 Content = NewMessageContent
             });
 
-            ActiveConversation.ChatMessages.Add(new ChatMessage
+            ActiveConversation.ChatMessages.Add(new ChatMessage(ActiveConversation)
             {
                 Role = "assistant",
                 Content = Engine.Chat(NewMessageContent, ActiveConversation.ChatMessages)
@@ -113,74 +112,6 @@ namespace MindFlayer
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
-
-    public class Conversation : INotifyPropertyChanged
-    {
-        private ObservableCollection<ChatMessage> chatMessages = new ObservableCollection<ChatMessage>();
-        private string name;
-        private readonly ChatViewModel parent;
-
-        public Conversation(ChatViewModel parent)
-        {
-            this.parent = parent;
-            ShowCloseButton = Visibility.Visible;
-            ChatMessages.Add(new ChatMessage { Role = "system", Content = "You are a helpful assistant." });
-        }
-
-        public Conversation()
-        {
-            ShowCloseButton = Visibility.Hidden;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public Visibility ShowCloseButton { get; }
-
-        public ObservableCollection<ChatMessage> ChatMessages
-        {
-            get { return chatMessages; }
-            set
-            {
-                chatMessages = value;
-                OnPropertyChanged(nameof(ChatMessages));
-            }
-        }
-
-        public string Name
-        {
-            get { return name; }
-            set
-            {
-                name = value;
-                OnPropertyChanged(nameof(Name));
-            }
-        }
-
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private ICommand closeTabCommand;
-
-        public ICommand CloseTabCommand
-        {
-            get
-            {
-                if (closeTabCommand == null)
-                {
-                    closeTabCommand = new RelayCommand(() => true, CloseTab);
-                }
-
-                return closeTabCommand;
-            }
-        }
-
-        private void CloseTab()
-        {
-            parent.Conversations.Remove(this);
         }
     }
 }

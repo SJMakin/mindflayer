@@ -47,6 +47,12 @@ namespace MindFlayer
             return Chat(prompt);
         }
 
+        public static string Chat(IEnumerable<ChatMessage> messages)
+        {
+            var prompt = messages.Select(prompt => new ChatPrompt(prompt.Role, prompt.Content)).ToList();
+            return Chat(prompt);
+        }
+
         private static string Chat(IEnumerable<ChatPrompt> prompts)
         {
             var request = new ChatRequest(messages: prompts, model: Model.GPT3_5_Turbo);

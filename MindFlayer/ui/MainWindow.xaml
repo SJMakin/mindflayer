@@ -54,11 +54,13 @@
                                             <Grid VerticalAlignment="Bottom">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="80" />
+                                                    <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="10*" />
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Text="{Binding Role}" FontWeight="Bold" Grid.Column="0" />
+                                                <Button Content="🔁" Command="{Binding ReplayCommand}" Visibility="{Binding ReplayButtonVisibility}" Grid.Column="1" Margin="3" />
                                                 <TextBox Background="Transparent" BorderThickness="0" TextWrapping="Wrap" Text="{Binding Content}"
-                                                         Grid.Column="1">
+                                                         Grid.Column="2">
                                                     <TextBox.Style>
                                                         <Style TargetType="TextBox">
                                                             <Setter Property="SpellCheck.IsEnabled" Value="False" />
