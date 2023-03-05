@@ -30,7 +30,7 @@ namespace MindFlayer
             scrollViewer?.ScrollToBottom();
         }
 
-        private static void SetScrollToBottomOnChange(object sender, NotifyCollectionChangedEventArgs e, ScrollViewer? scrollViewer)
+        private static void SetScrollToBottomOnChange(object? sender, NotifyCollectionChangedEventArgs e, ScrollViewer? scrollViewer)
         {
             scrollViewer?.ScrollToBottom();
         }
