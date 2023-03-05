@@ -45,7 +45,7 @@
             </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>
                 <DataTemplate>
-                    <ScrollViewer>
+                    <ScrollViewer Name="ScrollView" local:ScrollViewerAttachedProperties.ScrollToBottomOnChange="{Binding ChatMessages}">
                         <StackPanel x:Name="MessageContainer">
                             <ItemsControl ItemsSource="{Binding ChatMessages}">
                                 <ItemsControl.ItemTemplate>
