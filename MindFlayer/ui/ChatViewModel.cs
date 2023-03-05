@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Input;
 using MindFlayer;
 
-namespace Changeling
+namespace MindFlayer
 {
     public class ChatViewModel : INotifyPropertyChanged
     {
