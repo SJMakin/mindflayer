@@ -20,7 +20,7 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Name}"/>
-                        <Button Grid.Column="1" Command="{Binding CloseTabCommand}" >
+                        <Button Grid.Column="1" Command="{Binding CloseTabCommand}" Visibility="{Binding ShowCloseButton}" >
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Path Data="M0,0 L8,8 M8,0 L0,8" StrokeThickness="3" VerticalAlignment="Center" Margin="5,4,0,2">
@@ -90,7 +90,7 @@
             </Grid.ColumnDefinitions>
             <TextBox x:Name="MessageInput" Text="{Binding NewMessageContent}" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" />
             <Button Content="Send" Command="{Binding SendMessageCommand}" Margin="5" Grid.Column="1" />
-            <Button Content="New Conversation" Command="{Binding CreateConversationCommand}" Margin="5" Grid.Column="1" VerticalAlignment="Top" />
+            <Button Content="Record" Command="{Binding RecordInputCommand}" Margin="5" Grid.Column="1" VerticalAlignment="Top" />
         </Grid>
     </Grid>
 </Window>
