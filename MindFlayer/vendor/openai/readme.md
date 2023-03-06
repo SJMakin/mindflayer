@@ -1,0 +1,1 @@
+﻿Trimmed and tweaked version of https://github.com/RageAgainstThePixel/OpenAI-DotNet

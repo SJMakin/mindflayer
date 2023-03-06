@@ -2,6 +2,7 @@
 using OpenAI.Completions;
 using OpenAI.Edits;
 using OpenAI.Models;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Authentication;
 using System.Text.Json;

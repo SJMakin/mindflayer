@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Changeling
+namespace MindFlayer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -23,6 +23,7 @@ namespace Changeling
         public MainWindow()
         {
             InitializeComponent();
+            AppContext.SetSwitch(@"Switch.System.Windows.Controls.DoNotAugmentWordBreakingUsingSpeller", true);
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using OpenAI.Models;
+using System.IO;
+using System.Net.Http;
 using System.Text.Json;
 
 namespace OpenAI.Completions
