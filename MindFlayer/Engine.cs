@@ -58,7 +58,7 @@ namespace MindFlayer
             var request = new ChatRequest(messages: prompts, model: Model.GPT3_5_Turbo);
             var result = Client.ChatEndpoint.GetCompletionAsync(request).Result;
             log.Info($"{nameof(Engine)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={JsonSerializer.Serialize(result)}");
-            return result.FirstChoice.Message.Content;
+            return result.FirstChoice.Message.Content.Trim();
         }
 
         private static string ReplacePlaceholders(string template, string input)

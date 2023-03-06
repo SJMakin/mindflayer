@@ -1,8 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows.Input;
-using MindFlayer;
 
 namespace MindFlayer
 {
@@ -10,65 +8,55 @@ namespace MindFlayer
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private Conversation AddNewConvo = new Conversation() { Name = "+" };
+        private Conversation _addNewConvo = new Conversation() { Name = "+" };
+        private bool _addingNew = false;
 
         public ChatViewModel()
         {
             Conversations.Add(NewConversation());
-            Conversations.Add(AddNewConvo);
+            Conversations.Add(_addNewConvo);
         }
 
-        public ObservableCollection<Conversation> Conversations { get; set; } = new ObservableCollection<Conversation>();
+        public ObservableCollection<Conversation> Conversations { get; } = new ObservableCollection<Conversation>();
+        
 
-        private Conversation activeConversation;
-        private bool addingNew = false;
+        private Conversation _activeConversation;
+        
         public Conversation ActiveConversation
         {
-            get => activeConversation;
+            get => _activeConversation;
             set
             {
-                if (value == AddNewConvo && !addingNew)
+                if (value == _addNewConvo && !_addingNew)
                 {
-                    addingNew = true;
+                    _addingNew = true;
                     var newConvo = NewConversation();
                     Conversations.Insert(Conversations.Count - 1, newConvo);
                     ActiveConversation = newConvo;
                     OnPropertyChanged(nameof(ActiveConversation));
-                    addingNew = false;
+                    _addingNew = false;
                 }
                 else
                 {
-                    activeConversation = value;
+                    _activeConversation = value;
                 }
             }
         }
 
-        private string newMessageContent;
+        private string _newMessageContent;
 
         public string NewMessageContent
         {
-            get { return newMessageContent; }
+            get => _newMessageContent;
             set
             {
-                newMessageContent = value;
+                _newMessageContent = value;
                 OnPropertyChanged(nameof(NewMessageContent));
             }
         }
 
-        private ICommand sendMessageCommand;
-
-        public ICommand SendMessageCommand
-        {
-            get
-            {
-                if (sendMessageCommand == null)
-                {
-                    sendMessageCommand = new RelayCommand(() => true, SendMessage);
-                }
-
-                return sendMessageCommand;
-            }
-        }
+        private ICommand _sendMessageCommand;
+        public ICommand SendMessageCommand => _sendMessageCommand ??= new RelayCommand(() => true, SendMessage);
 
         private void SendMessage()
         {
@@ -86,28 +74,16 @@ namespace MindFlayer
 
             NewMessageContent = string.Empty;
         }
-
-        private ICommand recordInputCommand;
-
-        public ICommand RecordInputCommand
-        {
-            get
-            {
-                if (recordInputCommand == null)
-                {
-                    recordInputCommand = new RelayCommand(() => true, RecordInput);
-                }
-
-                return recordInputCommand;
-            }
-        }
-
-        private Conversation NewConversation() => new Conversation(this) { Name = $"Chat {Conversations.Count(c => c != AddNewConvo) + 1}" };
-
+        
+        private ICommand _recordInputCommand;
+        public ICommand RecordInputCommand => _recordInputCommand ??= new RelayCommand(() => true, RecordInput);
+        
         private void RecordInput()
         {
 
         }
+
+        private Conversation NewConversation() => new Conversation(this) { Name = $"Chat {Conversations.Count(c => c != _addNewConvo) + 1}" };
 
         protected void OnPropertyChanged(string propertyName)
         {

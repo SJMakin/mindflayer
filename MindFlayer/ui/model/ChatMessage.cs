@@ -11,32 +11,21 @@ namespace MindFlayer
 
         public Visibility ReplayButtonVisibility => Role == "assistant" ? Visibility.Visible : Visibility.Hidden;
 
-        private ICommand replayCommand;
-        private readonly Conversation parent;
+        private readonly Conversation _parent;
 
-        public ICommand ReplayCommand
-        {
-            get
-            {
-                if (replayCommand == null)
-                {
-                    replayCommand = new RelayCommand(() => true, Replay);
-                }
-
-                return replayCommand;
-            }
-        }
+        private ICommand _replayCommand;
+        public ICommand ReplayCommand => _replayCommand ??= new RelayCommand(() => true, Replay);
 
         private void Replay()
         {
-            parent.ReplayFromThisMessage(this);
+            _parent.ReplayFromThisMessage(this);
         }
 
         public ChatMessage() { }
 
         public ChatMessage(Conversation parent)
         {
-            this.parent = parent;
+            _parent = parent;
         }
     }
 }

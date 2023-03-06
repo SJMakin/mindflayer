@@ -7,13 +7,13 @@ namespace MindFlayer
 {
     public class Conversation : INotifyPropertyChanged
     {
-        private ObservableCollection<ChatMessage> chatMessages = new ObservableCollection<ChatMessage>();
-        private string name;
-        private readonly ChatViewModel parent;
+        private ObservableCollection<ChatMessage> _chatMessages = new ObservableCollection<ChatMessage>();
+        private string _name;
+        private readonly ChatViewModel _parent;
 
         public Conversation(ChatViewModel parent)
         {
-            this.parent = parent;
+            this._parent = parent;
             ShowCloseButton = Visibility.Visible;
             ChatMessages.Add(new ChatMessage { Role = "system", Content = "You are a helpful assistant." });
         }
@@ -29,20 +29,20 @@ namespace MindFlayer
 
         public ObservableCollection<ChatMessage> ChatMessages
         {
-            get { return chatMessages; }
+            get => _chatMessages;
             set
             {
-                chatMessages = value;
+                _chatMessages = value;
                 OnPropertyChanged(nameof(ChatMessages));
             }
         }
 
         public string Name
         {
-            get { return name; }
+            get => _name;
             set
             {
-                name = value;
+                _name = value;
                 OnPropertyChanged(nameof(Name));
             }
         }
@@ -52,24 +52,12 @@ namespace MindFlayer
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private ICommand closeTabCommand;
-
-        public ICommand CloseTabCommand
-        {
-            get
-            {
-                if (closeTabCommand == null)
-                {
-                    closeTabCommand = new RelayCommand(() => true, CloseTab);
-                }
-
-                return closeTabCommand;
-            }
-        }
+        private ICommand _closeTabCommand;
+        public ICommand CloseTabCommand => _closeTabCommand ??= new RelayCommand(() => true, CloseTab);
 
         private void CloseTab()
         {
-            parent.Conversations.Remove(this);
+            _parent.Conversations.Remove(this);
         }
 
         public void ReplayFromThisMessage(ChatMessage message)

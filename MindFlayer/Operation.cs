@@ -1,6 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using OpenAI.Chat;
-using Message = OpenAI.Chat.Message;
 
 namespace MindFlayer;
 
