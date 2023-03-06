@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MaterialDesignThemes" Version="4.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MindFlayer\MindFlayer.csproj" />
   </ItemGroup>
 
