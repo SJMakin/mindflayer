@@ -44,7 +44,7 @@
                 </DataTemplate>
             </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>
-                <DataTemplate>
+                <DataTemplate DataType="local:Conversation">
                     <ScrollViewer Name="ScrollView" local:ScrollViewerAttachedProperties.ScrollToBottomOnChange="{Binding ChatMessages}">
                         <StackPanel x:Name="MessageContainer">
                             <ItemsControl ItemsSource="{Binding ChatMessages}">
@@ -58,7 +58,7 @@
                                                     <ColumnDefinition Width="10*" />
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Text="{Binding Role}" FontWeight="Bold" Grid.Column="0" />
-                                                <Button Content="🔁" Command="{Binding ReplayCommand}" Visibility="{Binding ReplayButtonVisibility}" Grid.Column="1" Margin="3" Padding="1" Height="10"/>
+                                                <Button Content="🔁" Command="{Binding ReplayCommand}" Visibility="{Binding ReplayButtonVisibility}" Grid.Column="1"/>
                                                 <TextBox Background="Transparent" BorderThickness="0" TextWrapping="Wrap" Text="{Binding Content}" Grid.Column="2">
                                                     <TextBox.Style>
                                                         <Style TargetType="TextBox">
