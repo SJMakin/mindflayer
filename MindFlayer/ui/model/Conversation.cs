@@ -1,5 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using MindFlayer.ui.model;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
 
@@ -77,5 +79,6 @@ namespace MindFlayer
                 Content = Engine.Chat(ChatMessages)
             });
         }
+        
     }
 }
