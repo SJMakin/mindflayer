@@ -38,24 +38,24 @@ namespace MindFlayer
         public static string Chat(string input, Operation op)
         {
             var prompt = op.Messages.Select(prompt => new ChatPrompt(prompt.Role, ReplacePlaceholders(prompt.Content, input))).ToList();
-            return Chat(prompt);
+            return Chat(prompt, 1);
         }
 
         public static string Chat(string input, IEnumerable<ChatMessage> messages)
         {
             var prompt = messages.Select(prompt => new ChatPrompt(prompt.Role, ReplacePlaceholders(prompt.Content, input))).ToList();
-            return Chat(prompt);
+            return Chat(prompt, 1);
         }
 
-        public static string Chat(IEnumerable<ChatMessage> messages)
+        public static string Chat(IEnumerable<ChatMessage> messages, double temp)
         {
             var prompt = messages.Select(prompt => new ChatPrompt(prompt.Role, prompt.Content)).ToList();
-            return Chat(prompt);
+            return Chat(prompt, temp);
         }
 
-        private static string Chat(IEnumerable<ChatPrompt> prompts)
+        private static string Chat(IEnumerable<ChatPrompt> prompts, double temp)
         {
-            var request = new ChatRequest(messages: prompts, model: Model.GPT3_5_Turbo);
+            var request = new ChatRequest(messages: prompts, model: Model.GPT3_5_Turbo, temperature: temp );
             var result = Client.ChatEndpoint.GetCompletionAsync(request).Result;
             log.Info($"{nameof(Engine)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={JsonSerializer.Serialize(result)}");
             return result.FirstChoice.Message.Content.Trim();

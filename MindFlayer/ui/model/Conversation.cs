@@ -76,7 +76,7 @@ namespace MindFlayer
             ChatMessages.Add(new ChatMessage(this)
             {
                 Role = "assistant",
-                Content = Engine.Chat(ChatMessages)
+                Content = Engine.Chat(ChatMessages, 1.2)
             });
         }
         
