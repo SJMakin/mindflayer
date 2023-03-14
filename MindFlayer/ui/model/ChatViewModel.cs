@@ -139,13 +139,13 @@ Use the this format for your response - provide valid JSON ONLY - be careful to 
         ""summary"": ""Another suggestion"",
         ""text"": ""This is the full text of the suggestion.""
     }
-]
-"
+]"
             });
             try
             {
-                var result = Engine.Chat(currectConvo, 1);
+                var result = Engine.Chat(currectConvo);
                 if (result.IndexOf("[") != 0) result = result.Substring(result.IndexOf("["));
+                result = result.Replace("```", "");
                 var suggestions = JsonSerializer.Deserialize<List<Suggestion>>(result); 
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
