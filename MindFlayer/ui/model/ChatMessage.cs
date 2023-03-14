@@ -9,7 +9,7 @@ namespace MindFlayer
         [JsonPropertyName("role")] public string Role { get; set; } = "";
         [JsonPropertyName("content")] public string Content { get; set; } = "";
 
-        public Visibility ReplayButtonVisibility => Role == "assistant" ? Visibility.Visible : Visibility.Hidden;
+        public Visibility ReplayButtonVisibility => Role == "assistant" ? Visibility.Visible : Visibility.Collapsed;
 
         private readonly Conversation _parent;
 
