@@ -1,8 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Text.Json;
 using System.Windows.Input;
 using MindFlayer.ui.model;
+using NAudio.Wave.Compression;
+using NAudio.Wave;
 
 namespace MindFlayer
 {
@@ -24,6 +27,9 @@ namespace MindFlayer
         public ObservableCollection<Suggestion> Suggestions { get; } = new ObservableCollection<Suggestion>() { new Suggestion() { Summary = "Loading.." } };
 
         private Conversation _activeConversation;
+
+        private readonly Dictaphone _dictaphone = new();
+        private readonly KeyBinder _keyBinder = new();
 
         public Conversation ActiveConversation
         {
@@ -58,6 +64,18 @@ namespace MindFlayer
             }
         }
 
+        private double _temperature = 1.1;
+
+        public double Temperature
+        {
+            get => _temperature;
+            set
+            {
+                _temperature = value;
+                OnPropertyChanged(nameof(Temperature));
+            }
+        }
+
         private bool _sendEnabled = true;
 
         public bool SendEnabled
@@ -81,12 +99,12 @@ namespace MindFlayer
                 Content = NewMessageContent
             });
 
-            SendEnabled = false; 
+            SendEnabled = false;
 
             var input = NewMessageContent;
             NewMessageContent = string.Empty;
 
-            Task.Run(() => Engine.Chat(ActiveConversation.ChatMessages, 1.1))
+            Task.Run(() => Engine.Chat(ActiveConversation.ChatMessages, Temperature))
                 .ContinueWith(t =>
                 {
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
@@ -104,10 +122,31 @@ namespace MindFlayer
         private ICommand _recordInputCommand;
         public ICommand RecordInputCommand => _recordInputCommand ??= new RelayCommand(() => true, RecordInput);
 
+        private bool _recording;
+        public bool Recording
+        {
+            get { return _recording; }
+            set
+            {
+                _recording = value;
+                OnPropertyChanged(nameof(Recording));
+            }
+        }
+
         private void RecordInput()
         {
-
+            if (Recording)
+            {
+                NewMessageContent = _dictaphone.StopAndTranscribe();
+                Recording = false;
+            }
+            else
+            {
+                Recording = true;
+                _dictaphone.Record();
+            }
         }
+
 
         private ICommand _setInputCommand;
         public ICommand SetInputCommand => _setInputCommand ??= new RelayCommand<string>(SetInput);
@@ -128,7 +167,7 @@ namespace MindFlayer
                 Role = "user",
                 Content = @"Please suggest some continuations for this conversation with the assistant. Write the suggestions in the voice of the user. Pay attention to, and imitate, their style.
 
-Use the this format for your response - provide valid JSON ONLY - be careful to escape double quotes:
+Please use the this structured JSON format for your response:
 
 [
     {
@@ -137,29 +176,31 @@ Use the this format for your response - provide valid JSON ONLY - be careful to 
     },   
     {
         ""summary"": ""Another suggestion"",
-        ""text"": ""This is the full text of the suggestion.""
+        ""text"": ""This is the full text of another suggestion.""
     }
 ]"
             });
             try
             {
-                var result = Engine.Chat(currectConvo);
-                if (result.IndexOf("[") != 0) result = result.Substring(result.IndexOf("["));
+                var result = Engine.Chat(currectConvo, Temperature);
+                var indexOfArrayChar = result.IndexOf("[", StringComparison.Ordinal);
+                if (indexOfArrayChar > 0) result = result.Substring(indexOfArrayChar);
                 result = result.Replace("```", "");
-                var suggestions = JsonSerializer.Deserialize<List<Suggestion>>(result); 
+                var suggestions = JsonSerializer.Deserialize<List<Suggestion>>(result);
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     Suggestions.Clear();
                     suggestions.ForEach(s => Suggestions.Add(s));
                 });
             }
-            catch {
+            catch
+            {
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     Suggestions.Clear();
                     Suggestions.Add(new Suggestion() { Summary = "Failed." });
                 });
-            }           
+            }
         }
 
         private Conversation NewConversation() => new Conversation(this) { Name = $"Chat {Conversations.Count(c => c != _addNewConvo) + 1}" };

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text.Json;
 
 namespace OpenAI
@@ -12,6 +13,8 @@ namespace OpenAI
         private const string OPENAI_API_KEY = "OPENAI_API_KEY";
         private const string OPENAI_SECRET_KEY = "OPENAI_SECRET_KEY";
         private const string TEST_OPENAI_SECRET_KEY = "TEST_OPENAI_SECRET_KEY";
+        private const string OPENAI_ORGANIZATION_ID = "OPENAI_ORGANIZATION_ID";
+        private const string OPEN_AI_ORGANIZATION_ID = "OPEN_AI_ORGANIZATION_ID";
         private const string ORGANIZATION = "ORGANIZATION";
 
         private readonly AuthInfo authInfo;
@@ -25,7 +28,7 @@ namespace OpenAI
         /// For users who belong to multiple organizations, you can pass a header to specify which organization is used for an API request.
         /// Usage from these API requests will count against the specified organization's subscription quota.
         /// </summary>
-        public string Organization => authInfo.Organization;
+        public string OrganizationId => authInfo.OrganizationId;
 
         /// <summary>
         /// Allows implicit casting from a string, so that a simple string API key can be provided in place of an instance of <see cref="OpenAIAuthentication"/>.
@@ -79,7 +82,7 @@ namespace OpenAI
         /// <summary>
         /// Attempts to load api keys from environment variables, as "OPENAI_KEY" (or "OPENAI_SECRET_KEY", for backwards compatibility)
         /// </summary>
-        /// <param name="organization">
+        /// <param name="organizationId">
         /// For users who belong to multiple organizations, you can pass a header to specify which organization is used for an API request.
         /// Usage from these API requests will count against the specified organization's subscription quota.
         /// </param>
@@ -87,7 +90,7 @@ namespace OpenAI
         /// Returns the loaded <see cref="OpenAIAuthentication"/> any api keys were found,
         /// or <see langword="null"/> if there were no matching environment vars.
         /// </returns>
-        public static OpenAIAuthentication LoadFromEnv(string organization = null)
+        public static OpenAIAuthentication LoadFromEnv(string organizationId = null)
         {
             var apiKey = Environment.GetEnvironmentVariable(OPENAI_KEY);
 
@@ -106,7 +109,17 @@ namespace OpenAI
                 apiKey = Environment.GetEnvironmentVariable(TEST_OPENAI_SECRET_KEY);
             }
 
-            return string.IsNullOrEmpty(apiKey) ? null : new OpenAIAuthentication(apiKey, organization);
+            if (string.IsNullOrWhiteSpace(organizationId))
+            {
+                organizationId = Environment.GetEnvironmentVariable(OPEN_AI_ORGANIZATION_ID);
+            }
+
+            if (string.IsNullOrWhiteSpace(organizationId))
+            {
+                organizationId = Environment.GetEnvironmentVariable(OPENAI_ORGANIZATION_ID);
+            }
+
+            return string.IsNullOrEmpty(apiKey) ? null : new OpenAIAuthentication(apiKey, organizationId);
         }
 
         /// <summary>

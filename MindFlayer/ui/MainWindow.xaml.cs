@@ -1,9 +1,9 @@
 ﻿using MaterialDesignThemes.Wpf;
 using System.Windows;
+using Application = System.Windows.Application;
 
 namespace MindFlayer
 {
-    /// <summary>
     // ▒ ████▒  ██▓    ▄▄▄     ▓██   ██▓ ▓█████ ██▀███  
     //▒▓██     ▓██▒   ▒████▄    ▒██  ██▒ ▓█   ▀▓██ ▒ ██▒
     //░▒████   ▒██░   ▒██  ▀█▄   ▒██ ██░ ▒███  ▓██ ░▄█ ▒
@@ -13,7 +13,6 @@ namespace MindFlayer
     //  ░     ░░ ░ ▒  ░ ░   ▒▒  ▓██ ░▒░ ░ ░ ░    ░▒ ░ ▒ 
     //  ░ ░      ░ ░    ░   ▒   ▒ ▒ ░░      ░    ░░   ░ 
     //        ░    ░        ░   ░ ░     ░   ░     ░     
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -22,8 +21,9 @@ namespace MindFlayer
             AppContext.SetSwitch(@"Switch.System.Windows.Controls.DoNotAugmentWordBreakingUsingSpeller", true);
         }
 
-        private void MenuDarkModeButton_Click(object sender, RoutedEventArgs e)
-            => ModifyTheme(DarkModeToggleButton.IsChecked == true);
+        private void MenuDarkModeButton_Click(object sender, RoutedEventArgs e) => ModifyTheme(DarkModeToggleButton.IsChecked == true);
+
+        private void CloseButtonClickHandler_Click(object sender, RoutedEventArgs e) => Close();
 
         private static void ModifyTheme(bool isDarkTheme)
         {

@@ -93,15 +93,24 @@
                                         Margin="10 0 0 0"
                                         Grid.Column="2"/>
                                 <TextBlock
-                                        Text="Enabled"
+                                        Text="Temp"
                                         Margin="0 10 10 0"
                                         Grid.Row="1"/>
-                                <ToggleButton
-                                        x:Name="ControlsEnabledToggleButton"
-                                        Margin="0 10 0 0"
-                                        IsChecked="{Binding ControlsEnabled}"
+                                <Slider x:Name="slVolume" 
+                                        Width="40"
+                                        Value="{Binding Temperature}"
+                                        Maximum="2" 
+                                        Margin="0 10 10 0"
                                         Grid.Row="1"
-                                        Grid.Column="1"/>
+                                        Grid.Column="1"
+                                />
+                                <TextBox Text="{Binding ElementName=slVolume, Path=Value, StringFormat=N2, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="29" 
+                                         Height="22" 
+                                         TextWrapping="Wrap" 
+                                         Margin="10,0,0,0" 
+                                         Grid.Row="1"
+                                         Grid.Column="2"/>
                             </Grid>
 
                             <Separator/>
@@ -122,6 +131,7 @@
 
                             <Button
                                     Content="Goodbye"
+                                    Click="CloseButtonClickHandler_Click" 
                                     />
                         </StackPanel>
                     </materialDesign:PopupBox>
@@ -195,7 +205,7 @@
                                                     <RowDefinition Height="1*" />
                                                 </Grid.RowDefinitions>
                                                 <TextBlock Text="{Binding Role}" FontWeight="Bold" Grid.Column="0" />
-                                                <Button Content="🔁" Command="{Binding ReplayCommand}" Visibility="{Binding ReplayButtonVisibility}" Grid.Column="0" Grid.Row="1"/>
+                                                <Button Content="🔁" Command="{Binding ReplayCommand}" Visibility="{Binding ReplayButtonVisibility}" Grid.Column="0" Grid.Row="1" Padding="0" Width="20" Height="20"/>
                                                 <TextBox Background="Transparent" BorderThickness="0" TextWrapping="Wrap" Text="{Binding Content}" Grid.Column="1" Grid.RowSpan="2">
                                                     <TextBox.Style>
                                                         <Style TargetType="TextBox">

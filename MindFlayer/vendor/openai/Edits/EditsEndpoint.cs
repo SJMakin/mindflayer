@@ -1,11 +1,11 @@
 ﻿using OpenAI.Models;
-using System.Net.Http;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace OpenAI.Edits
 {
     /// <summary>
-    /// Given a prompt and an instruction, the model will return an edited version of the prompt.
+    /// Given a prompt and an instruction, the model will return an edited version of the prompt.<br/>
     /// <see href="https://beta.openai.com/docs/api-reference/edits"/>
     /// </summary>
     public sealed class EditsEndpoint : BaseEndPoint
@@ -14,8 +14,7 @@ namespace OpenAI.Edits
         public EditsEndpoint(OpenAIClient api) : base(api) { }
 
         /// <inheritdoc />
-        protected override string GetEndpoint()
-            => $"{Api.BaseUrl}edits";
+        protected override string Root => "edits";
 
         /// <summary>
         /// Creates a new edit for the provided input, instruction, and parameters
@@ -56,25 +55,10 @@ namespace OpenAI.Edits
         /// <returns><see cref="EditResponse"/></returns>
         public async Task<EditResponse> CreateEditAsync(EditRequest request)
         {
-            var jsonContent = JsonSerializer.Serialize(request, Api.JsonSerializationOptions);
-            var response = await Api.Client.PostAsync(GetEndpoint(), jsonContent.ToJsonStringContent()).ConfigureAwait(false);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var resultAsString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var editResponse = JsonSerializer.Deserialize<EditResponse>(resultAsString, Api.JsonSerializationOptions);
-
-                if (editResponse == null)
-                {
-                    throw new HttpRequestException($"{nameof(CreateEditAsync)} returned no results!  HTTP status code: {response.StatusCode}. Response body: {resultAsString}");
-                }
-
-                editResponse.SetResponseData(response.Headers);
-
-                return editResponse;
-            }
-
-            throw new HttpRequestException($"{nameof(CreateEditAsync)} Failed!  HTTP status code: {response.StatusCode}. Request body: {jsonContent}");
+            var jsonContent = JsonSerializer.Serialize(request, Api.JsonSerializationOptions).ToJsonStringContent();
+            var response = await Api.Client.PostAsync(GetUrl(), jsonContent).ConfigureAwait(false);
+            var responseAsString = await response.ReadAsStringAsync().ConfigureAwait(false);
+            return response.DeserializeResponse<EditResponse>(responseAsString, Api.JsonSerializationOptions);
         }
     }
 }

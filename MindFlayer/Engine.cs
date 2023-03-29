@@ -5,6 +5,7 @@ using OpenAI.Completions;
 using OpenAI.Edits;
 using OpenAI.Models;
 using System.Text.Json;
+using OpenAI.Audio;
 
 namespace MindFlayer
 {
@@ -28,8 +29,7 @@ namespace MindFlayer
             var request = new CompletionRequest(
                 prompt: ReplacePlaceholders(op.Prompt, input),
                 temperature: 0.1,
-                model: Model.Davinci,
-                max_tokens: 256);
+                model: Model.Davinci);
             var result = Client.CompletionsEndpoint.CreateCompletionAsync(request).Result;
             log.Info($"{nameof(Engine)}.{nameof(Completion)} request={JsonSerializer.Serialize(request)} result={JsonSerializer.Serialize(result)}");
             return result.Completions[0].Text;
@@ -66,6 +66,14 @@ namespace MindFlayer
             return template
                 .Replace("<{time}>", DateTime.Now.ToString("HH:SS"))
                 .Replace("<{input}>", input);
+        }
+
+        public static string Transcribe(string file)
+        {
+            var request = new AudioTranscriptionRequest(audioPath: file, responseFormat: AudioResponseFormat.Text);
+            var result = Client.AudioEndpoint.CreateTranscriptionAsync(request).Result;
+            log.Info($"{nameof(Engine)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={JsonSerializer.Serialize(result)}");
+            return result.Trim();
         }
     }
 }

@@ -12,7 +12,6 @@
 	<ItemGroup>
 	  <Compile Remove="Main.cs" />
 	  <Compile Remove="Main.Designer.cs" />
-	  <Compile Remove="Toast.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -36,5 +35,6 @@
 	<ItemGroup>
 		<PackageReference Include="log4net" Version="2.0.15" />
 		<PackageReference Include="MaterialDesignThemes" Version="4.2.1" />
+		<PackageReference Include="NAudio" Version="1.8.5" />
 	</ItemGroup>
 </Project>
