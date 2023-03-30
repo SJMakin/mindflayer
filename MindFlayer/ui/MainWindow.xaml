@@ -14,7 +14,8 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
         Title="Chat Dialog" Height="500" Width="500"
-        WindowStyle="None" >
+        WindowStyle="None"
+        MouseDown="MainWindow_OnMouseDown">
     <Window.Resources>
         <ResourceDictionary>
             <Style x:Key="CustomNavigationRailTabItemStyle" TargetType="{x:Type TabItem}" BasedOn="{StaticResource MaterialDesignNavigationRailTabItem}">
