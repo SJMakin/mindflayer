@@ -20,10 +20,10 @@ namespace OpenAI.Chat
             const string defaultModel = "gpt-3.5-turbo";
             Model = model ?? new Model(defaultModel);
 
-            if (!Model.Contains(defaultModel))
-            {
-                throw new ArgumentException(nameof(model), $"{Model} not supported");
-            }
+            //if (!Model.Contains(defaultModel))
+            //{
+            //    throw new ArgumentException(nameof(model), $"{Model} not supported");
+            //}
 
             Messages = messages.ToList();
             Temperature = temperature;

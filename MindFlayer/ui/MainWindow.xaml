@@ -66,11 +66,7 @@
                                 materialDesign:RippleAssist.Feedback="{Binding RelativeSource={RelativeSource Self}, Path=Foreground, Converter={StaticResource BrushRoundConverter}}"/>
                     </StackPanel>
 
-                    <materialDesign:PopupBox
-                            DockPanel.Dock="Right"
-                            PlacementMode="BottomAndAlignRightEdges"
-                            StaysOpen="True">
-
+                    <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="True">
                         <StackPanel>
                             <Grid Margin="10">
                                 <Grid.ColumnDefinitions>
@@ -113,21 +109,19 @@
                                          Grid.Row="1"
                                          Grid.Column="2"/>
                             </Grid>
-
                             <Separator/>
-
-                            <Button
-                                    Content="Hello World"
-                                    />
-
-                            <Button
-                                    Content="Nice Popup"
-                                    />
-
-                            <Button
-                                    Content="Can't Touch This"
-                                    IsEnabled="False"/>
-
+                            <ComboBox
+                                    materialDesign:HintAssist.Hint="Search"
+                                    materialDesign:HintAssist.HintOpacity=".26"
+                                    IsEditable="True"
+                                    >
+                                <ComboBoxItem Content="Apple" />
+                                <ComboBoxItem Content="Banana" />
+                                <ComboBoxItem Content="Pear" />
+                                <ComboBoxItem Content="Orange" />
+                            </ComboBox>
+                            <Button Content="Nice Popup"/>
+                            <Button Content="Can't Touch This" IsEnabled="False"/>
                             <Separator/>
 
                             <Button
@@ -207,6 +201,8 @@
                                                 </Grid.RowDefinitions>
                                                 <TextBlock Text="{Binding Role}" FontWeight="Bold" Grid.Column="0" />
                                                 <Button Content="🔁" Command="{Binding ReplayCommand}" Visibility="{Binding ReplayButtonVisibility}" Grid.Column="0" Grid.Row="1" Padding="0" Width="20" Height="20"/>
+                                                <Button Content="🍔" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" Visibility="{Binding ChangePromptButtonVisibility}" Grid.Column="0" Grid.Row="1" Padding="0" Width="20" Height="20"/>
+
                                                 <TextBox Background="Transparent" BorderThickness="0" TextWrapping="Wrap" Text="{Binding Content}" Grid.Column="1" Grid.RowSpan="2">
                                                     <TextBox.Style>
                                                         <Style TargetType="TextBox">

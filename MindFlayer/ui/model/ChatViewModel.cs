@@ -101,22 +101,27 @@ namespace MindFlayer
 
             SendEnabled = false;
 
+            var msg = new ChatMessage(ActiveConversation)
+            {
+                Role = "assistant",
+                Content = ""
+            };
+
+            ActiveConversation.ChatMessages.Add(msg);
+
             var input = NewMessageContent;
             NewMessageContent = string.Empty;
 
-            Task.Run(() => Engine.Chat(ActiveConversation.ChatMessages, Temperature))
-                .ContinueWith(t =>
+            Task.Run(() => Engine.ChatStream(ActiveConversation.ChatMessages, Temperature, (t) =>
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        ActiveConversation.ChatMessages.Add(new ChatMessage(ActiveConversation)
-                        {
-                            Role = "assistant",
-                            Content = t.Result
-                        });
-                        SendEnabled = true;
-                    });
-                }).ContinueWith(t => { Task.Run(GetSuggestions); });
+                    if (t.FirstChoice == null) return;
+                    msg.Content = msg.Content + t.FirstChoice.Delta.Content ;
+                    
+                });
+            }));
+            SendEnabled = true;
         }
 
         private ICommand _recordInputCommand;
@@ -162,7 +167,8 @@ namespace MindFlayer
         private void GetSuggestions()
         {
             var currectConvo = ActiveConversation.ChatMessages.ToList();
-            currectConvo.Add(new ChatMessage(ActiveConversation)
+            var question = new List<ChatMessage>();
+            question.Add(new ChatMessage(ActiveConversation)
             {
                 Role = "user",
                 Content = @"Please suggest some continuations for this conversation with the assistant. Write the suggestions in the voice of the user. Pay attention to, and imitate, their style.
@@ -182,7 +188,7 @@ Please use the this structured JSON format for your response:
             });
             try
             {
-                var result = Engine.Chat(currectConvo, Temperature);
+                var result = Engine.Chat(question, Temperature);
                 var indexOfArrayChar = result.IndexOf("[", StringComparison.Ordinal);
                 if (indexOfArrayChar > 0) result = result.Substring(indexOfArrayChar);
                 result = result.Replace("```", "");

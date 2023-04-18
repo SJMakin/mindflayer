@@ -61,6 +61,18 @@ namespace MindFlayer
             return result.FirstChoice.Message.Content.Trim();
         }
 
+        public static async Task ChatStream(IEnumerable<ChatMessage> messages, double? temp, Action<ChatResponse> callback)
+        {
+            var prompt = messages.Select(prompt => new ChatPrompt(prompt.Role, prompt.Content)).ToList();
+            await ChatStream(prompt, temp, callback).ConfigureAwait(false);
+        }
+
+        public static async Task ChatStream(IEnumerable<ChatPrompt> prompts, double? temp, Action<ChatResponse> callback)
+        {
+            var request = new ChatRequest(messages: prompts, model: Model.GPT3_5_Turbo, temperature: temp);
+            await Client.ChatEndpoint.StreamCompletionAsync(request, callback).ConfigureAwait(false);          
+        }
+
         private static string ReplacePlaceholders(string template, string input)
         {
             return template
