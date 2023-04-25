@@ -23,6 +23,9 @@ Set API key as env variable.
 
     [Environment]::SetEnvironmentVariable('OPENAI_KEY', 'sk-here', 'Machine')
 
+## Tech
+Built in WPF as I wanted to play with the Material Design in XAML library - might migrate to Avalonia at some point. Pretty basic app really.
+
 ## References
 The name "MindFlayer" is inspired by the powerful, intellect-devouring creature from the tabletop role-playing game Dungeons & Dragons. Just as the Mind Flayer can manipulate and control the minds of others, this tool gives you the power to manipulate and control your data with ease.
 
