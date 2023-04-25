@@ -1,13 +1,17 @@
 # MindFlayer
-A dotnet 6 c# tool that leverages the OpenAI API to edit and complete data on your clipboard with ease. Simply press Ctrl + Alt + G to unleash its power!
+A dotnet 6 C# OpenAI API chat client and general utility. Leaverages the completion/edit api to manipulate selected text *in any application*. Hooked up to the whisper api to transcribe of audio. 
 
 ## Features
-* Edit and completion API support
+* Chat interface, using streaming api
+* Customisable system prompt
+* Edit and replay of chat messages
+* Edit and completion API support for selected text manipulation in any app (via clipboard)
 * Easily configurable prompts
-* Keyboard shortcut for quick access (Ctrl + Alt + G)
+* Global keyboard shortcut for quick access (Ctrl + Alt + G)
+* Audio transcription
 
 ## Installation
-Simply run the app and you are good to go.
+Simply run the app and you are good to go. God bless .NET.
 
 ## Usage
 * Ctrl + Alt + P to choose operation
@@ -18,6 +22,9 @@ Simply run the app and you are good to go.
 Set API key as env variable.
 
     [Environment]::SetEnvironmentVariable('OPENAI_KEY', 'sk-here', 'Machine')
+
+## Tech
+Built in WPF as I wanted to play with the Material Design in XAML library - might migrate to Avalonia at some point. Pretty basic app really.
 
 ## References
 The name "MindFlayer" is inspired by the powerful, intellect-devouring creature from the tabletop role-playing game Dungeons & Dragons. Just as the Mind Flayer can manipulate and control the minds of others, this tool gives you the power to manipulate and control your data with ease.
