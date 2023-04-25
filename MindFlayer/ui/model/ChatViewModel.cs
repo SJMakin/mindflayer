@@ -13,13 +13,15 @@ namespace MindFlayer
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private Conversation _addNewConvo = new Conversation() { Name = "+" };
-        private bool _addingNew = false;
+        private Conversation _addNewConvoButton = new Conversation() { Name = "+" };
+
+        private bool _addingNew;
+        private bool _removing;
 
         public ChatViewModel()
         {
             Conversations.Add(NewConversation());
-            Conversations.Add(_addNewConvo);
+            Conversations.Add(_addNewConvoButton);
         }
 
         public ObservableCollection<Conversation> Conversations { get; } = new ObservableCollection<Conversation>();
@@ -36,18 +38,30 @@ namespace MindFlayer
             get => _activeConversation;
             set
             {
-                if (value == _addNewConvo && !_addingNew)
+                //if (_removing)
+                //{  
+                //    _removing = false;
+                //    ActiveConversation = Conversations.Reverse().Skip(1).First();
+                    
+                //    return;
+                //}
+                if (value == _addNewConvoButton && !_addingNew && !_removing)
                 {
                     _addingNew = true;
+
+
                     var newConvo = NewConversation();
                     Conversations.Insert(Conversations.Count - 1, newConvo);
                     ActiveConversation = newConvo;
                     OnPropertyChanged(nameof(ActiveConversation));
                     _addingNew = false;
+
+
                 }
                 else
                 {
-                    _activeConversation = value;
+                    _activeConversation = value == _addNewConvoButton ? Conversations.Reverse().Skip(1).First() : value;
+                    OnPropertyChanged(nameof(ActiveConversation));
                 }
             }
         }
@@ -64,7 +78,7 @@ namespace MindFlayer
             }
         }
 
-        private double _temperature = 1.1;
+        private double _temperature = 1.05;
 
         public double Temperature
         {
@@ -117,8 +131,8 @@ namespace MindFlayer
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     if (t.FirstChoice == null) return;
-                    msg.Content = msg.Content + t.FirstChoice.Delta.Content ;
-                    
+                    msg.Content = msg.Content + t.FirstChoice.Delta.Content;
+
                 });
             }));
             SendEnabled = true;
@@ -163,6 +177,8 @@ namespace MindFlayer
 
         private ICommand _getSuggestionsCommand;
         public ICommand GetSuggestionsCommand => _getSuggestionsCommand ??= new RelayCommand(() => true, GetSuggestions);
+
+        public bool Removing { get => _removing; set => _removing = value; }
 
         private void GetSuggestions()
         {
@@ -209,7 +225,7 @@ Please use the this structured JSON format for your response:
             }
         }
 
-        private Conversation NewConversation() => new Conversation(this) { Name = $"Chat {Conversations.Count(c => c != _addNewConvo) + 1}" };
+        private Conversation NewConversation() => new Conversation(this) { Name = $"Chat {Conversations.Count(c => c != _addNewConvoButton) + 1}" };
 
         protected void OnPropertyChanged(string propertyName)
         {

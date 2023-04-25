@@ -59,7 +59,10 @@ namespace MindFlayer
 
         private void CloseTab()
         {
+            if (_parent.Conversations.Count <= 2) return;
+            _parent.Removing = true;
             _parent.Conversations.Remove(this);
+            _parent.Removing = false;
         }
 
         public void ReplayFromThisMessage(ChatMessage message)
@@ -73,11 +76,24 @@ namespace MindFlayer
                     ChatMessages.RemoveAt(startIndex);
                 }
             }
-            ChatMessages.Add(new ChatMessage(this)
+
+            var msg = new ChatMessage(this)
             {
                 Role = "assistant",
-                Content = Engine.Chat(ChatMessages, _parent.Temperature)
-            });
+                Content = ""
+            };
+
+            ChatMessages.Add(msg);
+
+            Task.Run(() => Engine.ChatStream(ChatMessages, _parent.Temperature, (t) =>
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    if (t.FirstChoice == null) return;
+                    msg.Content = msg.Content + t.FirstChoice.Delta.Content;
+
+                });
+            }));
         }
         
     }

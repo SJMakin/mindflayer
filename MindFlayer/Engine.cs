@@ -75,9 +75,8 @@ namespace MindFlayer
 
         private static string ReplacePlaceholders(string template, string input)
         {
-            return template
-                .Replace("<{time}>", DateTime.Now.ToString("HH:SS"))
-                .Replace("<{input}>", input);
+            return template.Replace("<{time}>", DateTime.Now.ToString("HH:SS"))
+                            .Replace("<{input}>", input);
         }
 
         public static string Transcribe(string file)

@@ -40,5 +40,18 @@ namespace MindFlayer
             if (e.ChangedButton == MouseButton.Left)
                 this.DragMove();
         }
+        private void Sample1_DialogHost_OnDialogClosing(object sender, DialogClosingEventArgs eventArgs)
+        {
+            //Debug.WriteLine($"SAMPLE 1: Closing dialog with parameter: {eventArgs.Parameter ?? string.Empty}");
+
+            //you can cancel the dialog close:
+            //eventArgs.Cancel();
+
+            if (!Equals(eventArgs.Parameter, true))
+                return;
+
+            //if (!string.IsNullOrWhiteSpace(FruitTextBox.Text))
+            //    FruitListBox.Items.Add(FruitTextBox.Text.Trim());
+        }
     }
 }
