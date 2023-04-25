@@ -1,13 +1,17 @@
 # MindFlayer
-A dotnet 6 c# tool that leverages the OpenAI API to edit and complete data on your clipboard with ease. Simply press Ctrl + Alt + G to unleash its power!
+A dotnet 6 C# OpenAI API chat client and general utility. Leaverages the completion/edit api to manipulate selected text *in any application*. Hooked up to the whisper api to transcribe of audio. 
 
 ## Features
-* Edit and completion API support
+* Chat interface, using streaming api
+* Customisable system prompt
+* Edit and replay of chat messages
+* Edit and completion API support for selected text manipulation in any app (via clipboard)
 * Easily configurable prompts
-* Keyboard shortcut for quick access (Ctrl + Alt + G)
+* Global keyboard shortcut for quick access (Ctrl + Alt + G)
+* Audio transcription
 
 ## Installation
-Simply run the app and you are good to go.
+Simply run the app and you are good to go. God bless .NET.
 
 ## Usage
 * Ctrl + Alt + P to choose operation
