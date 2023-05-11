@@ -26,7 +26,12 @@ namespace MindFlayer
 
         public ObservableCollection<Conversation> Conversations { get; } = new ObservableCollection<Conversation>();
 
-        public ObservableCollection<Suggestion> Suggestions { get; } = new ObservableCollection<Suggestion>() { new Suggestion() { Summary = "Loading.." } };
+        public ObservableCollection<Suggestion> Suggestions { get; } = new ObservableCollection<Suggestion>() 
+        { 
+            new Suggestion() { Summary = "Summerise", Text = "Summary" },
+            new Suggestion() { Summary = "Reply", Text = "Reply" },
+            new Suggestion() { Summary = "Retort", Text = "Retort" }
+        };
 
         private Conversation _activeConversation;
 
@@ -172,7 +177,29 @@ namespace MindFlayer
 
         private void SetInput(string suggestion)
         {
-            NewMessageContent = suggestion;
+            var content = string.Join(Environment.NewLine, ActiveConversation.ChatMessages.Skip(1).Select(m => $"[{m.Role}]: {m.Content}"));
+
+            var question = new List<ChatMessage>();
+
+            if (suggestion == "Summary")
+            {
+                question.Add(new ChatMessage { Role = "system", Content = "You are a helpful assistant, who is an expert at summerisation." });
+                question.Add(new ChatMessage { Role = "user", Content = $"Please summerise this conversation down to just the facts:\n{content}" });
+            }
+            else if (suggestion == "Reply")
+            {
+                question.Add(new ChatMessage { Role = "system", Content = "You are a chatbot that is a skilled conversationalist, if a little rude/nerdy. You are an expert at getting in to really deep and knowledgeable discussions, and like to debate. You never let a conversation die." });
+                question.Add(new ChatMessage { Role = "user", Content = $"Please create a creative user response, that seeks to continue the conversation:\n{content}\n[user]:" });
+            }
+            else if (suggestion == "Retort")
+            {
+                question.Add(new ChatMessage { Role = "system", Content = "You are a an extreamly rude and sarcastic chatbot." });
+                question.Add(new ChatMessage { Role = "user", Content = $"Please create a creative user response, that seeks to continue the conversation:\n{content}\n[user]:" });
+            }
+
+            var result = Engine.Chat(question, Temperature);
+
+            NewMessageContent = result;
         }
 
         private ICommand _getSuggestionsCommand;

@@ -6,6 +6,7 @@ using OpenAI.Edits;
 using OpenAI.Models;
 using System.Text.Json;
 using OpenAI.Audio;
+using System.Text;
 
 namespace MindFlayer
 {
@@ -70,7 +71,15 @@ namespace MindFlayer
         public static async Task ChatStream(IEnumerable<ChatPrompt> prompts, double? temp, Action<ChatResponse> callback)
         {
             var request = new ChatRequest(messages: prompts, model: Model.GPT3_5_Turbo, temperature: temp);
-            await Client.ChatEndpoint.StreamCompletionAsync(request, callback).ConfigureAwait(false);          
+            var response = new StringBuilder();
+            var callbackWrapper = new Action<ChatResponse>((c) =>
+            {
+                response.Append(c.FirstChoice.Delta.Content);
+                callback(c);
+            });
+            await Client.ChatEndpoint.StreamCompletionAsync(request, callbackWrapper)
+                .ContinueWith(_ => log.Info($"{nameof(Engine)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={response}"))
+                .ConfigureAwait(false);          
         }
 
         private static string ReplacePlaceholders(string template, string input)
