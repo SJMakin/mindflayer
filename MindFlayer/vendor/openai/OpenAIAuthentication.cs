@@ -5,7 +5,7 @@ using System.Text.Json;
 namespace OpenAI
 {
     /// <summary>
-    /// Represents authentication to the OpenAPI API endpoint
+    /// Represents authentication to the OpenAI API endpoint
     /// </summary>
     public sealed class OpenAIAuthentication
     {
@@ -119,8 +119,25 @@ namespace OpenAI
                 organizationId = Environment.GetEnvironmentVariable(OPENAI_ORGANIZATION_ID);
             }
 
+            if (string.IsNullOrWhiteSpace(organizationId))
+            {
+                organizationId = Environment.GetEnvironmentVariable(ORGANIZATION);
+            }
+
             return string.IsNullOrEmpty(apiKey) ? null : new OpenAIAuthentication(apiKey, organizationId);
         }
+
+        /// <summary>
+        /// Attempts to load api keys from a specified configuration file.
+        /// </summary>
+        /// <param name="path">The specified path to the configuration file.</param>
+        /// <returns>
+        /// Returns the loaded <see cref="OpenAIAuthentication"/> any api keys were found,
+        /// or <see langword="null"/> if it was not successful in finding a config
+        /// (or if the config file didn't contain correctly formatted API keys)
+        /// </returns>
+        public static OpenAIAuthentication LoadFromPath(string path)
+            => LoadFromDirectory(Path.GetDirectoryName(path), Path.GetFileName(path), false);
 
         /// <summary>
         /// Attempts to load api keys from a configuration file, by default ".openai" in the current directory,
@@ -142,7 +159,10 @@ namespace OpenAI
         /// </returns>
         public static OpenAIAuthentication LoadFromDirectory(string directory = null, string filename = ".openai", bool searchUp = true)
         {
-            directory ??= Environment.CurrentDirectory;
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                directory = Environment.CurrentDirectory;
+            }
 
             AuthInfo authInfo = null;
 
@@ -172,7 +192,7 @@ namespace OpenAI
                     {
                         var parts = line.Split('=', ':');
 
-                        for (var i = 0; i < parts.Length; i++)
+                        for (var i = 0; i < parts.Length - 1; i++)
                         {
                             var part = parts[i];
                             var nextPart = parts[i + 1];
@@ -186,6 +206,8 @@ namespace OpenAI
                                     apiKey = nextPart.Trim();
                                     break;
                                 case ORGANIZATION:
+                                case OPENAI_ORGANIZATION_ID:
+                                case OPEN_AI_ORGANIZATION_ID:
                                     organization = nextPart.Trim();
                                     break;
                             }

@@ -38,23 +38,23 @@ namespace MindFlayer
 
         public static string Chat(string input, Operation op)
         {
-            var prompt = op.Messages.Select(prompt => new ChatPrompt(prompt.Role, ReplacePlaceholders(prompt.Content, input))).ToList();
+            var prompt = op.Messages.Select(prompt => new OpenAI.Chat.Message(prompt.Role, ReplacePlaceholders(prompt.Content, input))).ToList();
             return Chat(prompt, 1);
         }
 
         public static string Chat(string input, IEnumerable<ChatMessage> messages)
         {
-            var prompt = messages.Select(prompt => new ChatPrompt(prompt.Role, ReplacePlaceholders(prompt.Content, input))).ToList();
+            var prompt = messages.Select(prompt => new OpenAI.Chat.Message(prompt.Role, ReplacePlaceholders(prompt.Content, input))).ToList();
             return Chat(prompt, 1);
         }
 
         public static string Chat(IEnumerable<ChatMessage> messages, double? temp = null)
         {
-            var prompt = messages.Select(prompt => new ChatPrompt(prompt.Role, prompt.Content)).ToList();
+            var prompt = messages.Select(prompt => new OpenAI.Chat.Message(prompt.Role, prompt.Content)).ToList();
             return Chat(prompt, temp);
         }
 
-        private static string Chat(IEnumerable<ChatPrompt> prompts, double? temp)
+        private static string Chat(IEnumerable<OpenAI.Chat.Message> prompts, double? temp)
         {
             var request = new ChatRequest(messages: prompts, model: Model.GPT3_5_Turbo, temperature: temp );
             var result = Client.ChatEndpoint.GetCompletionAsync(request).Result;
@@ -64,13 +64,13 @@ namespace MindFlayer
 
         public static async Task ChatStream(IEnumerable<ChatMessage> messages, double? temp, Action<ChatResponse> callback)
         {
-            var prompt = messages.Select(prompt => new ChatPrompt(prompt.Role, prompt.Content)).ToList();
+            var prompt = messages.Select(prompt => new OpenAI.Chat.Message(prompt.Role, prompt.Content)).ToList();
             await ChatStream(prompt, temp, callback).ConfigureAwait(false);
         }
 
-        public static async Task ChatStream(IEnumerable<ChatPrompt> prompts, double? temp, Action<ChatResponse> callback)
+        public static async Task ChatStream(IEnumerable<OpenAI.Chat.Message> messages, double? temp, Action<ChatResponse> callback)
         {
-            var request = new ChatRequest(messages: prompts, model: Model.GPT3_5_Turbo, temperature: temp);
+            var request = new ChatRequest(messages: messages, model: Model.GPT3_5_Turbo, temperature: temp);
             var response = new StringBuilder();
             var callbackWrapper = new Action<ChatResponse>((c) =>
             {
@@ -92,7 +92,7 @@ namespace MindFlayer
         {
             var request = new AudioTranscriptionRequest(audioPath: file, responseFormat: AudioResponseFormat.Text);
             var result = Client.AudioEndpoint.CreateTranscriptionAsync(request).Result;
-            log.Info($"{nameof(Engine)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={JsonSerializer.Serialize(result)}");
+            log.Info($"{nameof(Engine)}.{nameof(Chat)} request=AudioRequest result={JsonSerializer.Serialize(result)}");
             return result.Trim();
         }
     }

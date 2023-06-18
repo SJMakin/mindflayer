@@ -17,6 +17,7 @@ namespace MindFlayer
 
         private bool _addingNew;
         private bool _removing;
+        private MessageTokenCalculator _tokenCalculator = new MessageTokenCalculator();
 
         public ChatViewModel()
         {
@@ -83,6 +84,18 @@ namespace MindFlayer
             }
         }
 
+        private int _newMessageTokenCount;
+
+        public int NewMessageTokenCount
+        {
+            get => _newMessageTokenCount;
+            set
+            {
+                _newMessageTokenCount = value;
+                OnPropertyChanged(nameof(NewMessageTokenCount));
+            }
+        }
+
         private double _temperature = 1.05;
 
         public double Temperature
@@ -114,15 +127,16 @@ namespace MindFlayer
         {
             ActiveConversation.ChatMessages.Add(new ChatMessage(ActiveConversation)
             {
-                Role = "user",
-                Content = NewMessageContent
+                Role = OpenAI.Chat.Role.User,
+                Content = NewMessageContent,
+                TokenCount = _tokenCalculator.NumTokensFromMessage(NewMessageContent)
             });
 
             SendEnabled = false;
 
             var msg = new ChatMessage(ActiveConversation)
             {
-                Role = "assistant",
+                Role = OpenAI.Chat.Role.Assistant,
                 Content = ""
             };
 
@@ -137,9 +151,10 @@ namespace MindFlayer
                 {
                     if (t.FirstChoice == null) return;
                     msg.Content = msg.Content + t.FirstChoice.Delta.Content;
-
+                    ActiveConversation.TokenCount = t.Usage?.TotalTokens;
                 });
-            }));
+            }))
+            .ContinueWith(_ => msg.TokenCount = _tokenCalculator.NumTokensFromMessage(msg.Content));
             SendEnabled = true;
         }
 
@@ -183,18 +198,18 @@ namespace MindFlayer
 
             if (suggestion == "Summary")
             {
-                question.Add(new ChatMessage { Role = "system", Content = "You are a helpful assistant, who is an expert at summerisation." });
-                question.Add(new ChatMessage { Role = "user", Content = $"Please summerise this conversation down to just the facts:\n{content}" });
+                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "You are a helpful assistant, who is an expert at summerisation." });
+                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Please summerise this conversation down to just the facts:\n{content}" });
             }
             else if (suggestion == "Reply")
             {
-                question.Add(new ChatMessage { Role = "system", Content = "You are a chatbot that is a skilled conversationalist, if a little rude/nerdy. You are an expert at getting in to really deep and knowledgeable discussions, and like to debate. You never let a conversation die." });
-                question.Add(new ChatMessage { Role = "user", Content = $"Please create a creative user response, that seeks to continue the conversation:\n{content}\n[user]:" });
+                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "You are a chatbot that is a skilled conversationalist, if a little rude/nerdy. You are an expert at getting in to really deep and knowledgeable discussions, and like to debate. You never let a conversation die." });
+                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Please create a creative user response, that seeks to continue the conversation:\n{content}\n[user]:" });
             }
             else if (suggestion == "Retort")
             {
-                question.Add(new ChatMessage { Role = "system", Content = "You are a an extreamly rude and sarcastic chatbot." });
-                question.Add(new ChatMessage { Role = "user", Content = $"Please create a creative user response, that seeks to continue the conversation:\n{content}\n[user]:" });
+                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "You are a an extreamly rude and sarcastic chatbot." });
+                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Please create a creative user response, that seeks to continue the conversation:\n{content}\n[user]:" });
             }
 
             var result = Engine.Chat(question, Temperature);
@@ -213,7 +228,7 @@ namespace MindFlayer
             var question = new List<ChatMessage>();
             question.Add(new ChatMessage(ActiveConversation)
             {
-                Role = "user",
+                Role = OpenAI.Chat.Role.User,
                 Content = @"Please suggest some continuations for this conversation with the assistant. Write the suggestions in the voice of the user. Pay attention to, and imitate, their style.
 
 Please use the this structured JSON format for your response:
@@ -252,7 +267,15 @@ Please use the this structured JSON format for your response:
             }
         }
 
-        private Conversation NewConversation() => new Conversation(this) { Name = $"Chat {Conversations.Count(c => c != _addNewConvoButton) + 1}" };
+        private Conversation NewConversation() {
+            var newConvo = new Conversation(this) { Name = $"Chat {Conversations.Count(c => c != _addNewConvoButton) + 1}" };
+            newConvo.ChatMessages.Add(new ChatMessage { 
+                Role = OpenAI.Chat.Role.System, 
+                Content = "You are a helpful assistant.",
+                TokenCount = _tokenCalculator.NumTokensFromMessage("You are a helpful assistant.")
+            });
+            return newConvo;
+        }
 
         protected void OnPropertyChanged(string propertyName)
         {

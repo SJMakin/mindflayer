@@ -17,7 +17,6 @@ namespace MindFlayer
         {
             this._parent = parent;
             ShowCloseButton = Visibility.Visible;
-            ChatMessages.Add(new ChatMessage { Role = "system", Content = "You are a helpful assistant." });
         }
 
         public Conversation()
@@ -49,6 +48,8 @@ namespace MindFlayer
             }
         }
 
+        public int? TokenCount { get; set; }
+
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -79,7 +80,7 @@ namespace MindFlayer
 
             var msg = new ChatMessage(this)
             {
-                Role = "assistant",
+                Role = OpenAI.Chat.Role.Assistant,
                 Content = ""
             };
 

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using OpenAI.Chat;
+using System.ComponentModel;
 using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Input;
@@ -7,7 +8,11 @@ namespace MindFlayer
 {
     public class ChatMessage : INotifyPropertyChanged
     {
-        [JsonPropertyName("role")] public string Role { get; set; } = "";
+        [JsonInclude]
+        [JsonPropertyName("role")]
+        public Role Role { get; set; }
+
+        [JsonInclude]
         [JsonPropertyName("content")]
         public string Content
         {
@@ -17,19 +22,33 @@ namespace MindFlayer
             }
             set
             {
-
                 _content = value;
                 OnPropertyChanged(nameof(Content));
             }
         }
 
-        public Visibility ReplayButtonVisibility => Role == "assistant" ? Visibility.Visible : Visibility.Collapsed;
-        public Visibility ChangePromptButtonVisibility => Role == "system" ? Visibility.Visible : Visibility.Collapsed;
+        public int TokenCount
+        {
+            get
+            {
+                return _tokenCount;
+            }
+            set
+            {
+
+                _tokenCount = value;
+                OnPropertyChanged(nameof(TokenCount));
+            }
+        }
+
+        public Visibility ReplayButtonVisibility => Role == Role.Assistant ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility ChangePromptButtonVisibility => Role == Role.System ? Visibility.Visible : Visibility.Collapsed;
 
         private readonly Conversation _parent;
 
         private ICommand _replayCommand;
         private string _content;
+        private int _tokenCount;
 
         public ICommand ReplayCommand => _replayCommand ??= new RelayCommand(() => true, Replay);
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenAI.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
@@ -9,35 +10,31 @@ namespace OpenAI.Models
 {
     /// <summary>
     /// List and describe the various models available in the API.
-    /// You can refer to the Models documentation to understand what <see href="https://beta.openai.com/docs/models"/> are available and the differences between them.<br/>
-    /// <see href="https://beta.openai.com/docs/api-reference/models"/>
+    /// You can refer to the Models documentation to understand what <see href="https://platform.openai.com/docs/models"/> are available and the differences between them.<br/>
+    /// <see href="https://platform.openai.com/docs/api-reference/models"/>
     /// </summary>
     public sealed class ModelsEndpoint : BaseEndPoint
     {
         private class ModelsList
         {
+            [JsonInclude]
             [JsonPropertyName("data")]
-            public List<Model> Data { get; set; }
+            public List<Model> Data { get; private set; }
         }
 
         private class DeleteModelResponse
         {
-            [JsonConstructor]
-            public DeleteModelResponse(string id, string @object, bool deleted)
-            {
-                Id = id;
-                Object = @object;
-                Deleted = deleted;
-            }
-
+            [JsonInclude]
             [JsonPropertyName("id")]
-            public string Id { get; }
+            public string Id { get; private set; }
 
+            [JsonInclude]
             [JsonPropertyName("object")]
-            public string Object { get; }
+            public string Object { get; private set; }
 
+            [JsonInclude]
             [JsonPropertyName("deleted")]
-            public bool Deleted { get; }
+            public bool Deleted { get; private set; }
         }
 
         /// <inheritdoc />
@@ -85,6 +82,8 @@ namespace OpenAI.Models
             {
                 throw new Exception($"Failed to get {modelId} info!");
             }
+
+            // Don't check ownership as API does it for us.
 
             try
             {

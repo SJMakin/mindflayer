@@ -56,22 +56,22 @@
             </StackPanel>
         </materialDesign:DialogHost.DialogContent>
         <Grid Margin="0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="1*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="2*" />
-        </Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="8*" />
+                <RowDefinition Height="2*" />
+            </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" Margin="0">
-            <materialDesign:ColorZone
+            <DockPanel Grid.Row="0" Margin="0">
+                <materialDesign:ColorZone
                 Margin="0"
                     Padding="2"
                     
                     Mode="PrimaryMid"
                     DockPanel.Dock="Bottom">
-                <DockPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Button
+                    <DockPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Button
                                 Margin="16,0,0,0"
                                 ToolTip="Home"
                                 Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
@@ -79,37 +79,37 @@
                                 Style="{DynamicResource MaterialDesignToolButton}"
                                 Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
                                 materialDesign:RippleAssist.Feedback="{Binding RelativeSource={RelativeSource Self}, Path=Foreground, Converter={StaticResource BrushRoundConverter}}"/>
-                    </StackPanel>
+                        </StackPanel>
 
-                    <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="True">
-                        <StackPanel>
-                            <Grid Margin="10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <TextBlock
+                        <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="True">
+                            <StackPanel>
+                                <Grid Margin="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock
                                         Text="Light"
                                         Margin="0 0 10 0"/>
-                                <ToggleButton
+                                    <ToggleButton
                                         x:Name="DarkModeToggleButton"
                                         HorizontalAlignment="Center"
                                         Click="MenuDarkModeButton_Click"
                                         Grid.Column="1"/>
-                                <TextBlock
+                                    <TextBlock
                                         Text="Dark"
                                         Margin="10 0 0 0"
                                         Grid.Column="2"/>
-                                <TextBlock
+                                    <TextBlock
                                         Text="Temp"
                                         Margin="0 10 10 0"
                                         Grid.Row="1"/>
-                                <Slider x:Name="slVolume" 
+                                    <Slider x:Name="slVolume" 
                                         HorizontalAlignment="Center"
                                         Width="40"
                                         Value="{Binding Temperature}"
@@ -119,119 +119,127 @@
                                         Grid.Row="1"
                                         Grid.Column="1"
                                 />
-                                <TextBox Text="{Binding ElementName=slVolume, Path=Value, StringFormat=N2, UpdateSourceTrigger=PropertyChanged}"
+                                    <TextBox Text="{Binding ElementName=slVolume, Path=Value, StringFormat=N2, UpdateSourceTrigger=PropertyChanged}"
                                          Width="29" 
                                          Height="22" 
                                          TextWrapping="Wrap" 
                                          Margin="10,0,0,0" 
                                          Grid.Row="1"
                                          Grid.Column="2"/>
-                            </Grid>
-                            <Separator/>
-                            <!--<Button Content="Nice Popup"/>
+                                </Grid>
+                                <Separator/>
+                                <!--<Button Content="Nice Popup"/>
                             <Button Content="Can't Touch This" IsEnabled="False"/>-->
-                            <!--<Separator/>-->
+                                <!--<Separator/>-->
 
-                            <Button
+                                <Button
                                     Content="Quit"
                                     Click="CloseButtonClickHandler_Click" 
                                     />
-                        </StackPanel>
-                    </materialDesign:PopupBox>
+                            </StackPanel>
+                        </materialDesign:PopupBox>
 
-                    <TextBlock
+                        <TextBlock
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             FontSize="22"
                             Text=""/>
-                </DockPanel>
-            </materialDesign:ColorZone>
+                    </DockPanel>
+                </materialDesign:ColorZone>
 
-        </DockPanel>
+            </DockPanel>
 
-        <TabControl Grid.Row="1" ItemsSource="{Binding Conversations}" SelectedItem="{Binding ActiveConversation}"
+            <TabControl Grid.Row="1" ItemsSource="{Binding Conversations}" SelectedItem="{Binding ActiveConversation}"
               Style="{StaticResource MaterialDesignNavigatilRailTabControl}" 
   TabStripPlacement="Top"
   materialDesign:ShadowAssist.ShadowDepth="Depth4"
   materialDesign:ColorZoneAssist.Mode="Standard"
   SnapsToDevicePixels="True" BorderThickness="0"
                     ItemContainerStyle="{StaticResource CustomNavigationRailTabItemStyle}">
-            <TabControl.ItemTemplate>
-                <DataTemplate >
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding Name}"/>
-                        <Button Grid.Column="1" Command="{Binding CloseTabCommand}" Visibility="{Binding ShowCloseButton}" Margin="0" Height="Auto">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Path Data="M0,0 L8,8 M8,0 L0,8" StrokeThickness="3" VerticalAlignment="Center" Margin="5,4,0,2">
-                                        <Path.Style>
-                                            <Style TargetType="{x:Type Path}">
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="False">
-                                                        <Setter Property="Stroke" Value="LightGray" />
-                                                    </Trigger>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Stroke" Value="Black" />
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Path.Style>
-                                    </Path>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
-                    </Grid>
-                </DataTemplate>
-            </TabControl.ItemTemplate>
-            <TabControl.ContentTemplate>
-                <DataTemplate DataType="local:Conversation" >
-                    <ScrollViewer Name="ScrollView" 
+                <TabControl.ItemTemplate>
+                    <DataTemplate >
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding Name}"/>
+                            <Button Grid.Column="1" Command="{Binding CloseTabCommand}" Visibility="{Binding ShowCloseButton}" Margin="0" Height="Auto">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Path Data="M0,0 L8,8 M8,0 L0,8" StrokeThickness="3" VerticalAlignment="Center" Margin="5,4,0,2">
+                                            <Path.Style>
+                                                <Style TargetType="{x:Type Path}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="False">
+                                                            <Setter Property="Stroke" Value="LightGray" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Stroke" Value="Black" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+                <TabControl.ContentTemplate>
+                    <DataTemplate DataType="local:Conversation" >
+                        <ScrollViewer Name="ScrollView" 
                                   local:ScrollViewerAttachedProperties.ScrollToBottomOnChange="{Binding ChatMessages}"
                                     Background="{DynamicResource MaterialDesignPaper}">
-                        <StackPanel x:Name="MessageContainer">
-                            <ItemsControl ItemsSource="{Binding ChatMessages}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
+                            <StackPanel x:Name="MessageContainer">
+                                <ItemsControl ItemsSource="{Binding ChatMessages}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
                                             <Border  Padding="2" Margin="3">
-                                            <Grid VerticalAlignment="Bottom">
-                                                <Grid.ColumnDefinitions>
-                                                </Grid.ColumnDefinitions>
+                                                <Grid VerticalAlignment="Bottom">
+                                                    <Grid.ColumnDefinitions>
+                                                    </Grid.ColumnDefinitions>
                                                     <Grid.RowDefinitions>
                                                     </Grid.RowDefinitions>
                                                     <!--<Button Content="🍔" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" Visibility="{Binding ChangePromptButtonVisibility}" Grid.Column="0" Grid.Row="1" Padding="0" Width="20" Height="20"/>-->
-<!--BorderThickness="0"-->
-                                                    <TextBox Background="Transparent"  materialDesign:HintAssist.Hint="{Binding Role}" TextWrapping="Wrap" Text="{Binding Content}" Grid.Column="0" Grid.RowSpan="2">
-                                                    <TextBox.Style>
+                                                    <!--BorderThickness="0"-->
+                                                    <TextBox Background="Transparent"  materialDesign:HintAssist.Hint="{Binding Role}" materialDesign:HintAssist.HelperText="{Binding TokenCount}"  TextWrapping="Wrap" Text="{Binding Content}" Grid.Column="0" Grid.RowSpan="2">
+
+                                                        <materialDesign:HintAssist.HelperTextStyle>
+                                                            <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignHelperTextBlock}">
+                                                                <Setter Property="Foreground" Value="LightGray" />
+                                                                <Setter Property="HorizontalAlignment" Value="Right" />
+                                                                <Setter Property="FontSize" Value="7" />
+                                                            </Style>
+                                                        </materialDesign:HintAssist.HelperTextStyle>
+                                                        <TextBox.Style>
                                                             <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
 
-                                                            <Setter Property="SpellCheck.IsEnabled" Value="False" />
-                                                            <Style.Triggers>
-                                                                <Trigger Property="IsFocused" Value="True">
-                                                                    <Setter Property="SpellCheck.IsEnabled" Value="True" />
-                                                                </Trigger>
-                                                                <Trigger Property="IsFocused" Value="False">
-                                                                    <Setter Property="SpellCheck.IsEnabled" Value="False" />
-                                                                </Trigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBox.Style>
+                                                                <Setter Property="SpellCheck.IsEnabled" Value="False" />
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="IsFocused" Value="True">
+                                                                        <Setter Property="SpellCheck.IsEnabled" Value="True" />
+                                                                    </Trigger>
+                                                                    <Trigger Property="IsFocused" Value="False">
+                                                                        <Setter Property="SpellCheck.IsEnabled" Value="False" />
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBox.Style>
                                                     </TextBox>
                                                     <Button Content="🔁" Command="{Binding ReplayCommand}" Visibility="{Binding ReplayButtonVisibility}" Grid.Column="0" Grid.Row="1" Padding="0" Margin="2"  Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource MaterialDesignFlatLightButton}"/>
 
                                                 </Grid>
-                                                </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
-                    </ScrollViewer>
-                </DataTemplate>
-            </TabControl.ContentTemplate>
-        </TabControl>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
             <GridSplitter Grid.Row="1" Margin="0,0,0,0" Height="3" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" />
             <Grid Margin="5" Grid.Row="2">
                 <Grid.ColumnDefinitions>

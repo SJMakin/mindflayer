@@ -1,4 +1,4 @@
-﻿using OpenAI.Models;
+﻿using OpenAI.Extensions;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -6,7 +6,7 @@ namespace OpenAI.Edits
 {
     /// <summary>
     /// Given a prompt and an instruction, the model will return an edited version of the prompt.<br/>
-    /// <see href="https://beta.openai.com/docs/api-reference/edits"/>
+    /// <see href="https://platform.openai.com/docs/api-reference/edits"/>
     /// </summary>
     public sealed class EditsEndpoint : BaseEndPoint
     {
@@ -41,7 +41,7 @@ namespace OpenAI.Edits
             int? editCount,
             double? temperature,
             double? topP,
-            Model model = null)
+            string model = null)
         {
             var request = new EditRequest(input, instruction, editCount, temperature, topP, model);
             var result = await CreateEditAsync(request).ConfigureAwait(false);

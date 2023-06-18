@@ -1,5 +1,4 @@
-﻿using OpenAI.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -8,7 +7,7 @@ namespace OpenAI.Completions
 {
     /// <summary>
     /// Represents a request to the <see cref="CompletionsEndpoint"/>.  Mostly matches the parameters in
-    /// <see href="https://beta.openai.com/docs/api-reference/completions">the OpenAI docs</see>,
+    /// <see href="https://platform.openai.com/docs/api-reference/completions">the OpenAI docs</see>,
     /// although some have been renames or expanded into single/multiple properties for ease of use.
     /// </summary>
     public sealed class CompletionRequest
@@ -156,7 +155,7 @@ namespace OpenAI.Completions
         }
 
         /// <summary>
-        /// The logit bias dictionary of token bias values for modifying likelihoods. Positive biases increases the likelihood of 
+        /// The logit bias dictionary of token bias values for modifying likelihoods. Positive biases increases the likelihood of
         /// generating a token, while negative biases decreases the probability of a token. Very large biases (e.g. -100,100) can
         /// either eliminate or force a token to be generated.
         /// </summary>
@@ -164,7 +163,7 @@ namespace OpenAI.Completions
         public Dictionary<string, double> LogitBias { get; set; }
 
         /// <summary>
-        /// How many different completions to generate.  Interacts with <see cref="NumChoicesPerPrompt"/> to generate top 
+        /// How many different completions to generate.  Interacts with <see cref="NumChoicesPerPrompt"/> to generate top
         /// NumChoicesPerPrompt out of BestOf. In cases where both are set, BestOf should be greater than NumChoicesPerPrompt.
         /// </summary>
         [JsonPropertyName("best_of")]
@@ -248,7 +247,7 @@ namespace OpenAI.Completions
         /// <param name="bestOf">Returns the top bestOf results based on the best probability.</param>
         /// <param name="user">A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse.</param>
         public CompletionRequest(
-            Model model,
+            string model = null,
             string prompt = null,
             IEnumerable<string> prompts = null,
             string suffix = null,
@@ -275,10 +274,14 @@ namespace OpenAI.Completions
             }
             else
             {
-                throw new ArgumentNullException($"Missing required {nameof(prompt)}(s)");
+                throw new ArgumentNullException(nameof(prompt), $"Missing required prompt or prompts");
             }
 
-            Model = model ?? DefaultCompletionRequestArgs?.Model ?? Models.Model.Davinci;
+            Model = string.IsNullOrWhiteSpace(model)
+                    ? (string.IsNullOrWhiteSpace(DefaultCompletionRequestArgs?.Model)
+                        ? Models.Model.Davinci
+                        : DefaultCompletionRequestArgs.Model)
+                    : model;
 
             if (!Model.Contains("davinci") &&
                 !Model.Contains("curie") &&

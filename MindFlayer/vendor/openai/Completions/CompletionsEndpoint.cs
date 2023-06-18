@@ -1,4 +1,5 @@
-﻿using OpenAI.Models;
+﻿using OpenAI.Extensions;
+using OpenAI.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +17,7 @@ namespace OpenAI.Completions
     /// a few written examples. This simple approach works for a wide range of use cases, including summarization,
     /// translation, grammar correction, question answering, chatbots, composing emails, and much more
     /// (see the prompt library for inspiration).<br/>
-    /// <see href="https://beta.openai.com/docs/api-reference/completions"/>
+    /// <see href="https://platform.openai.com/docs/api-reference/completions"/>
     /// </summary>
     public sealed class CompletionsEndpoint : BaseEndPoint
     {
@@ -73,11 +74,11 @@ namespace OpenAI.Completions
             int? logProbabilities = null,
             bool? echo = null,
             IEnumerable<string> stopSequences = null,
-            Model model = null,
+            string model = null,
             CancellationToken cancellationToken = default)
         {
             var request = new CompletionRequest(
-                model ?? Model.Davinci,
+                string.IsNullOrWhiteSpace(model) ? Model.Davinci : model,
                 prompt,
                 prompts,
                 suffix,
@@ -165,11 +166,11 @@ namespace OpenAI.Completions
             int? logProbabilities = null,
             bool? echo = null,
             IEnumerable<string> stopSequences = null,
-            Model model = null,
+            string model = null,
             CancellationToken cancellationToken = default)
         {
             var request = new CompletionRequest(
-                model ?? Model.Davinci,
+                string.IsNullOrWhiteSpace(model) ? Model.Davinci : model,
                 prompt,
                 prompts,
                 suffix,
@@ -207,21 +208,19 @@ namespace OpenAI.Completions
             await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
             using var reader = new StreamReader(stream);
 
-            while (await reader.ReadLineAsync().ConfigureAwait(false) is { } line)
+            while (await reader.ReadLineAsync() is { } streamData)
             {
-                if (line.StartsWith("data: "))
-                {
-                    line = line["data: ".Length..];
-                }
+                cancellationToken.ThrowIfCancellationRequested();
 
-                if (line == "[DONE]")
+                if (streamData.TryGetEventStreamData(out var eventData))
                 {
-                    return;
-                }
+                    if (string.IsNullOrWhiteSpace(eventData)) { continue; }
 
-                if (!string.IsNullOrWhiteSpace(line))
+                    resultHandler(response.DeserializeResponse<CompletionResult>(eventData, Api.JsonSerializationOptions));
+                }
+                else
                 {
-                    resultHandler(response.DeserializeResponse<CompletionResult>(line.Trim(), Api.JsonSerializationOptions));
+                    break;
                 }
             }
         }
@@ -274,11 +273,11 @@ namespace OpenAI.Completions
             int? logProbabilities = null,
             bool? echo = null,
             IEnumerable<string> stopSequences = null,
-            Model model = null,
+            string model = null,
             CancellationToken cancellationToken = default)
         {
             var request = new CompletionRequest(
-                model ?? Model.Davinci,
+                string.IsNullOrWhiteSpace(model) ? Model.Davinci : model,
                 prompt,
                 prompts,
                 suffix,
@@ -319,22 +318,18 @@ namespace OpenAI.Completions
             await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
             using var reader = new StreamReader(stream);
 
-            while (await reader.ReadLineAsync().ConfigureAwait(false) is { } line &&
-                   !cancellationToken.IsCancellationRequested)
+            while (await reader.ReadLineAsync() is { } streamData)
             {
-                if (line.StartsWith("data: "))
-                {
-                    line = line["data: ".Length..];
-                }
+                cancellationToken.ThrowIfCancellationRequested();
 
-                if (line == "[DONE]")
+                if (streamData.TryGetEventStreamData(out var eventData))
                 {
-                    yield break;
+                    if (string.IsNullOrWhiteSpace(eventData)) { continue; }
+                    yield return response.DeserializeResponse<CompletionResult>(eventData, Api.JsonSerializationOptions);
                 }
-
-                if (!string.IsNullOrWhiteSpace(line))
+                else
                 {
-                    yield return response.DeserializeResponse<CompletionResult>(line.Trim(), Api.JsonSerializationOptions);
+                    break;
                 }
             }
         }

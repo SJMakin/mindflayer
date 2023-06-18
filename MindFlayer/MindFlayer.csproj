@@ -21,11 +21,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="log4net.config" />
-		<None Remove="Operations.json" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Content Include="flayer.ico" />
 		<Content Include="log4net.config">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -1,5 +1,5 @@
-﻿using System.Text.Json.Serialization;
-using OpenAI.Models;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace OpenAI.Edits
 {
@@ -29,9 +29,15 @@ namespace OpenAI.Edits
             int? editCount = null,
             double? temperature = null,
             double? topP = null,
-            Model model = null)
+            string model = null)
         {
-            Model = model ?? new Model("text-davinci-edit-001");
+            Model = string.IsNullOrWhiteSpace(model) ? Models.Model.DavinciEdit : model;
+
+            if (!Model.Contains("-edit-"))
+            {
+                throw new ArgumentException($"{Model} is not supported", nameof(model));
+            }
+
             Input = input;
             Instruction = instruction;
             EditCount = editCount;

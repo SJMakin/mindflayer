@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Text.Json.Serialization;
-using OpenAI.Models;
 
 namespace OpenAI.Audio
 {
-    public sealed class AudioTranscriptionRequest
+    public sealed class AudioTranscriptionRequest : IDisposable
     {
         /// <summary>
         /// Constructor.
@@ -41,7 +39,7 @@ namespace OpenAI.Audio
         /// </param>
         public AudioTranscriptionRequest(
             string audioPath,
-            Model model = null,
+            string model = null,
             string prompt = null,
             AudioResponseFormat responseFormat = AudioResponseFormat.Json,
             int? temperature = null,
@@ -88,7 +86,7 @@ namespace OpenAI.Audio
         public AudioTranscriptionRequest(
             Stream audio,
             string audioName,
-            Model model = null,
+            string model = null,
             string prompt = null,
             AudioResponseFormat responseFormat = AudioResponseFormat.Json,
             int? temperature = null,
@@ -103,7 +101,7 @@ namespace OpenAI.Audio
 
             AudioName = audioName;
 
-            Model = model ?? Models.Model.Whisper1;
+            Model = string.IsNullOrWhiteSpace(model) ? Models.Model.Whisper1 : model;
 
             if (!Model.Contains("whisper"))
             {
@@ -121,7 +119,6 @@ namespace OpenAI.Audio
         /// <summary>
         /// The audio file to transcribe, in one of these formats: mp3, mp4, mpeg, mpga, m4a, wav, or webm.
         /// </summary>
-        [JsonIgnore]
         public Stream Audio { get; }
 
         /// <summary>
