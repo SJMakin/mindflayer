@@ -204,7 +204,7 @@
                                                     </Grid.RowDefinitions>
                                                     <!--<Button Content="🍔" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" Visibility="{Binding ChangePromptButtonVisibility}" Grid.Column="0" Grid.Row="1" Padding="0" Width="20" Height="20"/>-->
                                                     <!--BorderThickness="0"-->
-                                                    <TextBox Background="Transparent"  materialDesign:HintAssist.Hint="{Binding Role}" materialDesign:HintAssist.HelperText="{Binding TokenCount}"  TextWrapping="Wrap" Text="{Binding Content}" Grid.Column="0" Grid.RowSpan="2">
+                                                    <TextBox Background="Transparent"  materialDesign:HintAssist.Hint="{Binding Role}" materialDesign:HintAssist.HelperText="{Binding TokenCount}" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding Content}" Grid.Column="0" Grid.RowSpan="2">
 
                                                         <materialDesign:HintAssist.HelperTextStyle>
                                                             <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignHelperTextBlock}">
