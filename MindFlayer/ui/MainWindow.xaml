@@ -59,7 +59,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*" />
                 <RowDefinition Height="8*" />
-                <RowDefinition Height="2*" />
+                <RowDefinition Height="2*" MinHeight="90" />
             </Grid.RowDefinitions>
 
             <DockPanel Grid.Row="0" Margin="0">
@@ -240,47 +240,56 @@
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>
-            <GridSplitter Grid.Row="1" Margin="0,0,0,0" Height="3" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" />
+            <GridSplitter Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Width="60" Height="4" >
+                <GridSplitter.Template>
+                    <ControlTemplate TargetType="{x:Type GridSplitter}">
+                        <Grid>
+                            <Button Content="---" />
+                            <Rectangle Fill="#00FFFFFF" />
+                        </Grid>
+                    </ControlTemplate>
+                </GridSplitter.Template>
+            </GridSplitter>
+
             <Grid Margin="5" Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="10*" />
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="50" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
-                    <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                <TextBox Text="{Binding NewMessageContent}" Style="{StaticResource MaterialDesignFilledTextBox}" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Height="Auto"/>
-                <Button Command="{Binding RecordInputCommand}" Margin="2" Grid.Row="0" Grid.Column="1" Padding="1" Height="Auto">
-                    <materialDesign:PackIcon
-                        Kind="Record"
-                        Height="Auto"
-                        Width="Auto" />
-                </Button>
-                <materialDesign:PopupBox
-                      PlacementMode="TopAndAlignRightEdges"
-                      ToolTip="Suggestions..."
-                      Grid.Row="0" Grid.Column="2">
-                    <materialDesign:PopupBox.ToggleCheckedContent>
-                        <materialDesign:PackIcon Kind="Pencil" Width="24" Height="24" />
-                    </materialDesign:PopupBox.ToggleCheckedContent>
-                    <ItemsControl ItemsSource="{Binding Suggestions}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Vertical"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button Content="{Binding Summary}" Command="{Binding DataContext.SetInputCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" CommandParameter="{Binding Text}"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </materialDesign:PopupBox>
-                <Button Content="Send" Command="{Binding SendMessageCommand}" IsEnabled="{Binding SendEnabled}" 
-                          Style="{DynamicResource MaterialDesignFlatDarkBgButton}" Margin="2" 
-                    Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Height="Auto" />
+                <TextBox Text="{Binding NewMessageContent}"  VerticalContentAlignment="Top" Padding="0" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Height="Auto" />
+                <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Bottom" >
+                    
+                    <Button Command="{Binding RecordInputCommand}" Margin="2" Padding="1" Height="20">
+                        <materialDesign:PackIcon
+                            Kind="Record"
+                            Height="Auto"
+                            Width="Auto" />
+                    </Button>
+                    <materialDesign:PopupBox
+                          PlacementMode="TopAndAlignRightEdges"
+                          ToolTip="Suggestions...">
+                        <materialDesign:PopupBox.ToggleCheckedContent>
+                            <materialDesign:PackIcon Kind="Pencil" Width="24" Height="24" />
+                        </materialDesign:PopupBox.ToggleCheckedContent>
+                        <ItemsControl ItemsSource="{Binding Suggestions}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Content="{Binding Summary}" Command="{Binding DataContext.SetInputCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" CommandParameter="{Binding Text}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </materialDesign:PopupBox>
+                    <Button Content="💌" Command="{Binding SendMessageCommand}" IsEnabled="{Binding SendEnabled}" 
+                              Style="{DynamicResource MaterialDesignFlatDarkBgButton}" Margin="0" Width="50" Height="30" />
+                </StackPanel>
             </Grid>
         </Grid>
     </materialDesign:DialogHost>
