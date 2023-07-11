@@ -94,7 +94,7 @@ namespace MindFlayer
                     msg.Content = msg.Content + t.FirstChoice.Delta.Content;
 
                 });
-            }));
+            }, _parent.SelectedChatModel));
         }
         
     }

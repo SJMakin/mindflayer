@@ -30,12 +30,8 @@
     <materialDesign:DialogHost  DialogClosing="Sample1_DialogHost_OnDialogClosing"  DialogTheme="Inherit">
         <materialDesign:DialogHost.DialogContent>
             <StackPanel Margin="16">
-                <TextBlock Text="SETTINGS (todo)." />
-                <ComboBox materialDesign:HintAssist.Hint="Free text or select" materialDesign:HintAssist.HintOpacity=".26" IsEditable="True">
-                    <ComboBoxItem Content="Somequite big text that wont fit" />
-                    <ComboBoxItem Content="Banana" />
-                    <ComboBoxItem Content="Pear" />
-                    <ComboBoxItem Content="Orange" />
+                <TextBlock Text="SETTINGS:" />
+                <ComboBox materialDesign:HintAssist.Hint="Free text or select" materialDesign:HintAssist.HintOpacity=".26" SelectedValue="{Binding SelectedChatModel}" ItemsSource="{Binding ChatModels}" IsEditable="True">
                 </ComboBox>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0" Content="ACCEPT" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">

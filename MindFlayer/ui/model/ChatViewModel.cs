@@ -6,6 +6,7 @@ using System.Windows.Input;
 using MindFlayer.ui.model;
 using NAudio.Wave.Compression;
 using NAudio.Wave;
+using OpenAI.Models;
 
 namespace MindFlayer
 {
@@ -84,6 +85,25 @@ namespace MindFlayer
             }
         }
 
+        public ObservableCollection<Model> ChatModels { get; } = new ObservableCollection<Model>()
+        {
+            Model.GPT3_5_Turbo,
+            Model.GPT3_5_Turbo_16K,
+            Model.GPT4
+        };
+
+        private Model _selectedChatModel = Model.GPT3_5_Turbo;
+
+        public Model SelectedChatModel
+        {
+            get => _selectedChatModel;
+            set
+            {
+                _selectedChatModel = value;
+                OnPropertyChanged(nameof(_selectedChatModel));
+            }
+        }
+
         private int _newMessageTokenCount;
 
         public int NewMessageTokenCount
@@ -153,7 +173,7 @@ namespace MindFlayer
                     msg.Content = msg.Content + t.FirstChoice.Delta.Content;
                     ActiveConversation.TokenCount = t.Usage?.TotalTokens;
                 });
-            }))
+            }, SelectedChatModel))
             .ContinueWith(_ => msg.TokenCount = _tokenCalculator.NumTokensFromMessage(msg.Content));
             SendEnabled = true;
         }
@@ -212,7 +232,7 @@ namespace MindFlayer
                 question.Add(new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Please create a creative user response, that seeks to continue the conversation:\n{content}\n[user]:" });
             }
 
-            var result = Engine.Chat(question, Temperature);
+            var result = Engine.Chat(question, Temperature, SelectedChatModel);
 
             NewMessageContent = result;
         }
@@ -246,7 +266,7 @@ Please use the this structured JSON format for your response:
             });
             try
             {
-                var result = Engine.Chat(question, Temperature);
+                var result = Engine.Chat(question, Temperature, SelectedChatModel);
                 var indexOfArrayChar = result.IndexOf("[", StringComparison.Ordinal);
                 if (indexOfArrayChar > 0) result = result.Substring(indexOfArrayChar);
                 result = result.Replace("```", "");

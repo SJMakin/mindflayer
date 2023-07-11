@@ -86,7 +86,7 @@ namespace MindFlayer
         {
             { "edit", Engine.Edit },
             { "completion", Engine.Completion },
-            { "chat", Engine.Chat }
+            //{ "chat", Engine.Chat } // TODO make everything chat based.
         };
 
         private static string NormalizeLineEndings(string input) => Regex.Replace(input, @"\r\n|\n\r|\n|\r", "\r\n");
