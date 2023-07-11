@@ -1,13 +1,13 @@
 # MindFlayer
-A dotnet 6 C# OpenAI API chat client and general utility. Leaverages the completion/edit api to manipulate selected text *in any application*. Hooked up to the whisper api to transcribe of audio. 
+A dotnet 6 C# OpenAI API chat client and general utility. Allows one to manipulate selected text *in any application* through global hot keys. Hooked up to the whisper api to transcribe of audio. 
 
 ## Features
 * Chat interface, using streaming api
 * Customisable system prompt
 * Edit and replay of chat messages
-* Edit and completion API support for selected text manipulation in any app (via clipboard)
+* Selected text manipulation in any app (via global hotkeys/clipboard)
 * Easily configurable prompts
-* Global keyboard shortcut for quick access (Ctrl + Alt + G)
+* Global keyboard shortcut for quick access (eg. Ctrl + Alt + G)
 * Audio transcription
 
 ## Installation
