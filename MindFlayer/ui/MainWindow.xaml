@@ -204,7 +204,7 @@
 
                                                         <materialDesign:HintAssist.HelperTextStyle>
                                                             <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignHelperTextBlock}">
-                                                                <Setter Property="Foreground" Value="LightGray" />
+                                                                <Setter Property="Foreground" Value="DimGray" />
                                                                 <Setter Property="HorizontalAlignment" Value="Right" />
                                                                 <Setter Property="FontSize" Value="7" />
                                                             </Style>

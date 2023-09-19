@@ -1,7 +1,11 @@
 ﻿using log4net;
+using OpenAI.Chat;
+using OpenAI;
 using System.IO;
 using System.Runtime.ExceptionServices;
+using System.Text.Json.Nodes;
 using System.Windows;
+using Message = OpenAI.Chat.Message;
 
 namespace MindFlayer
 {

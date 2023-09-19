@@ -92,7 +92,7 @@ namespace MindFlayer
             Model.GPT4
         };
 
-        private Model _selectedChatModel = Model.GPT3_5_Turbo;
+        private Model _selectedChatModel = Model.GPT4;
 
         public Model SelectedChatModel
         {
