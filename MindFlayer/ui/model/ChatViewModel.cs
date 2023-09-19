@@ -291,7 +291,7 @@ Please use the this structured JSON format for your response:
             var newConvo = new Conversation(this) { Name = $"Chat {Conversations.Count(c => c != _addNewConvoButton) + 1}" };
             newConvo.ChatMessages.Add(new ChatMessage { 
                 Role = OpenAI.Chat.Role.System, 
-                Content = "You are a helpful concise assistant.",
+                Content = "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize.",
                 TokenCount = _tokenCalculator.NumTokensFromMessage("You are a helpful concise assistant.")
             });
             return newConvo;
