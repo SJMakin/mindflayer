@@ -89,7 +89,8 @@ namespace MindFlayer
         {
             Model.GPT3_5_Turbo,
             Model.GPT3_5_Turbo_16K,
-            Model.GPT4
+            Model.GPT4,
+            Model.GPT4Preview
         };
 
         private Model _selectedChatModel = Model.GPT4;
