@@ -3,6 +3,7 @@ using OpenAI.Chat;
 using OpenAI.Completions;
 using OpenAI.Edits;
 using OpenAI.Embeddings;
+using OpenAI.Extensions;
 using OpenAI.Files;
 using OpenAI.FineTuning;
 using OpenAI.Images;
@@ -35,25 +36,7 @@ namespace OpenAI
         /// </param>
         /// <param name="client">A <see cref="HttpClient"/>.</param>
         /// <exception cref="AuthenticationException">Raised when authentication details are missing or invalid.</exception>
-        public OpenAIClient(OpenAIAuthentication openAIAuthentication, OpenAIClientSettings clientSettings, HttpClient client)
-            : this(openAIAuthentication, clientSettings)
-        {
-            Client = SetupClient(client);
-        }
-
-        /// <summary>
-        /// Creates a new entry point to the OpenAPI API, handling auth and allowing access to the various API endpoints
-        /// </summary>
-        /// <param name="openAIAuthentication">
-        /// The API authentication information to use for API calls,
-        /// or <see langword="null"/> to attempt to use the <see cref="OpenAI.OpenAIAuthentication.Default"/>,
-        /// potentially loading from environment vars or from a config file.
-        /// </param>
-        /// <param name="clientSettings">
-        /// Optional, <see cref="OpenAIClientSettings"/> for specifying OpenAI deployments to Azure or proxy domain.
-        /// </param>
-        /// <exception cref="AuthenticationException">Raised when authentication details are missing or invalid.</exception>
-        public OpenAIClient(OpenAIAuthentication openAIAuthentication = null, OpenAIClientSettings clientSettings = null)
+        public OpenAIClient(OpenAIAuthentication openAIAuthentication = null, OpenAIClientSettings clientSettings = null, HttpClient client = null)
         {
             OpenAIAuthentication = openAIAuthentication ?? OpenAIAuthentication.Default;
             OpenAIClientSettings = clientSettings ?? OpenAIClientSettings.Default;
@@ -63,19 +46,13 @@ namespace OpenAI
                 throw new AuthenticationException("You must provide API authentication.  Please refer to https://github.com/RageAgainstThePixel/OpenAI-DotNet#authentication for details.");
             }
 
-            Client = SetupClient();
-            JsonSerializationOptions = new JsonSerializerOptions
-            {
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                Converters =
-                {
-                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
-                }
-            };
+            Client = SetupClient(client);
             ModelsEndpoint = new ModelsEndpoint(this);
             CompletionsEndpoint = new CompletionsEndpoint(this);
             ChatEndpoint = new ChatEndpoint(this);
+#pragma warning disable CS0612 // Type or member is obsolete
             EditsEndpoint = new EditsEndpoint(this);
+#pragma warning restore CS0612 // Type or member is obsolete
             ImagesEndPoint = new ImagesEndpoint(this);
             EmbeddingsEndpoint = new EmbeddingsEndpoint(this);
             AudioEndpoint = new AudioEndpoint(this);
@@ -125,7 +102,14 @@ namespace OpenAI
         /// <summary>
         /// The <see cref="JsonSerializationOptions"/> to use when making calls to the API.
         /// </summary>
-        internal JsonSerializerOptions JsonSerializationOptions { get; }
+        internal static readonly JsonSerializerOptions JsonSerializationOptions = new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            Converters =
+            {
+                new JsonStringEnumConverterFactory()
+            }
+        };
 
         /// <summary>
         /// The API authentication information to use for API calls
@@ -136,6 +120,11 @@ namespace OpenAI
         /// The client settings for configuring Azure OpenAI or custom domain.
         /// </summary>
         internal OpenAIClientSettings OpenAIClientSettings { get; }
+
+        /// <summary>
+        /// Enables or disables debugging for the whole client.
+        /// </summary>
+        public bool EnableDebug { get; set; }
 
         /// <summary>
         /// List and describe the various models available in the API.
@@ -164,6 +153,7 @@ namespace OpenAI
         /// Given a prompt and an instruction, the model will return an edited version of the prompt.<br/>
         /// <see href="https://platform.openai.com/docs/api-reference/edits"/>
         /// </summary>
+        [Obsolete]
         public EditsEndpoint EditsEndpoint { get; }
 
         /// <summary>
@@ -186,7 +176,7 @@ namespace OpenAI
 
         /// <summary>
         /// Files are used to upload documents that can be used with features like Fine-tuning.<br/>
-        /// <see href="https://platform.openai.com/docs/api-reference/fine-tunes"/>
+        /// <see href="https://platform.openai.com/docs/api-reference/files"/>
         /// </summary>
         public FilesEndpoint FilesEndpoint { get; }
 
