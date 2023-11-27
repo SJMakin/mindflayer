@@ -163,7 +163,7 @@
                             <Button Grid.Column="1" Command="{Binding CloseTabCommand}" Visibility="{Binding ShowCloseButton}" Margin="0" Height="Auto">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
-                                        <Path Data="M0,0 L8,8 M8,0 L0,8" StrokeThickness="3" VerticalAlignment="Center" Margin="5,4,0,2">
+                                        <Path Data="M0,0 L8,8 M8,0 L0,8" StrokeThickness="4" VerticalAlignment="Center" Margin="5,4,0,2">
                                             <Path.Style>
                                                 <Style TargetType="{x:Type Path}">
                                                     <Style.Triggers>
@@ -180,6 +180,12 @@
                                     </ControlTemplate>
                                 </Button.Template>
                             </Button>
+                            <Grid.ContextMenu>
+                                <ContextMenu Visibility="{Binding MessageButtonVisibility}">
+                                    <MenuItem Header="Save" Command="{Binding SaveCommand}"/>
+                                    <MenuItem Header="Load" Command="{Binding LoadCommand}"/>
+                                </ContextMenu>
+                            </Grid.ContextMenu>
                         </Grid>
                     </DataTemplate>
                 </TabControl.ItemTemplate>
@@ -223,9 +229,13 @@
                                                                 </Style.Triggers>
                                                             </Style>
                                                         </TextBox.Style>
+                                                        <TextBox.ContextMenu>
+                                                            <ContextMenu Visibility="{Binding MessageButtonVisibility}">
+                                                                <MenuItem Header="Replay" Command="{Binding ReplayCommand}"/>
+                                                                <MenuItem Header="Copy" Command="{Binding CopyCommand}"/>
+                                                            </ContextMenu>
+                                                        </TextBox.ContextMenu>
                                                     </TextBox>
-                                                    <Button Content="🔁" Command="{Binding ReplayCommand}" Visibility="{Binding ReplayButtonVisibility}" Grid.Column="0" Grid.Row="1" Padding="0" Margin="2"  Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource MaterialDesignFlatLightButton}"/>
-
                                                 </Grid>
                                             </Border>
                                         </DataTemplate>

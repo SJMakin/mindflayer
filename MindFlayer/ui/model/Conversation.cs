@@ -1,6 +1,7 @@
 ﻿using MindFlayer.ui.model;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
@@ -64,6 +65,40 @@ namespace MindFlayer
             _parent.Removing = true;
             _parent.Conversations.Remove(this);
             _parent.Removing = false;
+        }
+
+
+        private ICommand _saveCommand;
+        public ICommand SaveCommand => _saveCommand ??= new RelayCommand(() => true, Save);
+
+        private void Save()
+        {
+            using var sfd = new SaveFileDialog();
+            sfd.Filter = "Conversation Files (*.convo)|*.convo";
+            var result = sfd.ShowDialog();
+            if (result != DialogResult.OK) return;
+            var convo = JsonSerializer.Serialize(ChatMessages, new JsonSerializerOptions() {WriteIndented = true});
+            File.WriteAllText(sfd.FileName, convo);
+        }
+
+        private ICommand _loadCommand;
+        public ICommand LoadCommand => _loadCommand ??= new RelayCommand(() => true, Load);
+
+        private void Load()
+        {
+            using var sfd = new OpenFileDialog();
+            sfd.Filter = "Conversation Files (*.convo)|*.convo";
+            var result = sfd.ShowDialog();
+            if (result != DialogResult.OK) return;
+            var convoText = File.ReadAllText(sfd.FileName);
+            var convoMessages = JsonSerializer.Deserialize<ObservableCollection<ChatMessage>>(convoText);
+            var convo = new Conversation(_parent) { ChatMessages = convoMessages, Name = Path.GetFileNameWithoutExtension(sfd.FileName) };
+            foreach (var msg in convo.ChatMessages)
+            {
+                msg.Parent = convo;
+            }
+            _parent.Conversations.Insert(_parent.Conversations.Count - 1, convo);
+            
         }
 
         public void ReplayFromThisMessage(ChatMessage message)

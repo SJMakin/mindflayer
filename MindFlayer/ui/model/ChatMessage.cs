@@ -41,27 +41,34 @@ namespace MindFlayer
             }
         }
 
-        public Visibility ReplayButtonVisibility => Role == Role.Assistant ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility MessageButtonVisibility => Role == Role.Assistant ? Visibility.Visible : Visibility.Collapsed;
         public Visibility ChangePromptButtonVisibility => Role == Role.System ? Visibility.Visible : Visibility.Collapsed;
 
-        private readonly Conversation _parent;
-
         private ICommand _replayCommand;
+        private ICommand _copyCommand;
         private string _content;
         private int _tokenCount;
 
         public ICommand ReplayCommand => _replayCommand ??= new RelayCommand(() => true, Replay);
+        public ICommand CopyCommand => _copyCommand ??= new RelayCommand(() => true, Copy);
+
+        public Conversation Parent { get; set; }
 
         private void Replay()
         {
-            _parent.ReplayFromThisMessage(this);
+            Parent.ReplayFromThisMessage(this);
+        }
+
+        private void Copy()
+        {
+            System.Windows.Clipboard.SetText(Content);
         }
 
         public ChatMessage() { }
 
         public ChatMessage(Conversation parent)
         {
-            _parent = parent;
+            Parent = parent;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
