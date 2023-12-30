@@ -26,6 +26,11 @@ namespace MindFlayer
 
         private void CloseButtonClickHandler_Click(object sender, RoutedEventArgs e) => Close();
 
+        private void PromptsButtonClickHandler_Click(object sender, RoutedEventArgs e)
+        {
+            new PromptEditor().ShowDialog();
+        }
+
         private static void ModifyTheme(bool isDarkTheme)
         {
             var paletteHelper = new PaletteHelper();

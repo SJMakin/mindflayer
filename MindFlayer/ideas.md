@@ -1,4 +1,17 @@
 ﻿
+
+## To-do plan
+
+- Save / load conversation
+- Images
+
+
+
+
+
+
+
+
 1. Add a search bar to allow users to find previous messages or conversations quickly.
 
 3. Allow users to customize the appearance of their messages, like adding emojis or changing the font and color.

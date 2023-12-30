@@ -71,6 +71,10 @@
                                 <Separator/>
                                 <!--<Button Content="Nice Popup"/><Button Content="Can't Touch This" IsEnabled="False"/>-->
                                 <!--<Separator/>-->
+                                <Button Content="Prompts..." Click="PromptsButtonClickHandler_Click" />
+                                <Separator/>
+                                <!--<Button Content="Nice Popup"/><Button Content="Can't Touch This" IsEnabled="False"/>-->
+                                <!--<Separator/>-->
                                 <Button Content="Quit" Click="CloseButtonClickHandler_Click" />
                             </StackPanel>
                         </materialDesign:PopupBox>

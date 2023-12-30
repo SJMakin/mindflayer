@@ -9,7 +9,15 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ApplicationIcon>flayer.ico</ApplicationIcon>
 		<AnalysisLevel>6.0-all</AnalysisLevel>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="vendor\Markdig\**" />
+	  <EmbeddedResource Remove="vendor\Markdig\**" />
+	  <None Remove="vendor\Markdig\**" />
+	  <Page Remove="vendor\Markdig\**" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <Compile Remove="Main.cs" />
@@ -34,5 +42,6 @@
 		<PackageReference Include="log4net" Version="2.0.15" />
 		<PackageReference Include="MaterialDesignThemes" Version="4.2.1" />
 		<PackageReference Include="NAudio" Version="1.8.5" />
+		<PackageReference Include="System.Memory" Version="1.8.5" />
 	</ItemGroup>
 </Project>

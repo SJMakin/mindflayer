@@ -41,7 +41,7 @@ namespace MindFlayer
             }
         }
 
-        public Visibility MessageButtonVisibility => Role == Role.Assistant ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility MessageButtonVisibility => Visibility.Visible;  // Role == Role.Assistant ? Visibility.Visible : Visibility.Collapsed;
         public Visibility ChangePromptButtonVisibility => Role == Role.System ? Visibility.Visible : Visibility.Collapsed;
 
         private ICommand _replayCommand;
