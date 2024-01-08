@@ -52,6 +52,7 @@ namespace MindFlayer
         public ICommand ReplayCommand => _replayCommand ??= new RelayCommand(() => true, Replay);
         public ICommand CopyCommand => _copyCommand ??= new RelayCommand(() => true, Copy);
 
+        [JsonIgnore]
         public Conversation Parent { get; set; }
 
         private void Replay()

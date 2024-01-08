@@ -22,14 +22,13 @@
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="4*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="3*" />
             <RowDefinition Height="8*" />
+            <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-        <TreeView Grid.RowSpan="2" x:Name="treeView" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=Headers}">
+        <TreeView x:Name="treeView" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=Headers}">
                 <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type local:Header}" ItemsSource="{Binding Children}" >
                     <CheckBox Content="{Binding Title}" IsChecked="{Binding Path=(local:ItemHelper.IsChecked), Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
@@ -70,14 +69,19 @@
                     </Style>
                 </TreeView.ItemContainerStyle>
             </TreeView>
+        <TextBox Grid.Row="0" Grid.Column="2" x:Name="textBoxCrew" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True"  />
+
+        <DockPanel Grid.Row="2" Grid.Column="2">
+            <Button Grid.Row="2" Grid.Column="0" Content="Load" Click="Button_Load_Click" Width="150" />
+            <Button Grid.Row="2" Grid.Column="0" Content="Save" Click="Button_Save_Click" Width="150" />
+            <Button Grid.Row="2" Grid.Column="0" Content="Copy" Click="Button_Copy_Click" Width="150" />
+            <Button Grid.Row="2" Grid.Column="0" Content="Close" Click="Button_PrintCrew_Click" Width="150" HorizontalAlignment="Right" />
+        </DockPanel>
 
 
-            <Button Grid.Row="0" Grid.Column="2" Content="?" Click="Button_PrintCrew_Click" />
+        <Button Grid.Row="2" Grid.Column="0" Content="Refresh" Click="Button_PrintCrew_Click" />
 
-        <TextBox Grid.Row="1" Grid.Column="3" x:Name="textBoxCrew" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True"  />
-        
-       
-
+   
 
     </Grid>
 </Window>

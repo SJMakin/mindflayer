@@ -12,9 +12,15 @@ namespace MindFlayer
     {
         public string Title { get; set; }
         public int Level { get; set; }
-        public List<object> Children { get; set; } = new List<object>();
+        public List<Header> Children { get; set; } = new List<Header>();
+        public string Content { get; internal set; }
 
         public IEnumerable<object> GetChildren() => Children;
+
+        public override string ToString()
+        {
+            return $"{("".PadLeft(Level, '#'))} {Title}\n{Content}";
+        }
     }
 
 }

@@ -39,9 +39,9 @@
         </materialDesign:DialogHost.DialogContent>
         <Grid Margin="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="8*" />
-                <RowDefinition Height="2*" MinHeight="90" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="auto" MinHeight="90" />
             </Grid.RowDefinitions>
             <DockPanel Grid.Row="0" Margin="0">
                 <materialDesign:ColorZone Margin="0" Padding="2" Mode="PrimaryMid" DockPanel.Dock="Bottom">
@@ -82,7 +82,7 @@
                     </DockPanel>
                 </materialDesign:ColorZone>
             </DockPanel>
-            <TabControl Grid.Row="1" ItemsSource="{Binding Conversations}" SelectedItem="{Binding ActiveConversation}" Style="{StaticResource MaterialDesignNavigatilRailTabControl}" TabStripPlacement="Top" materialDesign:ShadowAssist.ShadowDepth="Depth4" materialDesign:ColorZoneAssist.Mode="Standard" SnapsToDevicePixels="True" BorderThickness="0" ItemContainerStyle="{StaticResource CustomNavigationRailTabItemStyle}">
+            <TabControl Grid.Row="1" ItemsSource="{Binding Conversations}" SelectedItem="{Binding ActiveConversation}" Style="{StaticResource MaterialDesignNavigatilRailTabControl}" materialDesign:ShadowAssist.ShadowDepth="Depth4" materialDesign:ColorZoneAssist.Mode="Standard" SnapsToDevicePixels="True" BorderThickness="0" ItemContainerStyle="{StaticResource CustomNavigationRailTabItemStyle}" TabStripPlacement="Left" Height="auto">
                 <TabControl.ItemTemplate>
                     <DataTemplate >
                         <Grid>

@@ -59,7 +59,7 @@ namespace MindFlayer
             var request = new ChatRequest(messages: prompts, model: model, temperature: temp );
             var result = Client.ChatEndpoint.GetCompletionAsync(request).Result;
             log.Info($"{nameof(Engine)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={JsonSerializer.Serialize(result)}");
-            return result.FirstChoice.Message.Content.Trim();
+            return result.FirstChoice.Message.Content.ToString().Trim();
         }
 
         public static async Task ChatStream(IEnumerable<ChatMessage> messages, double? temp, Action<ChatResponse> callback, Model model)

@@ -77,7 +77,7 @@ namespace MindFlayer
             sfd.Filter = "Conversation Files (*.convo)|*.convo";
             var result = sfd.ShowDialog();
             if (result != DialogResult.OK) return;
-            var convo = JsonSerializer.Serialize(ChatMessages, new JsonSerializerOptions() {WriteIndented = true});
+            var convo = JsonSerializer.Serialize(ChatMessages.ToList(), new JsonSerializerOptions() {WriteIndented = true});
             File.WriteAllText(sfd.FileName, convo);
         }
 

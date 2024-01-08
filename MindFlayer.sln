@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlayerFlayer", "FlayerFlayer\FlayerFlayer.csproj", "{1AF85CFB-018E-4D3A-8335-03EB7A54E799}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{997AD7D1-02F1-465F-BF85-FF9F04C6AF62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{997AD7D1-02F1-465F-BF85-FF9F04C6AF62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{997AD7D1-02F1-465F-BF85-FF9F04C6AF62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AF85CFB-018E-4D3A-8335-03EB7A54E799}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AF85CFB-018E-4D3A-8335-03EB7A54E799}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AF85CFB-018E-4D3A-8335-03EB7A54E799}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AF85CFB-018E-4D3A-8335-03EB7A54E799}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
