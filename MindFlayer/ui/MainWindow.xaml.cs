@@ -1,7 +1,6 @@
 ﻿using MaterialDesignThemes.Wpf;
 using System.Windows;
 using System.Windows.Input;
-using Application = System.Windows.Application;
 
 namespace MindFlayer
 {

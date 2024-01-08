@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using TiktokenSharp.Utils;
-
-namespace TiktokenSharp.Model
+﻿namespace TiktokenSharp.Model
 {
     public class EncodingSettingModel
     {

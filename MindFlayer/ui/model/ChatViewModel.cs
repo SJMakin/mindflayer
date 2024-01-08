@@ -1,10 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Text.Json;
 using System.Windows.Input;
 using MindFlayer.ui.model;
-using NAudio.Wave.Compression;
 using NAudio.Wave;
 using OpenAI.Models;
 

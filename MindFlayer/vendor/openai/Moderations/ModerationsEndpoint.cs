@@ -1,9 +1,6 @@
 ﻿using OpenAI.Extensions;
-using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OpenAI.Moderations
 {

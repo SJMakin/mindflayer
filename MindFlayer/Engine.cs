@@ -1,8 +1,6 @@
 ﻿using log4net;
 using OpenAI;
 using OpenAI.Chat;
-using OpenAI.Completions;
-using OpenAI.Edits;
 using OpenAI.Models;
 using System.Text.Json;
 using OpenAI.Audio;
@@ -16,25 +14,6 @@ namespace MindFlayer
 
         // [Environment]::SetEnvironmentVariable('OPENAI_KEY', 'sk-here', 'Machine')
         private static readonly OpenAIClient Client = new(OpenAIAuthentication.LoadFromEnv());
-
-        public static string Edit(string input, Operation op)
-        {
-            var request = new EditRequest(input, op.Prompt);
-            var result = Client.EditsEndpoint.CreateEditAsync(request).Result;
-            log.Info($"{nameof(Engine)}.{nameof(Edit)} request={JsonSerializer.Serialize(request)} result={JsonSerializer.Serialize(result)}");
-            return result.Choices[0].Text;
-        }
-
-        public static string Completion(string input, Operation op)
-        {
-            var request = new CompletionRequest(
-                prompt: ReplacePlaceholders(op.Prompt, input),
-                temperature: 0.1,
-                model: Model.Davinci);
-            var result = Client.CompletionsEndpoint.CreateCompletionAsync(request).Result;
-            log.Info($"{nameof(Engine)}.{nameof(Completion)} request={JsonSerializer.Serialize(request)} result={JsonSerializer.Serialize(result)}");
-            return result.Completions[0].Text;
-        }
 
         public static string Chat(string input, Operation op, Model model)
         {

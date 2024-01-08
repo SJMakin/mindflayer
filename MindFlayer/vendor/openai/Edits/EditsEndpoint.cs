@@ -1,8 +1,5 @@
-﻿using System;
-using OpenAI.Extensions;
+﻿using OpenAI.Extensions;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OpenAI.Edits
 {

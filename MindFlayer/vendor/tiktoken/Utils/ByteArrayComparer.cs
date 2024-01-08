@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TiktokenSharp.Utils
+﻿namespace TiktokenSharp.Utils
 {
     public class ByteArrayComparer : IEqualityComparer<byte[]>
     {

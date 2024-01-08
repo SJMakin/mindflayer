@@ -1,12 +1,5 @@
-﻿using NAudio.Wave.Compression;
-using NAudio.Wave;
-using System;
-using System.Collections.Generic;
+﻿using NAudio.Wave;
 using System.IO;
-using System.Linq;
-using System.Security.RightsManagement;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MindFlayer
 {

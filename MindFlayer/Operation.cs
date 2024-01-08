@@ -5,16 +5,12 @@ namespace MindFlayer;
 public class Operation
 {
     [JsonConstructor]
-    public Operation(string endpoint, string prompt, string name, List<ChatMessage> messages)
+    public Operation(string prompt, string name, List<ChatMessage> messages)
     {
-        Endpoint = endpoint;
         Prompt = prompt;
         Name = name;
         Messages = messages;
     }
-
-    [JsonPropertyName("endpoint")]
-    public string Endpoint { get; }
 
     [JsonPropertyName("prompt")]
     public string Prompt { get; }

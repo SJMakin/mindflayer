@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using MindFlayer.ui;
 using NHotkey;
 using NHotkey.WindowsForms;
+using OpenAI.Models;
 
 namespace MindFlayer
 {
     internal class KeyBinder
     {
-        private string _continuation = "";
         private readonly Dictaphone _dictaphone = new();
+        OperationPicker picker;
 
         public KeyBinder()
         {
             HotkeyManager.Current.AddOrReplace("Replace", Keys.Control | Keys.Alt | Keys.G, ReplaceText);
             HotkeyManager.Current.AddOrReplace("Pick", Keys.Control | Keys.Alt | Keys.P, Pick);
-            HotkeyManager.Current.AddOrReplace("Continue", Keys.Control | Keys.Alt | Keys.T, ContinueText);
-            HotkeyManager.Current.AddOrReplace("Record", Keys.Control | Keys.Alt | Keys.R, Record);
+            //HotkeyManager.Current.AddOrReplace("Record", Keys.Control | Keys.Alt | Keys.R, Record);
         }
 
         private void Record(object? sender, HotkeyEventArgs e)
@@ -38,14 +34,42 @@ namespace MindFlayer
 
         private void Pick(object? sender, HotkeyEventArgs e)
         {
+            if (picker is not null) return;
+            picker = new OperationPicker(SelectedOperation);
+            picker.ShowDialog();
+            SelectedOperation = picker.SelectedOperation;
+            picker = null;
             e.Handled = true;
         }
 
-        private void ContinueText(object? sender, HotkeyEventArgs e)
+        // ```csharp
+using System;
+using System.Collections.Generic;
+
+public class FibonacciSequence
+    {
+        public static IEnumerable<int> Generate(int count)
         {
-            Replace(_continuation);
-            e.Handled = true;
+            int first = 0, second = 1, next;
+
+            for (int i = 0; i < count; i++)
+            {
+                yield return first;
+                next = first + second;
+                first = second;
+                second = next;
+            }
         }
+
+        public static void Main()
+        {
+            foreach (var number in Generate(10)) // Generate first 10 Fibonacci numbers
+            {
+                Console.WriteLine(number);
+            }
+        }
+    }
+```It seems like your request got cut off.Could you please provide more details on what you need the C# code to do?
 
         private void ReplaceText(object? sender, HotkeyEventArgs e)
         {
@@ -69,8 +93,10 @@ namespace MindFlayer
 
             try
             {
-                var result = EndpointActions[op.Endpoint](input, op);
-                _continuation = input + result;
+                var clonedChat = op.Messages.Select(m => new ChatMessage { Role = m.Role, Content = m.Content }).ToList();
+                var lastMessage = clonedChat.Last();
+                lastMessage.Content = lastMessage.Content.Replace("<{input}>", input, StringComparison.OrdinalIgnoreCase);
+                var result = Engine.Chat(clonedChat, 0.1, Model.GPT4Preview);
                 SetText(result);
 
                 toast.UpdateThenClose("Huzzah!", Color.LightGreen, 1500);
@@ -81,13 +107,6 @@ namespace MindFlayer
                 toast.UpdateThenClose("Oh no! Something went wrong.", Color.OrangeRed, 3000);
             }
         }
-
-        private static readonly Dictionary<string, Func<string, Operation, string>> EndpointActions = new()
-        {
-            { "edit", Engine.Edit },
-            { "completion", Engine.Completion },
-            //{ "chat", Engine.Chat } // TODO make everything chat based.
-        };
 
         private static string NormalizeLineEndings(string input) => Regex.Replace(input, @"\r\n|\n\r|\n|\r", "\r\n");
 

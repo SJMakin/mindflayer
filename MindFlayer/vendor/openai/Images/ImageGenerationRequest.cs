@@ -1,5 +1,4 @@
 ﻿using OpenAI.Models;
-using System;
 using System.Text.Json.Serialization;
 using OpenAI.Extensions;
 

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace OpenAI
+﻿namespace OpenAI
 {
     public abstract class BaseEndPoint
     {

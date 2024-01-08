@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace OpenAI
+﻿namespace OpenAI
 {
     /// <summary>
     /// The client settings for configuring Azure OpenAI or custom domain.

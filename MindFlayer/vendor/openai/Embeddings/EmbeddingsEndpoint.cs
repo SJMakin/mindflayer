@@ -1,8 +1,5 @@
 ﻿using OpenAI.Extensions;
-using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OpenAI.Embeddings
 {

@@ -1,71 +1,146 @@
 [
   {
     "name": "Spelling",
-    "prompt": "Correct spelling.",
-    "endpoint": "edit"
-  },
-  {
-    "name": "Proper",
-    "prompt": "Posh english.",
-    "endpoint": "edit"
-  },
-  {
-    "name": "Basic Completion",
-    "prompt": "<{input}>",
-    "endpoint": "completion"
-  },
-  {
-    "name": "Basic Completion (Chat)",
     "messages": [
       {
         "role": "system",
-        "content": "You are a helpful assistant."
+        "content": "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize."
+      },
+      {
+        "role": "user",
+        "content": "Please correct the spelling. If no spelling errors are found return the text as-is.\n<{input}>"
+      }
+    ]
+  },
+  {
+    "name": "Proper",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize."
+      },
+      {
+        "role": "user",
+        "content": "Please update this to be written in posh english:\n<{input}>"
+      }
+    ]
+  },
+  {
+    "name": "Basic Completion",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize."
       },
       {
         "role": "user",
         "content": "<{input}>"
       }
-    ],
-    "endpoint": "chat"
+    ]
   },
   {
     "name": "Emoji",
-    "prompt": "Summerize this with emoji. \n <{input}> \n Emoji:",
-    "endpoint": "completion"
+    "messages": [
+      {
+        "role": "system",
+        "content": "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize."
+      },
+      {
+        "role": "user",
+        "content": "Summerize this with emoji.\n<{input}>"
+      }
+    ]
   },
   {
     "name": "Chat response: friend",
-    "prompt": "The following is a conversation between two london geezers. They like to banter. \n <{input}> \n",
-    "endpoint": "completion"
+    "messages": [
+      {
+        "role": "system",
+        "content": "Be helpful. Talk in the style of a london geezer."
+      },
+      {
+        "role": "user",
+        "content": "Please provide the next message in the conversation. \n <{input}> \n"
+      }
+    ]
   },
   {
     "name": "Chat response: work",
-    "prompt": "The following is a conversation on MS Teams between two team mates at a large tech company. \n <{input}> \n [<{time}>] Samuel Makin\n",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Be helpful."
+      },
+      {
+        "role": "user",
+        "content": "The following is a conversation on MS Teams between two team mates at a large tech company. Please provide the next message in the conversation. \n <{input}> \n"
+      }
+    ],
     "endpoint": "completion"
   },
   {
     "name": "Code review",
-    "prompt": "Please review, refactor and optimize this code: \n <{input}> \n Review notes: \n ",
-    "endpoint": "completion"
+    "messages": [
+      {
+        "role": "system",
+        "content": "Be helpful."
+      },
+      {
+        "role": "user",
+        "content": "Please review, refactor and optimize this code. Start with review notes.\n\n<{input}>."
+      }
+    ]
   },
   {
     "name": "Reword: Dev",
-    "prompt": "Please check/clean this text. Please ensure its using clear, concise, and straightforward voice, written in the style/tone of an expert software (C#/golang) developer (eg. Jon Skeet). \n Original: <{input}> \n Corrected: ",
-    "endpoint": "completion"
+    "messages": [
+      {
+        "role": "system",
+        "content": "Be helpful but terse."
+      },
+      {
+        "role": "user",
+        "content": "Please check/clean this text. Please ensure its using clear, concise, and straightforward voice, written in the style/tone of an expert software (C#/golang) developer (eg. Jon Skeet).\n\nHere is the text:\n<{input}>."
+      }
+    ]
   },
   {
     "name": "Reword: Code review",
-    "prompt": "Please check/clean this code review comment. Please ensure its using clean business english, written in the style/tone of an expert software code reviewer (eg. Jon Skeet). Ensure it is courteous. Please add reasoning if it is lacking. \n Original: <{input}> \n Corrected: ",
-    "endpoint": "completion"
+    "messages": [
+      {
+        "role": "system",
+        "content": "Be helpful but terse."
+      },
+      {
+        "role": "user",
+        "content": "Please check/clean this code review comment. Please ensure its using clean business english, written in the style/tone of an expert software code reviewer (eg. Jon Skeet). Ensure it is courteous. Please add reasoning if it is lacking.\n\nHere is the text:\n<{input}>."
+      }
+    ]
   },
   {
     "name": "Reword: Email",
-    "prompt": "Please check/clean this email comment. Please ensure its using clean business english, written in the style/tone of an expert. Ensure it is courteous. g. \n Original: <{input}> \n Corrected: ",
-    "endpoint": "completion"
+    "messages": [
+      {
+        "role": "system",
+        "content": "Be helpful but terse."
+      },
+      {
+        "role": "user",
+        "content": "Please check/clean this email comment. Please ensure its using clean business english, written in the style/tone of an expert. Ensure it is courteous.\n\nHere is the text:\n<{input}>."
+      }
+    ]
   },
   {
     "name": "C# Generator",
-    "prompt": "Please write some C# code to <{input}>.",
-    "endpoint": "completion"
+    "messages": [
+      {
+        "role": "system",
+        "content": "Be helpful but terse. Respond with code only."
+      },
+      {
+        "role": "user",
+        "content": "Please write some C# code to <{input}>."
+      }
+    ]
   }
 ]
