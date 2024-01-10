@@ -42,35 +42,6 @@ namespace MindFlayer
             e.Handled = true;
         }
 
-        // ```csharp
-using System;
-using System.Collections.Generic;
-
-public class FibonacciSequence
-    {
-        public static IEnumerable<int> Generate(int count)
-        {
-            int first = 0, second = 1, next;
-
-            for (int i = 0; i < count; i++)
-            {
-                yield return first;
-                next = first + second;
-                first = second;
-                second = next;
-            }
-        }
-
-        public static void Main()
-        {
-            foreach (var number in Generate(10)) // Generate first 10 Fibonacci numbers
-            {
-                Console.WriteLine(number);
-            }
-        }
-    }
-```It seems like your request got cut off.Could you please provide more details on what you need the C# code to do?
-
         private void ReplaceText(object? sender, HotkeyEventArgs e)
         {
             Replace();
