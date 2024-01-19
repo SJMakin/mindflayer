@@ -30,6 +30,11 @@ namespace MindFlayer
             new PromptEditor().ShowDialog();
         }
 
+        private void ImagesButtonClickHandler_Click(object sender, RoutedEventArgs e)
+        {
+            new ui.ImageViewer().ShowDialog();
+        }
+
         private static void ModifyTheme(bool isDarkTheme)
         {
             var paletteHelper = new PaletteHelper();
@@ -56,6 +61,11 @@ namespace MindFlayer
 
             //if (!string.IsNullOrWhiteSpace(FruitTextBox.Text))
             //    FruitListBox.Items.Add(FruitTextBox.Text.Trim());
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

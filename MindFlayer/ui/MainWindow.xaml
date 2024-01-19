@@ -90,6 +90,7 @@
                                 <!--<Button Content="Nice Popup"/><Button Content="Can't Touch This" IsEnabled="False"/>-->
                                 <!--<Separator/>-->
                                 <Button Content="Prompts..." Click="PromptsButtonClickHandler_Click" />
+                                <Button Content="Images..." Click="ImagesButtonClickHandler_Click" />
                                 <Separator/>
                                 <!--<Button Content="Nice Popup"/><Button Content="Can't Touch This" IsEnabled="False"/>-->
                                 <!--<Separator/>-->
