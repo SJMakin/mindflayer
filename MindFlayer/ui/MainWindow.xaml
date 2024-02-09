@@ -101,7 +101,34 @@
                     </DockPanel>
                 </materialDesign:ColorZone>
             </DockPanel>
-            <TabControl Grid.Row="1" ItemsSource="{Binding Conversations}" SelectedItem="{Binding ActiveConversation}" Style="{StaticResource MaterialDesignNavigatilRailTabControl}" materialDesign:ShadowAssist.ShadowDepth="Depth4" materialDesign:ColorZoneAssist.Mode="Standard" SnapsToDevicePixels="True" BorderThickness="0" ItemContainerStyle="{StaticResource CustomNavigationRailTabItemStyle}" TabStripPlacement="Left" Height="auto">
+            <TabControl Grid.Row="1" ItemsSource="{Binding Conversations}" SelectedItem="{Binding ActiveConversation}" Style="{StaticResource MaterialDesignNavigatilRailTabControl}" materialDesign:ShadowAssist.ShadowDepth="Depth4" materialDesign:ColorZoneAssist.Mode="Standard" SnapsToDevicePixels="True" BorderThickness="0" ItemContainerStyle="{StaticResource CustomNavigationRailTabItemStyle}" TabStripPlacement="Top" Height="auto">
+                <TabControl.Template>
+                    <ControlTemplate TargetType="TabControl">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
+                                <ScrollViewer.Resources>
+                                    <Style BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" TargetType="{x:Type ScrollBar}" />
+                                </ScrollViewer.Resources>
+                                <TabPanel x:Name="HeaderPanel"
+                                  Panel.ZIndex="1" 
+                                  KeyboardNavigation.TabIndex="1"
+                                  Grid.Column="0"
+                                  Grid.Row="0"                                          
+                                  Margin="0"
+                                  IsItemsHost="true"/>
+                            </ScrollViewer>
+                            <ContentPresenter x:Name="PART_SelectedContentHost"
+                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                      Margin="{TemplateBinding Padding}"
+                                      ContentSource="SelectedContent" Grid.Row="1"/>
+                        </Grid>
+                    </ControlTemplate>
+                </TabControl.Template>
+
                 <TabControl.ItemTemplate>
                     <DataTemplate >
                         <Grid>

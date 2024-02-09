@@ -70,11 +70,11 @@ namespace OpenAI.Models
         public string Parent { get; private set; }
 
 
-                /// <summary>
+        /// <summary>
         /// The latest GPT-4 model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more. Returns a maximum of 4,096 output tokens. 
         /// This preview model is not yet suited for production traffic.
         /// </summary>
-        public static Model GPT4Preview { get; } = new("gpt-4-preview", "openai");
+        public static Model GPT4Preview { get; } = new("gpt-4-turbo-preview", "openai");
 
         /// <summary>
         /// More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat.

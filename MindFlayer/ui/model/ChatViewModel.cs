@@ -115,7 +115,7 @@ namespace MindFlayer
             }
         }
 
-        private double _temperature = 1.05;
+        private double _temperature = 1.00;
 
         public double Temperature
         {
