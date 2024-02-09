@@ -3,12 +3,14 @@ using OpenAI.Images;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace MindFlayer.ui.model
 {
@@ -18,9 +20,9 @@ namespace MindFlayer.ui.model
     
         private static readonly OpenAIClient Client = new(OpenAIAuthentication.LoadFromEnv());
 
-        private Image _currentImage;
+        private BitmapSource _currentImage;
 
-        public Image CurrentImage
+        public BitmapSource CurrentImage
         {
             get => _currentImage;
             set
@@ -34,7 +36,7 @@ namespace MindFlayer.ui.model
 
         private void Load()
         {
-            CurrentImage = Image.FromFile(@"c:\temp\pineapple.jpg");
+            CurrentImage = new BitmapImage(new Uri(@"c:\temp\pineapple.jpg"));
         }
 
         private ICommand _saveCommand;
@@ -55,17 +57,20 @@ namespace MindFlayer.ui.model
             CurrentImage = images.FirstOrDefault();
         }
 
-        public Image DownloadImage(string url)
+        public BitmapSource DownloadImage(string url)
         {
-            Image image;
-            using (WebClient webClient = new WebClient())
-            {
-                using (Stream stream = webClient.OpenRead(url))
-                {
-                    image = Image.FromStream(stream);
-                }
-            }
-            return image;
+            //Image image;
+            //using (WebClient webClient = new WebClient())
+            //{
+            //    using (Stream stream = webClient.OpenRead(url))
+            //    {
+            //        image = Image.FromStream(stream);
+            //    }
+            //}
+            //return image;
+
+            return new BitmapImage(new Uri(url));
+
         }
 
         protected void OnPropertyChanged(string propertyName)

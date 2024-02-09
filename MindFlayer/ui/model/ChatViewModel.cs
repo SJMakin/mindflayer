@@ -91,7 +91,7 @@ namespace MindFlayer
             Model.GPT4Preview
         };
 
-        private Model _selectedChatModel = Model.GPT4;
+        private Model _selectedChatModel = Model.GPT4Preview;
 
         public Model SelectedChatModel
         {
