@@ -25,15 +25,9 @@ namespace MindFlayer
 
         private void CloseButtonClickHandler_Click(object sender, RoutedEventArgs e) => Close();
 
-        private void PromptsButtonClickHandler_Click(object sender, RoutedEventArgs e)
-        {
-            new PromptEditor().ShowDialog();
-        }
+        private void PromptsButtonClickHandler_Click(object sender, RoutedEventArgs e) => new PromptEditor().Show();
 
-        private void ImagesButtonClickHandler_Click(object sender, RoutedEventArgs e)
-        {
-            new ui.ImageViewer().ShowDialog();
-        }
+        private void ImagesButtonClickHandler_Click(object sender, RoutedEventArgs e) => new ui.ImageViewer().Show();
 
         private static void ModifyTheme(bool isDarkTheme)
         {
@@ -49,7 +43,7 @@ namespace MindFlayer
             if (e.ChangedButton == MouseButton.Left)
                 this.DragMove();
         }
-        private void Sample1_DialogHost_OnDialogClosing(object sender, DialogClosingEventArgs eventArgs)
+        private void Settings_DialogHost_OnDialogClosing(object sender, DialogClosingEventArgs eventArgs)
         {
             //Debug.WriteLine($"SAMPLE 1: Closing dialog with parameter: {eventArgs.Parameter ?? string.Empty}");
 

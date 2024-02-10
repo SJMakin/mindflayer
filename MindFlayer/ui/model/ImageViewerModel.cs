@@ -57,6 +57,7 @@ namespace MindFlayer.ui.model
         {
             var pd = new PromptDialog(LastPrompt);
             if (!pd.ShowDialog().GetValueOrDefault()) return;
+            LastPrompt = pd.PromptResult;
             var result = Client.ImagesEndPoint.GenerateImageAsync(new ImageGenerationRequest(pd.PromptResult, model: OpenAI.Models.Model.DallE_3, responseFormat: ResponseFormat.Url)).Result;
             var images = result.Select(DownloadImage).ToList();
             CurrentImage = images.FirstOrDefault();

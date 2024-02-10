@@ -30,7 +30,7 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <materialDesign:DialogHost DialogClosing="Sample1_DialogHost_OnDialogClosing" DialogTheme="Inherit">
+    <materialDesign:DialogHost DialogClosing="Settings_DialogHost_OnDialogClosing" DialogTheme="Inherit">
         <materialDesign:DialogHost.DialogContent>
             <StackPanel Margin="16">
                 <TextBlock Text="SETTINGS:" />
