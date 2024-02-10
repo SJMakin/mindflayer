@@ -36,7 +36,10 @@ namespace MindFlayer.ui.model
 
         private void Load()
         {
-            CurrentImage = new BitmapImage(new Uri(@"c:\temp\pineapple.jpg"));
+            var ofd = new OpenFileDialog();
+            ofd.Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG|All files (*.*)|*.*";
+            if (!(ofd.ShowDialog() == DialogResult.OK)) return;
+            CurrentImage = new BitmapImage(new Uri(ofd.FileName));
         }
 
         private ICommand _saveCommand;
@@ -44,7 +47,12 @@ namespace MindFlayer.ui.model
 
         private void Save()
         {
-            throw new NotImplementedException();
+            using var img = BitmapFromSource(CurrentImage);
+            using var sfd = new SaveFileDialog();
+            sfd.Filter = "Image Files(*.PNG)|*.png|All files (*.*)|*.*";
+            if (!(sfd.ShowDialog() == DialogResult.OK)) return;
+            img.Save(sfd.FileName, ImageFormat.Png);
+            Clipboard.SetImage(img);
         }
 
         private ICommand _promptCommand;
@@ -52,25 +60,57 @@ namespace MindFlayer.ui.model
 
         private void Prompt()
         {
-            var result = Client.ImagesEndPoint.GenerateImageAsync(new ImageGenerationRequest("pineapples", model: OpenAI.Models.Model.DallE_3, responseFormat: ResponseFormat.Url)).Result;
+            var pd = new PromptDialog();
+            if (!pd.ShowDialog().GetValueOrDefault()) return;
+            var result = Client.ImagesEndPoint.GenerateImageAsync(new ImageGenerationRequest(pd.PromptResult, model: OpenAI.Models.Model.DallE_3, responseFormat: ResponseFormat.Url)).Result;
             var images = result.Select(DownloadImage).ToList();
             CurrentImage = images.FirstOrDefault();
         }
 
+        private ICommand _editCommand;
+        public ICommand EditCommand => _editCommand ??= new RelayCommand(() => true, Edit);
+
+        private void Edit()
+        {
+            using var img = BitmapFromSource(CurrentImage);
+            const string imagePath = @"c:\temp\edit.png";
+            img.Save(imagePath, ImageFormat.Png);
+            using var req = new ImageVariationRequest(imagePath);
+            var result = Client.ImagesEndPoint.CreateImageVariationAsync(req).Result;
+            var images = result.Select(DownloadImage).ToList();
+            CurrentImage = images.FirstOrDefault();
+        }
+
+        private ICommand _copyCommand;
+        public ICommand CopyCommand => _copyCommand ??= new RelayCommand(() => true, Copy);
+
+        private void Copy()
+        {
+            using var img = BitmapFromSource(CurrentImage);
+            Clipboard.SetImage(img);
+        }
+
+        public static Bitmap BitmapFromSource(BitmapSource bitmapsource)
+        {
+            //convert image format
+            var src = new FormatConvertedBitmap();
+            src.BeginInit();
+            src.Source = bitmapsource;
+            src.DestinationFormat = System.Windows.Media.PixelFormats.Bgra32;
+            src.EndInit();
+
+            //copy to bitmap
+            Bitmap bitmap = new Bitmap(src.PixelWidth, src.PixelHeight, PixelFormat.Format32bppArgb);
+            var data = bitmap.LockBits(new Rectangle(Point.Empty, bitmap.Size), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            src.CopyPixels(System.Windows.Int32Rect.Empty, data.Scan0, data.Height * data.Stride, data.Stride);
+            bitmap.UnlockBits(data);
+
+            return bitmap;
+        }
+
         public BitmapSource DownloadImage(string url)
         {
-            //Image image;
-            //using (WebClient webClient = new WebClient())
-            //{
-            //    using (Stream stream = webClient.OpenRead(url))
-            //    {
-            //        image = Image.FromStream(stream);
-            //    }
-            //}
-            //return image;
-
             return new BitmapImage(new Uri(url));
-
         }
 
         protected void OnPropertyChanged(string propertyName)

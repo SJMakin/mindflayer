@@ -26,11 +26,15 @@ namespace MindFlayer
 
         public ObservableCollection<Conversation> Conversations { get; } = new ObservableCollection<Conversation>();
 
-        public ObservableCollection<Suggestion> Suggestions { get; } = new ObservableCollection<Suggestion>() 
-        { 
-            new Suggestion() { Summary = "Summerise", Text = "Summary" },
-            new Suggestion() { Summary = "Reply", Text = "Reply" },
-            new Suggestion() { Summary = "Retort", Text = "Retort" }
+        public ObservableCollection<Suggestion> Suggestions { get; } = new ObservableCollection<Suggestion>()
+        {
+            Suggestion.ZeroShotCoTPrompt,
+            Suggestion.ZeroShotCoTAPEPrompt,
+            Suggestion.TreeOfThoughV1,
+            Suggestion.TreeOfThoughV2,
+            Suggestion.Reply,
+            Suggestion.Summarise,
+            Suggestion.Retort
         };
 
         private Conversation _activeConversation;
@@ -47,7 +51,7 @@ namespace MindFlayer
                 //{  
                 //    _removing = false;
                 //    ActiveConversation = Conversations.Reverse().Skip(1).First();
-                    
+
                 //    return;
                 //}
                 if (value == _addNewConvoButton && !_addingNew && !_removing)
@@ -207,32 +211,13 @@ namespace MindFlayer
 
 
         private ICommand _setInputCommand;
-        public ICommand SetInputCommand => _setInputCommand ??= new RelayCommand<string>(SetInput);
+        public ICommand SetInputCommand => _setInputCommand ??= new RelayCommand<Suggestion>(SetInput);
 
-        private void SetInput(string suggestion)
+        private void SetInput(Suggestion suggestion)
         {
-            var content = string.Join(Environment.NewLine, ActiveConversation.ChatMessages.Skip(1).Select(m => $"[{m.Role}]: {m.Content}"));
-
-            var question = new List<ChatMessage>();
-
-            if (suggestion == "Summary")
-            {
-                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "You are a helpful assistant, who is an expert at summerisation." });
-                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Please summerise this conversation down to just the facts:\n{content}" });
-            }
-            else if (suggestion == "Reply")
-            {
-                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "You are a chatbot that is a skilled conversationalist, if a little rude/nerdy. You are an expert at getting in to really deep and knowledgeable discussions, and like to debate. You never let a conversation die." });
-                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Please create a creative user response, that seeks to continue the conversation:\n{content}\n[user]:" });
-            }
-            else if (suggestion == "Retort")
-            {
-                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "You are a an extreamly rude and sarcastic chatbot." });
-                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Please create a creative user response, that seeks to continue the conversation:\n{content}\n[user]:" });
-            }
-
-            var result = Engine.Chat(question, Temperature, SelectedChatModel);
-
+            var convo = string.Join(Environment.NewLine, ActiveConversation.ChatMessages.Skip(1).Select(m => $"[{m.Role}]: {m.Content}"));
+            var (literal, question) = suggestion.Query(convo);
+            var result = literal ?? Engine.Chat(question, Temperature, SelectedChatModel);
             NewMessageContent = result;
         }
 
@@ -286,10 +271,12 @@ Please use the this structured JSON format for your response:
             }
         }
 
-        private Conversation NewConversation() {
+        private Conversation NewConversation()
+        {
             var newConvo = new Conversation(this) { Name = $"Chat {Conversations.Count(c => c != _addNewConvoButton) + 1}" };
-            newConvo.ChatMessages.Add(new ChatMessage { 
-                Role = OpenAI.Chat.Role.System, 
+            newConvo.ChatMessages.Add(new ChatMessage
+            {
+                Role = OpenAI.Chat.Role.System,
                 Content = "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize.",
                 TokenCount = _tokenCalculator.NumTokensFromMessage("You are a helpful concise assistant.")
             });

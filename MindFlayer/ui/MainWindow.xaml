@@ -256,7 +256,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Button Content="{Binding Summary}" Command="{Binding DataContext.SetInputCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" CommandParameter="{Binding Text}"/>
+                                    <Button Content="{Binding Summary}" Command="{Binding DataContext.SetInputCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" CommandParameter="{Binding}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

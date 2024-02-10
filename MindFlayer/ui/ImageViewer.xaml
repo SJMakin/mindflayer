@@ -25,8 +25,9 @@
         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
             <Button Width="100" Command="{Binding Path=LoadCommand}">Load</Button>
             <Button Width="100" Command="{Binding Path=SaveCommand}">Save</Button>
+            <Button Width="100" Command="{Binding Path=CopyCommand}">Copy</Button>
             <Button Width="100" Command="{Binding Path=PromptCommand}">Prompt...</Button>
-            <Button Width="100">Edit...</Button>
+            <Button Width="100" Command="{Binding Path=EditCommand}">Edit...</Button>
 
         </StackPanel>
     </Grid>
