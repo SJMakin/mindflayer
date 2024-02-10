@@ -1,14 +1,7 @@
 ﻿using OpenAI;
 using OpenAI.Images;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -19,6 +12,8 @@ namespace MindFlayer.ui.model
         public event PropertyChangedEventHandler PropertyChanged;
     
         private static readonly OpenAIClient Client = new(OpenAIAuthentication.LoadFromEnv());
+
+        private string LastPrompt { get; set; }
 
         private BitmapSource _currentImage;
 
@@ -60,7 +55,7 @@ namespace MindFlayer.ui.model
 
         private void Prompt()
         {
-            var pd = new PromptDialog();
+            var pd = new PromptDialog(LastPrompt);
             if (!pd.ShowDialog().GetValueOrDefault()) return;
             var result = Client.ImagesEndPoint.GenerateImageAsync(new ImageGenerationRequest(pd.PromptResult, model: OpenAI.Models.Model.DallE_3, responseFormat: ResponseFormat.Url)).Result;
             var images = result.Select(DownloadImage).ToList();

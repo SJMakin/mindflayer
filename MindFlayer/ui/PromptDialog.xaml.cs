@@ -6,9 +6,10 @@ namespace MindFlayer.ui
     {
         public string PromptResult { get; private set; }
 
-        public PromptDialog()
+        public PromptDialog(string prompt)
         {
             InitializeComponent();
+            PromptTextBox.Text = prompt;
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
