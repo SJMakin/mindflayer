@@ -7,16 +7,19 @@ using OpenAI.Models;
 
 namespace MindFlayer
 {
-    internal class KeyBinder
+    internal class GlobalKeyHooks
     {
         private readonly Dictaphone _dictaphone = new();
         OperationPicker picker;
 
-        public KeyBinder()
+        private static readonly Lazy<GlobalKeyHooks> lazy = new Lazy<GlobalKeyHooks>(() => new GlobalKeyHooks());
+
+        public static GlobalKeyHooks Instance { get { return lazy.Value; } }
+
+        public void Init()
         {
             HotkeyManager.Current.AddOrReplace("Replace", Keys.Control | Keys.Alt | Keys.G, ReplaceText);
             HotkeyManager.Current.AddOrReplace("Pick", Keys.Control | Keys.Alt | Keys.P, Pick);
-            //HotkeyManager.Current.AddOrReplace("Record", Keys.Control | Keys.Alt | Keys.R, Record);
         }
 
         private void Record(object? sender, HotkeyEventArgs e)

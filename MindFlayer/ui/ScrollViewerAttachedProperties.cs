@@ -20,19 +20,32 @@ namespace MindFlayer
                 coll.CollectionChanged -= (sender, args) => SetScrollToBottomOnChange(sender, args, scrollViewer);
             }
 
-            if (args.NewValue != null)
+            if (args.NewValue != null && args.NewValue is INotifyCollectionChanged c)
             {
-                var coll = (ObservableCollection<ChatMessage>)args.NewValue;
-                // Subscribe to CollectionChanged on the new collection
-                coll.CollectionChanged += (sender, args) => SetScrollToBottomOnChange(sender, args, scrollViewer);
+                c.CollectionChanged += (sender, args) => SetScrollToBottomOnChange(sender, args, scrollViewer);
             }
 
-            scrollViewer?.ScrollToBottom();
+            GoToEnd(scrollViewer);
+        }
+
+        public void AttachCollectionChangedEventHandler(object observableCollection, NotifyCollectionChangedEventHandler handler)
+        {
+            var collectionChangedEventInfo = observableCollection.GetType().GetEvent("CollectionChanged");
+            var delegateHandler = Delegate.CreateDelegate(collectionChangedEventInfo.EventHandlerType, handler.Target, handler.Method);
+            collectionChangedEventInfo.AddEventHandler(observableCollection, delegateHandler);
         }
 
         private static void SetScrollToBottomOnChange(object? sender, NotifyCollectionChangedEventArgs e, ScrollViewer? scrollViewer)
         {
-            scrollViewer?.ScrollToBottom();
+            GoToEnd(scrollViewer);
+        }
+
+        private static void GoToEnd(ScrollViewer? scrollViewer)
+        {
+            if (scrollViewer == null) return;
+            
+            scrollViewer.ScrollToRightEnd();
+            scrollViewer.ScrollToBottom();
         }
 
         public static void SetScrollToBottomOnChange(DependencyObject element, object value)

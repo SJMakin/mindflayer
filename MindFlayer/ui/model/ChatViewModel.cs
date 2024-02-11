@@ -40,7 +40,6 @@ namespace MindFlayer
         private Conversation _activeConversation;
 
         private readonly Dictaphone _dictaphone = new();
-        private readonly KeyBinder _keyBinder = new();
 
         public Conversation ActiveConversation
         {
@@ -155,6 +154,8 @@ namespace MindFlayer
                 TokenCount = _tokenCalculator.NumTokensFromMessage(NewMessageContent)
             });
 
+            if (ActiveConversation.ChatMessages.Count == 2) _ = GenerateConversationTitle(ActiveConversation);
+
             SendEnabled = false;
 
             var msg = new ChatMessage(ActiveConversation)
@@ -168,7 +169,7 @@ namespace MindFlayer
             var input = NewMessageContent;
             NewMessageContent = string.Empty;
 
-            Task.Run(() => Engine.ChatStream(ActiveConversation.ChatMessages, Temperature, (t) =>
+            _ = Engine.ChatStream(ActiveConversation.ChatMessages, Temperature, (t) =>
             {
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -176,9 +177,20 @@ namespace MindFlayer
                     msg.Content = msg.Content + t.FirstChoice.Delta.Content;
                     ActiveConversation.TokenCount = t.Usage?.TotalTokens;
                 });
-            }, SelectedChatModel))
-            .ContinueWith(_ => msg.TokenCount = _tokenCalculator.NumTokensFromMessage(msg.Content));
+            }, SelectedChatModel)
+            .ContinueWith(_ => msg.TokenCount = _tokenCalculator.NumTokensFromMessage(msg.Content), TaskScheduler.Current);
+
             SendEnabled = true;
+        }
+
+        private async Task GenerateConversationTitle(Conversation activeConversation)
+        {
+            var prompt = new List<ChatMessage>
+            {
+                new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
+                new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"The following is the start of a conversation. Think of a name for it. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
+            };
+            activeConversation.Name = await Engine.ChatAsync(prompt, Temperature, SelectedChatModel);
         }
 
         private ICommand _recordInputCommand;
@@ -209,7 +221,6 @@ namespace MindFlayer
             }
         }
 
-
         private ICommand _setInputCommand;
         public ICommand SetInputCommand => _setInputCommand ??= new RelayCommand<Suggestion>(SetInput);
 
@@ -221,56 +232,7 @@ namespace MindFlayer
             NewMessageContent = result;
         }
 
-        private ICommand _getSuggestionsCommand;
-        public ICommand GetSuggestionsCommand => _getSuggestionsCommand ??= new RelayCommand(() => true, GetSuggestions);
-
         public bool Removing { get => _removing; set => _removing = value; }
-
-        private void GetSuggestions()
-        {
-            var currectConvo = ActiveConversation.ChatMessages.ToList();
-            var question = new List<ChatMessage>();
-            question.Add(new ChatMessage(ActiveConversation)
-            {
-                Role = OpenAI.Chat.Role.User,
-                Content = @"Please suggest some continuations for this conversation with the assistant. Write the suggestions in the voice of the user. Pay attention to, and imitate, their style.
-
-Please use the this structured JSON format for your response:
-
-[
-    {
-        ""summary"": ""Example suggestion"",
-        ""text"": ""This is the full text of the suggestion.""
-    },   
-    {
-        ""summary"": ""Another suggestion"",
-        ""text"": ""This is the full text of another suggestion.""
-    }
-]"
-            });
-            try
-            {
-                var result = Engine.Chat(question, Temperature, SelectedChatModel);
-                var indexOfArrayChar = result.IndexOf("[", StringComparison.Ordinal);
-                if (indexOfArrayChar > 0) result = result.Substring(indexOfArrayChar);
-                result = result.Replace("```", "");
-                var suggestions = JsonSerializer.Deserialize<List<Suggestion>>(result);
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                {
-                    Suggestions.Clear();
-                    suggestions.ForEach(s => Suggestions.Add(s));
-                });
-            }
-            catch
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                {
-                    Suggestions.Clear();
-                    Suggestions.Add(new Suggestion() { Summary = "Failed." });
-                });
-            }
-        }
-
         private Conversation NewConversation()
         {
             var newConvo = new Conversation(this) { Name = $"Chat {Conversations.Count(c => c != _addNewConvoButton) + 1}" };

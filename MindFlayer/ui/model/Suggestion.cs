@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using OpenAI.Models;
+using System.Text.Json.Serialization;
 
 namespace MindFlayer.ui.model
 {
@@ -27,7 +28,7 @@ namespace MindFlayer.ui.model
         public static Suggestion Retort => new()
         {
             Summary = "Retort",
-            Query = (convo) => QuestionFactory("You are a an extreamly rude and sarcastic chatbot.",
+            Query = (convo) => QuestionFactory("You are an extreamly rude and sarcastic chatbot.",
                                   $"Please create a creative response, that seeks to continue the conversation for the user:\n{convo}\n[user]:")
         };
 
