@@ -207,7 +207,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                <TextBox Text="{Binding NewMessageContent, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Top" Padding="0" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Height="Auto">
+                <TextBox Text="{Binding NewMessageContent, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Top" Padding="0" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Height="Auto" materialDesign:HintAssist.Hint="Enter message...">
                     <TextBox.InputBindings>
                         <KeyBinding Command="{Binding Path=SendMessageCommand}" Key="Enter" />
                     </TextBox.InputBindings>
