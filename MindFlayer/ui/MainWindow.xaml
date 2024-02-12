@@ -27,10 +27,11 @@
         <ResourceDictionary>
             <Style x:Key="CustomNavigationRailTabItemStyle" TargetType="{x:Type TabItem}" BasedOn="{StaticResource MaterialDesignNavigationRailTabItem}">
                 <Setter Property="Height" Value="30" />
+                <Setter Property="Width" Value="Auto" />
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <materialDesign:DialogHost DialogClosing="Sample1_DialogHost_OnDialogClosing" DialogTheme="Inherit">
+    <materialDesign:DialogHost DialogClosing="Settings_DialogHost_OnDialogClosing" DialogTheme="Inherit">
         <materialDesign:DialogHost.DialogContent>
             <StackPanel Margin="16">
                 <TextBlock Text="SETTINGS:" />
@@ -90,6 +91,7 @@
                                 <!--<Button Content="Nice Popup"/><Button Content="Can't Touch This" IsEnabled="False"/>-->
                                 <!--<Separator/>-->
                                 <Button Content="Prompts..." Click="PromptsButtonClickHandler_Click" />
+                                <Button Content="Images..." Click="ImagesButtonClickHandler_Click" />
                                 <Separator/>
                                 <!--<Button Content="Nice Popup"/><Button Content="Can't Touch This" IsEnabled="False"/>-->
                                 <!--<Separator/>-->
@@ -100,15 +102,46 @@
                     </DockPanel>
                 </materialDesign:ColorZone>
             </DockPanel>
-            <TabControl Grid.Row="1" ItemsSource="{Binding Conversations}" SelectedItem="{Binding ActiveConversation}" Style="{StaticResource MaterialDesignNavigatilRailTabControl}" materialDesign:ShadowAssist.ShadowDepth="Depth4" materialDesign:ColorZoneAssist.Mode="Standard" SnapsToDevicePixels="True" BorderThickness="0" ItemContainerStyle="{StaticResource CustomNavigationRailTabItemStyle}" TabStripPlacement="Left" Height="auto">
+            <TabControl Grid.Row="1" ItemsSource="{Binding Conversations}" SelectedItem="{Binding ActiveConversation}" 
+                        materialDesign:ShadowAssist.ShadowDepth="Depth4" materialDesign:ColorZoneAssist.Mode="Standard" SnapsToDevicePixels="True" 
+                        BorderThickness="0" TabStripPlacement="Top" Height="auto"
+                        Style="{StaticResource MaterialDesignNavigatilRailTabControl}" 
+ItemContainerStyle="{StaticResource CustomNavigationRailTabItemStyle}" >
+                <TabControl.Template>
+                    <ControlTemplate TargetType="TabControl">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden"
+                                          local:ScrollViewerAttachedProperties.ScrollToBottomOnChange="{Binding Conversations}">
+                                <ScrollViewer.Resources>
+                                    <Style BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" TargetType="{x:Type ScrollBar}" />
+                                </ScrollViewer.Resources>
+                                <TabPanel x:Name="HeaderPanel"
+                                  Panel.ZIndex="1" 
+                                  KeyboardNavigation.TabIndex="1"
+                                  Grid.Column="0"
+                                  Grid.Row="0"                                          
+                                  Margin="0"
+                                  IsItemsHost="true"/>
+                            </ScrollViewer>
+                            <ContentPresenter x:Name="PART_SelectedContentHost"
+                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                      Margin="{TemplateBinding Padding}"
+                                      ContentSource="SelectedContent" Grid.Row="1"/>
+                        </Grid>
+                    </ControlTemplate>
+                </TabControl.Template>
                 <TabControl.ItemTemplate>
                     <DataTemplate >
-                        <Grid>
+                        <Grid Background="{DynamicResource MaterialDesignPaper}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="20" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="{Binding Name}"/>
+                            <Label Grid.Column="0" Content="{Binding Name}"/>
                             <Button Grid.Column="1" Command="{Binding CloseTabCommand}" Visibility="{Binding ShowCloseButton}" Margin="0" Height="Auto">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
@@ -141,6 +174,9 @@
                 <TabControl.ContentTemplate>
                     <DataTemplate DataType="local:Conversation">
                         <ScrollViewer Name="ScrollView" local:ScrollViewerAttachedProperties.ScrollToBottomOnChange="{Binding ChatMessages}" Background="{DynamicResource MaterialDesignPaper}">
+                            <ScrollViewer.Resources>
+                                <Style BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" TargetType="{x:Type ScrollBar}" />
+                            </ScrollViewer.Resources>
                             <StackPanel x:Name="MessageContainer">
                                 <ItemsControl ItemsSource="{Binding ChatMessages}">
                                     <ItemsControl.ItemTemplate>
@@ -228,7 +264,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Button Content="{Binding Summary}" Command="{Binding DataContext.SetInputCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" CommandParameter="{Binding Text}"/>
+                                    <Button Content="{Binding Summary}" Command="{Binding DataContext.SetInputCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" CommandParameter="{Binding}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

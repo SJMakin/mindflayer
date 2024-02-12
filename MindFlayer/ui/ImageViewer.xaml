@@ -1,0 +1,34 @@
+﻿<Window x:Class="MindFlayer.ui.ImageViewer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MindFlayer.ui"
+        mc:Ignorable="d"
+        Title="ImageViewer" Height="450" Width="800" TextElement.Foreground="{DynamicResource MaterialDesignBody}" 
+        TextElement.FontWeight="Regular" 
+        TextElement.FontSize="13" 
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto" 
+        Background="{DynamicResource MaterialDesignPaper}" 
+        FontFamily="{DynamicResource MaterialDesignFont}" 
+        ResizeMode="CanResizeWithGrip" 
+        WindowStyle="ToolWindow"  
+        MinHeight="420" 
+        MinWidth="420"
+        
+        DataContext="{Binding ImageViewerModel, Source={StaticResource Locator}}" >
+    <Grid>
+        <local:ZoomBorder x:Name="border" ClipToBounds="True" Background="Gray" Grid.ColumnSpan="2">
+            <Image  Source="{Binding CurrentImage, UpdateSourceTrigger=PropertyChanged}"/>
+        </local:ZoomBorder>
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
+            <Button Width="100" Command="{Binding Path=LoadCommand}">Load</Button>
+            <Button Width="100" Command="{Binding Path=SaveCommand}">Save</Button>
+            <Button Width="100" Command="{Binding Path=CopyCommand}">Copy</Button>
+            <Button Width="100" Command="{Binding Path=PromptCommand}">Prompt...</Button>
+            <Button Width="100" Command="{Binding Path=EditCommand}">Edit...</Button>
+
+        </StackPanel>
+    </Grid>
+</Window>

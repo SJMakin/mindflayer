@@ -19,16 +19,16 @@ namespace MindFlayer
         {
             InitializeComponent();
             AppContext.SetSwitch(@"Switch.System.Windows.Controls.DoNotAugmentWordBreakingUsingSpeller", true);
+            GlobalKeyHooks.Instance.Init();
         }
 
         private void MenuDarkModeButton_Click(object sender, RoutedEventArgs e) => ModifyTheme(DarkModeToggleButton.IsChecked == true);
 
         private void CloseButtonClickHandler_Click(object sender, RoutedEventArgs e) => Close();
 
-        private void PromptsButtonClickHandler_Click(object sender, RoutedEventArgs e)
-        {
-            new PromptEditor().ShowDialog();
-        }
+        private void PromptsButtonClickHandler_Click(object sender, RoutedEventArgs e) => new PromptEditor().Show();
+
+        private void ImagesButtonClickHandler_Click(object sender, RoutedEventArgs e) => new ui.ImageViewer().Show();
 
         private static void ModifyTheme(bool isDarkTheme)
         {
@@ -44,18 +44,19 @@ namespace MindFlayer
             if (e.ChangedButton == MouseButton.Left)
                 this.DragMove();
         }
-        private void Sample1_DialogHost_OnDialogClosing(object sender, DialogClosingEventArgs eventArgs)
-        {
-            //Debug.WriteLine($"SAMPLE 1: Closing dialog with parameter: {eventArgs.Parameter ?? string.Empty}");
 
+        private void Settings_DialogHost_OnDialogClosing(object sender, DialogClosingEventArgs eventArgs)
+        {
             //you can cancel the dialog close:
             //eventArgs.Cancel();
 
             if (!Equals(eventArgs.Parameter, true))
                 return;
+        }
 
-            //if (!string.IsNullOrWhiteSpace(FruitTextBox.Text))
-            //    FruitListBox.Items.Add(FruitTextBox.Text.Trim());
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

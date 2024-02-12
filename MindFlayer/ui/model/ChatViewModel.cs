@@ -26,17 +26,20 @@ namespace MindFlayer
 
         public ObservableCollection<Conversation> Conversations { get; } = new ObservableCollection<Conversation>();
 
-        public ObservableCollection<Suggestion> Suggestions { get; } = new ObservableCollection<Suggestion>() 
-        { 
-            new Suggestion() { Summary = "Summerise", Text = "Summary" },
-            new Suggestion() { Summary = "Reply", Text = "Reply" },
-            new Suggestion() { Summary = "Retort", Text = "Retort" }
+        public ObservableCollection<Suggestion> Suggestions { get; } = new ObservableCollection<Suggestion>()
+        {
+            Suggestion.ZeroShotCoTPrompt,
+            Suggestion.ZeroShotCoTAPEPrompt,
+            Suggestion.TreeOfThoughV1,
+            Suggestion.TreeOfThoughV2,
+            Suggestion.Reply,
+            Suggestion.Summarise,
+            Suggestion.Retort
         };
 
         private Conversation _activeConversation;
 
         private readonly Dictaphone _dictaphone = new();
-        private readonly KeyBinder _keyBinder = new();
 
         public Conversation ActiveConversation
         {
@@ -47,7 +50,7 @@ namespace MindFlayer
                 //{  
                 //    _removing = false;
                 //    ActiveConversation = Conversations.Reverse().Skip(1).First();
-                    
+
                 //    return;
                 //}
                 if (value == _addNewConvoButton && !_addingNew && !_removing)
@@ -91,7 +94,7 @@ namespace MindFlayer
             Model.GPT4Preview
         };
 
-        private Model _selectedChatModel = Model.GPT4;
+        private Model _selectedChatModel = Model.GPT4Preview;
 
         public Model SelectedChatModel
         {
@@ -115,7 +118,7 @@ namespace MindFlayer
             }
         }
 
-        private double _temperature = 1.05;
+        private double _temperature = 1.00;
 
         public double Temperature
         {
@@ -151,6 +154,8 @@ namespace MindFlayer
                 TokenCount = _tokenCalculator.NumTokensFromMessage(NewMessageContent)
             });
 
+            if (ActiveConversation.ChatMessages.Count == 2) _ = GenerateConversationTitle(ActiveConversation);
+
             SendEnabled = false;
 
             var msg = new ChatMessage(ActiveConversation)
@@ -164,7 +169,7 @@ namespace MindFlayer
             var input = NewMessageContent;
             NewMessageContent = string.Empty;
 
-            Task.Run(() => Engine.ChatStream(ActiveConversation.ChatMessages, Temperature, (t) =>
+            _ = Engine.ChatStream(ActiveConversation.ChatMessages, Temperature, (t) =>
             {
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -172,9 +177,20 @@ namespace MindFlayer
                     msg.Content = msg.Content + t.FirstChoice.Delta.Content;
                     ActiveConversation.TokenCount = t.Usage?.TotalTokens;
                 });
-            }, SelectedChatModel))
-            .ContinueWith(_ => msg.TokenCount = _tokenCalculator.NumTokensFromMessage(msg.Content));
+            }, SelectedChatModel)
+            .ContinueWith(_ => msg.TokenCount = _tokenCalculator.NumTokensFromMessage(msg.Content), TaskScheduler.Current);
+
             SendEnabled = true;
+        }
+
+        private async Task GenerateConversationTitle(Conversation activeConversation)
+        {
+            var prompt = new List<ChatMessage>
+            {
+                new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
+                new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"The following is the start of a conversation. Think of a name for it. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
+            };
+            activeConversation.Name = await Engine.ChatAsync(prompt, Temperature, SelectedChatModel);
         }
 
         private ICommand _recordInputCommand;
@@ -205,91 +221,24 @@ namespace MindFlayer
             }
         }
 
-
         private ICommand _setInputCommand;
-        public ICommand SetInputCommand => _setInputCommand ??= new RelayCommand<string>(SetInput);
+        public ICommand SetInputCommand => _setInputCommand ??= new RelayCommand<Suggestion>(SetInput);
 
-        private void SetInput(string suggestion)
+        private void SetInput(Suggestion suggestion)
         {
-            var content = string.Join(Environment.NewLine, ActiveConversation.ChatMessages.Skip(1).Select(m => $"[{m.Role}]: {m.Content}"));
-
-            var question = new List<ChatMessage>();
-
-            if (suggestion == "Summary")
-            {
-                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "You are a helpful assistant, who is an expert at summerisation." });
-                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Please summerise this conversation down to just the facts:\n{content}" });
-            }
-            else if (suggestion == "Reply")
-            {
-                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "You are a chatbot that is a skilled conversationalist, if a little rude/nerdy. You are an expert at getting in to really deep and knowledgeable discussions, and like to debate. You never let a conversation die." });
-                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Please create a creative user response, that seeks to continue the conversation:\n{content}\n[user]:" });
-            }
-            else if (suggestion == "Retort")
-            {
-                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "You are a an extreamly rude and sarcastic chatbot." });
-                question.Add(new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Please create a creative user response, that seeks to continue the conversation:\n{content}\n[user]:" });
-            }
-
-            var result = Engine.Chat(question, Temperature, SelectedChatModel);
-
+            var convo = string.Join(Environment.NewLine, ActiveConversation.ChatMessages.Skip(1).Select(m => $"[{m.Role}]: {m.Content}"));
+            var (literal, question) = suggestion.Query(convo);
+            var result = literal ?? Engine.Chat(question, Temperature, SelectedChatModel);
             NewMessageContent = result;
         }
 
-        private ICommand _getSuggestionsCommand;
-        public ICommand GetSuggestionsCommand => _getSuggestionsCommand ??= new RelayCommand(() => true, GetSuggestions);
-
         public bool Removing { get => _removing; set => _removing = value; }
-
-        private void GetSuggestions()
+        private Conversation NewConversation()
         {
-            var currectConvo = ActiveConversation.ChatMessages.ToList();
-            var question = new List<ChatMessage>();
-            question.Add(new ChatMessage(ActiveConversation)
-            {
-                Role = OpenAI.Chat.Role.User,
-                Content = @"Please suggest some continuations for this conversation with the assistant. Write the suggestions in the voice of the user. Pay attention to, and imitate, their style.
-
-Please use the this structured JSON format for your response:
-
-[
-    {
-        ""summary"": ""Example suggestion"",
-        ""text"": ""This is the full text of the suggestion.""
-    },   
-    {
-        ""summary"": ""Another suggestion"",
-        ""text"": ""This is the full text of another suggestion.""
-    }
-]"
-            });
-            try
-            {
-                var result = Engine.Chat(question, Temperature, SelectedChatModel);
-                var indexOfArrayChar = result.IndexOf("[", StringComparison.Ordinal);
-                if (indexOfArrayChar > 0) result = result.Substring(indexOfArrayChar);
-                result = result.Replace("```", "");
-                var suggestions = JsonSerializer.Deserialize<List<Suggestion>>(result);
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                {
-                    Suggestions.Clear();
-                    suggestions.ForEach(s => Suggestions.Add(s));
-                });
-            }
-            catch
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                {
-                    Suggestions.Clear();
-                    Suggestions.Add(new Suggestion() { Summary = "Failed." });
-                });
-            }
-        }
-
-        private Conversation NewConversation() {
             var newConvo = new Conversation(this) { Name = $"Chat {Conversations.Count(c => c != _addNewConvoButton) + 1}" };
-            newConvo.ChatMessages.Add(new ChatMessage { 
-                Role = OpenAI.Chat.Role.System, 
+            newConvo.ChatMessages.Add(new ChatMessage
+            {
+                Role = OpenAI.Chat.Role.System,
                 Content = "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize.",
                 TokenCount = _tokenCalculator.NumTokensFromMessage("You are a helpful concise assistant.")
             });
