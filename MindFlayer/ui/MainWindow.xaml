@@ -88,13 +88,9 @@
                                     <TextBox Text="{Binding ElementName=slVolume, Path=Value, StringFormat=N2, UpdateSourceTrigger=PropertyChanged}" Width="29" Height="22" TextWrapping="Wrap" Margin="10,0,0,0" Grid.Row="1" Grid.Column="2"/>
                                 </Grid>
                                 <Separator/>
-                                <!--<Button Content="Nice Popup"/><Button Content="Can't Touch This" IsEnabled="False"/>-->
-                                <!--<Separator/>-->
                                 <Button Content="Prompts..." Click="PromptsButtonClickHandler_Click" />
                                 <Button Content="Images..." Click="ImagesButtonClickHandler_Click" />
                                 <Separator/>
-                                <!--<Button Content="Nice Popup"/><Button Content="Can't Touch This" IsEnabled="False"/>-->
-                                <!--<Separator/>-->
                                 <Button Content="Quit" Click="CloseButtonClickHandler_Click" />
                             </StackPanel>
                         </materialDesign:PopupBox>

@@ -188,7 +188,7 @@ namespace MindFlayer
             var prompt = new List<ChatMessage>
             {
                 new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
-                new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"The following is the start of a conversation. Think of a name for it. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
+                new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Think of a topic name for this. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
             };
             activeConversation.Name = await Engine.ChatAsync(prompt, Temperature, SelectedChatModel);
         }
