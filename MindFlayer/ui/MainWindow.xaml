@@ -88,13 +88,9 @@
                                     <TextBox Text="{Binding ElementName=slVolume, Path=Value, StringFormat=N2, UpdateSourceTrigger=PropertyChanged}" Width="29" Height="22" TextWrapping="Wrap" Margin="10,0,0,0" Grid.Row="1" Grid.Column="2"/>
                                 </Grid>
                                 <Separator/>
-                                <!--<Button Content="Nice Popup"/><Button Content="Can't Touch This" IsEnabled="False"/>-->
-                                <!--<Separator/>-->
                                 <Button Content="Prompts..." Click="PromptsButtonClickHandler_Click" />
                                 <Button Content="Images..." Click="ImagesButtonClickHandler_Click" />
                                 <Separator/>
-                                <!--<Button Content="Nice Popup"/><Button Content="Can't Touch This" IsEnabled="False"/>-->
-                                <!--<Separator/>-->
                                 <Button Content="Quit" Click="CloseButtonClickHandler_Click" />
                             </StackPanel>
                         </materialDesign:PopupBox>
@@ -243,7 +239,7 @@ ItemContainerStyle="{StaticResource CustomNavigationRailTabItemStyle}" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                <TextBox Text="{Binding NewMessageContent, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Top" Padding="0" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Height="Auto">
+                <TextBox Text="{Binding NewMessageContent, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Top" Padding="0" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Height="Auto" materialDesign:HintAssist.Hint="Enter message...">
                     <TextBox.InputBindings>
                         <KeyBinding Command="{Binding Path=SendMessageCommand}" Key="Enter" />
                     </TextBox.InputBindings>
