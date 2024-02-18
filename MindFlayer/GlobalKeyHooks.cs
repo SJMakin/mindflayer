@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
+using MindFlayer.audio;
 using MindFlayer.ui;
 using NHotkey;
 using NHotkey.WindowsForms;

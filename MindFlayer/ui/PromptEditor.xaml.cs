@@ -63,8 +63,7 @@ namespace MindFlayer
         {
             if (Headers.Count == 0) return string.Empty;
             var content = new StringBuilder();
-            foreach (var header in Headers.First().DepthFirst(h => h.Children)
-                                                 .Where(h => ItemHelper.GetIsChecked(h).Value))
+            foreach (var header in Headers.First().DepthFirst(h => h.Children).Where(h => ItemHelper.GetIsChecked(h).Value))
                 content.AppendLine(header?.Content);
             return content.ToString();
         }

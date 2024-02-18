@@ -1,4 +1,5 @@
 ﻿using MaterialDesignThemes.Wpf;
+using MindFlayer.audio;
 using System.Windows;
 using System.Windows.Input;
 
@@ -20,6 +21,7 @@ namespace MindFlayer
             InitializeComponent();
             AppContext.SetSwitch(@"Switch.System.Windows.Controls.DoNotAugmentWordBreakingUsingSpeller", true);
             GlobalKeyHooks.Instance.Init();
+            //AudioCapture.Capture();
         }
 
         private void MenuDarkModeButton_Click(object sender, RoutedEventArgs e) => ModifyTheme(DarkModeToggleButton.IsChecked == true);

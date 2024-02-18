@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Text.Json;
 using System.Windows.Input;
+using MindFlayer.audio;
 using MindFlayer.ui.model;
 using NAudio.Wave;
 using OpenAI.Models;
