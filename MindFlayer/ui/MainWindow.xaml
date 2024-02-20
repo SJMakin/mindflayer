@@ -208,6 +208,7 @@ ItemContainerStyle="{StaticResource CustomNavigationRailTabItemStyle}" >
                                                             <ContextMenu Visibility="{Binding MessageButtonVisibility}">
                                                                 <MenuItem Header="Replay" Command="{Binding ReplayCommand}"/>
                                                                 <MenuItem Header="Copy" Command="{Binding CopyCommand}"/>
+                                                                <MenuItem Header="Read" Command="{Binding ReadCommand}"/>
                                                             </ContextMenu>
                                                         </TextBox.ContextMenu>
                                                     </TextBox>

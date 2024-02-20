@@ -14,7 +14,7 @@ namespace MindFlayer
 
         // To set this, simply exevute the below...
         // [Environment]::SetEnvironmentVariable('OPENAI_KEY', 'sk-here', 'Machine')
-        private static readonly OpenAIClient Client = new(OpenAIAuthentication.LoadFromEnv());
+        public static readonly OpenAIClient Client = new(OpenAIAuthentication.LoadFromEnv());
 
         public static string Chat(string input, Operation op, Model model)
         {

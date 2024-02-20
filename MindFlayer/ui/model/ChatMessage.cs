@@ -1,4 +1,6 @@
-﻿using OpenAI.Chat;
+﻿using MindFlayer.audio;
+using OpenAI.Chat;
+using OpenAI.Models;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 using System.Windows;
@@ -46,11 +48,13 @@ namespace MindFlayer
 
         private ICommand _replayCommand;
         private ICommand _copyCommand;
+        private ICommand _readCommand;
         private string _content;
         private int _tokenCount;
 
         public ICommand ReplayCommand => _replayCommand ??= new RelayCommand(() => true, Replay);
         public ICommand CopyCommand => _copyCommand ??= new RelayCommand(() => true, Copy);
+        public ICommand ReadCommand => _readCommand ??= new RelayCommand(() => true, Read);
 
         [JsonIgnore]
         public Conversation Parent { get; set; }
@@ -63,6 +67,15 @@ namespace MindFlayer
         private void Copy()
         {
             System.Windows.Clipboard.SetText(Content);
+        }
+
+        private void Read()
+        {
+            Task.Run(() =>
+            {
+                var audioData = Engine.Client.AudioEndpoint.CreateSpeechAsync(new OpenAI.Audio.SpeechRequest(Content, Model.TTS_1)).Result;
+                Mp3Player.PlayFromMemory(audioData.ToArray());
+            });
         }
 
         public ChatMessage() { }
