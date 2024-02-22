@@ -32,6 +32,8 @@ namespace MindFlayer
 
         private void ImagesButtonClickHandler_Click(object sender, RoutedEventArgs e) => new ui.ImageViewer().Show();
 
+        private void TranscribeButtonClickHandler_Click(object sender, RoutedEventArgs e) => new ui.Transcribe().Show();
+
         private static void ModifyTheme(bool isDarkTheme)
         {
             var paletteHelper = new PaletteHelper();

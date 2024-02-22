@@ -90,6 +90,7 @@
                                 <Separator/>
                                 <Button Content="Prompts..." Click="PromptsButtonClickHandler_Click" />
                                 <Button Content="Images..." Click="ImagesButtonClickHandler_Click" />
+                                <Button Content="Transcribe..." Click="TranscribeButtonClickHandler_Click" />
                                 <Separator/>
                                 <Button Content="Quit" Click="CloseButtonClickHandler_Click" />
                             </StackPanel>

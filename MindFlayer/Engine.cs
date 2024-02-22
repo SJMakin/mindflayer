@@ -64,7 +64,7 @@ namespace MindFlayer
                 callback(c);
             });
             await Client.ChatEndpoint.StreamCompletionAsync(request, callbackWrapper)
-                .ContinueWith(_ => log.Info($"{nameof(Engine)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={response}"))
+                .ContinueWith(_ => log.Info($"{nameof(Engine)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={response}"), TaskScheduler.Current)
                 .ConfigureAwait(false);          
         }
 

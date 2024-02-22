@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MindFlayer.ui"
         mc:Ignorable="d"
-        Title="Transcribe" Height="450" Width="800">
+        Title="Transcribe" Height="450" Width="800"
+        DataContext="{Binding TranscribeModel, Source={StaticResource Locator}}" >
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
