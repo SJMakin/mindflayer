@@ -1,12 +1,11 @@
-namespace OpenAI.Chat
+namespace OpenAI.Chat;
+
+public enum Role
 {
-    public enum Role
-    {
-        System = 1,
-        Assistant,
-        User,
-        [Obsolete("Use Tool")]
-        Function,
-        Tool
-    }
+    System = 1,
+    Assistant,
+    User,
+    [Obsolete("Use Tool")]
+    Function,
+    Tool
 }

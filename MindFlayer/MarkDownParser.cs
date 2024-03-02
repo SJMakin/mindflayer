@@ -1,47 +1,44 @@
 ﻿using System.Text;
 
-namespace MindFlayer
+namespace MindFlayer;
+
+internal class MarkDownParser
 {
-    internal class MarkDownParser
+    public static Header Parse(string mdText)
     {
-        public static Header Parse(string mdText)
+        var lines = mdText.Split('\n');
+
+        var root = new Header { Level = 0, Title = "Root" };
+        var stack = new Stack<Header>();
+        stack.Push(root);
+        var contentBuffer = new StringBuilder();
+        foreach (var line in lines)
         {
-            var lines = mdText.Split('\n');
+            
 
-            var root = new Header { Level = 0, Title = "Root" };
-            var stack = new Stack<Header>();
-            stack.Push(root);
-            var contentBuffer = new StringBuilder();
-            foreach (var line in lines)
+            var level = line.TakeWhile(c => c == '#').Count();
+
+            if (level > 0)
             {
-                
+                var title = line.Substring(level).Trim();
+                var header = new Header { Level = level, Title = title };
+                var parent = stack.Peek();
 
-                var level = line.TakeWhile(c => c == '#').Count();
+                parent.Content = parent.Content + contentBuffer.ToString();
+                contentBuffer.Clear();
 
-                if (level > 0)
+                while (stack.Peek().Level >= level)
                 {
-                    var title = line.Substring(level).Trim();
-                    var header = new Header { Level = level, Title = title };
-                    var parent = stack.Peek();
-
-                    parent.Content = parent.Content + contentBuffer.ToString();
-                    contentBuffer.Clear();
-
-                    while (stack.Peek().Level >= level)
-                    {
-                        stack.Pop();
-                    }
-
-
-                    stack.Peek().Children.Add(header);
-                    stack.Push(header);
+                    stack.Pop();
                 }
 
-                contentBuffer.Append(line);
+
+                stack.Peek().Children.Add(header);
+                stack.Push(header);
             }
-            return root;
+
+            contentBuffer.Append(line);
         }
+        return root;
     }
-
-
 }

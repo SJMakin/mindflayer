@@ -1,35 +1,32 @@
-﻿using MindFlayer;
-using MindFlayer.audio;
+﻿using MindFlayer.audio;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Threading;
 using System.Windows.Input;
 
-namespace MindFlayer.ui.model
+namespace MindFlayer.ui.model;
+
+internal class TranscribeModel : INotifyPropertyChanged
 {
-    internal class TranscribeModel : INotifyPropertyChanged
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public ObservableCollection<AudioSegment> AudioSegments { get; set; } = new();
+
+    private RelayCommand startCommand;
+    public ICommand StartCommand => startCommand ??= new RelayCommand(Start);
+
+    private CancellationTokenSource cancellationTokenSource;
+
+    private void Start()
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        cancellationTokenSource = new CancellationTokenSource();
+        _ = AudioCapture.Capture(AudioSegments, cancellationTokenSource.Token);
+    }
 
-        public ObservableCollection<AudioSegment> AudioSegments { get; set; } = new();
+    private RelayCommand stopCommand;
+    public ICommand StopCommand => stopCommand ??= new RelayCommand(Stop);
 
-        private RelayCommand startCommand;
-        public ICommand StartCommand => startCommand ??= new RelayCommand(Start);
-
-        private CancellationTokenSource cancellationTokenSource;
-
-        private void Start()
-        {
-            cancellationTokenSource = new CancellationTokenSource();
-            _ = AudioCapture.Capture(AudioSegments, cancellationTokenSource.Token);
-        }
-
-        private RelayCommand stopCommand;
-        public ICommand StopCommand => stopCommand ??= new RelayCommand(Stop);
-
-        private void Stop()
-        {
-            cancellationTokenSource.Cancel();
-        }
+    private void Stop()
+    {
+        cancellationTokenSource.Cancel();
     }
 }

@@ -1,10 +1,9 @@
-﻿namespace NHotkey.WindowsForms
+﻿namespace NHotkey.WindowsForms;
+
+static class Extensions
 {
-    static class Extensions
+    public static bool HasFlag(this Keys keys, Keys flag)
     {
-        public static bool HasFlag(this Keys keys, Keys flag)
-        {
-            return (keys & flag) == flag;
-        }
+        return (keys & flag) == flag;
     }
 }

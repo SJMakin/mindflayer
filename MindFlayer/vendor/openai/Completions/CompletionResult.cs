@@ -1,52 +1,51 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace OpenAI.Completions
+namespace OpenAI.Completions;
+
+/// <summary>
+/// Represents a result from calling the <see cref="CompletionsEndpoint"/>.
+/// </summary>
+public sealed class CompletionResult : BaseResponse
 {
     /// <summary>
-    /// Represents a result from calling the <see cref="CompletionsEndpoint"/>.
+    /// The identifier of the result, which may be used during troubleshooting
     /// </summary>
-    public sealed class CompletionResult : BaseResponse
-    {
-        /// <summary>
-        /// The identifier of the result, which may be used during troubleshooting
-        /// </summary>
-        [JsonInclude]
-        [JsonPropertyName("id")]
-        public string Id { get; private set; }
+    [JsonInclude]
+    [JsonPropertyName("id")]
+    public string Id { get; private set; }
 
-        [JsonInclude]
-        [JsonPropertyName("object")]
-        public string Object { get; private set; }
+    [JsonInclude]
+    [JsonPropertyName("object")]
+    public string Object { get; private set; }
 
-        /// <summary>
-        /// The time when the result was generated in unix epoch format
-        /// </summary>
-        [JsonInclude]
-        [JsonPropertyName("created")]
-        public int CreatedUnixTime { get; private set; }
+    /// <summary>
+    /// The time when the result was generated in unix epoch format
+    /// </summary>
+    [JsonInclude]
+    [JsonPropertyName("created")]
+    public int CreatedUnixTime { get; private set; }
 
-        /// <summary>
-        /// The time when the result was generated.
-        /// </summary>
-        [JsonIgnore]
-        public DateTime Created => DateTimeOffset.FromUnixTimeSeconds(CreatedUnixTime).DateTime;
+    /// <summary>
+    /// The time when the result was generated.
+    /// </summary>
+    [JsonIgnore]
+    public DateTime Created => DateTimeOffset.FromUnixTimeSeconds(CreatedUnixTime).DateTime;
 
-        [JsonInclude]
-        [JsonPropertyName("model")]
-        public string Model { get; private set; }
+    [JsonInclude]
+    [JsonPropertyName("model")]
+    public string Model { get; private set; }
 
-        /// <summary>
-        /// The completions returned by the API.  Depending on your request, there may be 1 or many choices.
-        /// </summary>
-        [JsonInclude]
-        [JsonPropertyName("choices")]
-        public IReadOnlyList<Choice> Completions { get; private set; }
+    /// <summary>
+    /// The completions returned by the API.  Depending on your request, there may be 1 or many choices.
+    /// </summary>
+    [JsonInclude]
+    [JsonPropertyName("choices")]
+    public IReadOnlyList<Choice> Completions { get; private set; }
 
-        [JsonIgnore]
-        public Choice FirstChoice => Completions?.FirstOrDefault(choice => choice.Index == 0);
+    [JsonIgnore]
+    public Choice FirstChoice => Completions?.FirstOrDefault(choice => choice.Index == 0);
 
-        public override string ToString() => FirstChoice?.ToString() ?? string.Empty;
+    public override string ToString() => FirstChoice?.ToString() ?? string.Empty;
 
-        public static implicit operator string(CompletionResult response) => response.ToString();
-    }
+    public static implicit operator string(CompletionResult response) => response.ToString();
 }

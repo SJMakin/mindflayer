@@ -1,11 +1,10 @@
 ﻿using MindFlayer.ui.model;
 
-namespace MindFlayer
+namespace MindFlayer;
+
+internal class ViewModelLocator
 {
-    internal class ViewModelLocator
-    {
-        public ChatViewModel ChatViewModel { get; } = new();
-        public ImageViewerModel ImageViewerModel { get; } = new();
-        public TranscribeModel TranscribeModel { get; } = new();
-    }
+    public ChatViewModel ChatViewModel { get; } = new();
+    public ImageViewerModel ImageViewerModel { get; } = new();
+    public TranscribeModel TranscribeModel { get; } = new();
 }

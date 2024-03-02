@@ -1,12 +1,11 @@
 using System.Runtime.Serialization;
 
-namespace OpenAI.Chat
+namespace OpenAI.Chat;
+
+public enum ChatResponseFormat
 {
-    public enum ChatResponseFormat
-    {
-        [EnumMember(Value = "text")]
-        Text,
-        [EnumMember(Value = "json_object")]
-        Json
-    }
+    [EnumMember(Value = "text")]
+    Text,
+    [EnumMember(Value = "json_object")]
+    Json
 }

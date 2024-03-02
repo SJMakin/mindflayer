@@ -1,21 +1,19 @@
 ﻿using System.Windows;
 
-namespace MindFlayer
+namespace MindFlayer;
+
+
+public class Header : DependencyObject, IParent<object>
 {
+    public string Title { get; set; }
+    public int Level { get; set; }
+    public List<Header> Children { get; set; } = new List<Header>();
+    public string Content { get; internal set; }
 
-    public class Header : DependencyObject, IParent<object>
+    public IEnumerable<object> GetChildren() => Children;
+
+    public override string ToString()
     {
-        public string Title { get; set; }
-        public int Level { get; set; }
-        public List<Header> Children { get; set; } = new List<Header>();
-        public string Content { get; internal set; }
-
-        public IEnumerable<object> GetChildren() => Children;
-
-        public override string ToString()
-        {
-            return $"{("".PadLeft(Level, '#'))} {Title}\n{Content}";
-        }
+        return $"{("".PadLeft(Level, '#'))} {Title}\n{Content}";
     }
-
 }

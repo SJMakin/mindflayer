@@ -1,19 +1,18 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace OpenAI.Moderations
+namespace OpenAI.Moderations;
+
+public sealed class ModerationsResponse : BaseResponse
 {
-    public sealed class ModerationsResponse : BaseResponse
-    {
-        [JsonInclude]
-        [JsonPropertyName("id")]
-        public string Id { get; private set; }
+    [JsonInclude]
+    [JsonPropertyName("id")]
+    public string Id { get; private set; }
 
-        [JsonInclude]
-        [JsonPropertyName("model")]
-        public string Model { get; private set; }
+    [JsonInclude]
+    [JsonPropertyName("model")]
+    public string Model { get; private set; }
 
-        [JsonInclude]
-        [JsonPropertyName("results")]
-        public IReadOnlyList<ModerationResult> Results { get; private set; }
-    }
+    [JsonInclude]
+    [JsonPropertyName("results")]
+    public IReadOnlyList<ModerationResult> Results { get; private set; }
 }

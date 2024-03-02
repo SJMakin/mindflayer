@@ -1,26 +1,25 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace OpenAI
+namespace OpenAI;
+
+public sealed class Event
 {
-    public sealed class Event
-    {
-        [JsonInclude]
-        [JsonPropertyName("object")]
-        public string Object { get; private set; }
+    [JsonInclude]
+    [JsonPropertyName("object")]
+    public string Object { get; private set; }
 
-        [JsonInclude]
-        [JsonPropertyName("created_at")]
-        public int CreatedAtUnixTime { get; private set; }
+    [JsonInclude]
+    [JsonPropertyName("created_at")]
+    public int CreatedAtUnixTime { get; private set; }
 
-        [JsonIgnore]
-        public DateTime CreatedAt => DateTimeOffset.FromUnixTimeSeconds(CreatedAtUnixTime).DateTime;
+    [JsonIgnore]
+    public DateTime CreatedAt => DateTimeOffset.FromUnixTimeSeconds(CreatedAtUnixTime).DateTime;
 
-        [JsonInclude]
-        [JsonPropertyName("level")]
-        public string Level { get; private set; }
+    [JsonInclude]
+    [JsonPropertyName("level")]
+    public string Level { get; private set; }
 
-        [JsonInclude]
-        [JsonPropertyName("message")]
-        public string Message { get; private set; }
-    }
+    [JsonInclude]
+    [JsonPropertyName("message")]
+    public string Message { get; private set; }
 }

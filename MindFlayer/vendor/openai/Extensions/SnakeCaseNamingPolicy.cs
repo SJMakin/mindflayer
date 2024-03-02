@@ -1,10 +1,9 @@
 ﻿using System.Text.Json;
 
-namespace OpenAI.Extensions
+namespace OpenAI.Extensions;
+
+internal sealed class SnakeCaseNamingPolicy : JsonNamingPolicy
 {
-    internal sealed class SnakeCaseNamingPolicy : JsonNamingPolicy
-    {
-        public override string ConvertName(string name)
-            => StringExtensions.ToSnakeCase(name);
-    }
+    public override string ConvertName(string name)
+        => StringExtensions.ToSnakeCase(name);
 }

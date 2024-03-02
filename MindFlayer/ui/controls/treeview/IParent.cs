@@ -1,7 +1,6 @@
-﻿namespace MindFlayer
+﻿namespace MindFlayer;
+
+interface IParent<T> where T : class, new()
 {
-    interface IParent<T> where T : class, new()
-    {
-        IEnumerable<T> GetChildren();
-    }
+    IEnumerable<T> GetChildren();
 }

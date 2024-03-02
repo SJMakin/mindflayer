@@ -1,12 +1,11 @@
-namespace OpenAI.Audio
+namespace OpenAI.Audio;
+
+public enum SpeechVoice
 {
-    public enum SpeechVoice
-    {
-        Alloy = 0,
-        Echo,
-        Fable,
-        Onyx,
-        Nova,
-        Shimmer
-    }
+    Alloy = 0,
+    Echo,
+    Fable,
+    Onyx,
+    Nova,
+    Shimmer
 }

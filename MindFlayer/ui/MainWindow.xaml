@@ -103,7 +103,7 @@
                         materialDesign:ShadowAssist.ShadowDepth="Depth4" materialDesign:ColorZoneAssist.Mode="Standard" SnapsToDevicePixels="True" 
                         BorderThickness="0" TabStripPlacement="Top" Height="auto"
                         Style="{StaticResource MaterialDesignNavigatilRailTabControl}" 
-ItemContainerStyle="{StaticResource CustomNavigationRailTabItemStyle}" >
+ItemContainerStyle="{StaticResource CustomNavigationRailTabItemStyle}" SelectionChanged="TabControl_SelectionChanged">
                 <TabControl.Template>
                     <ControlTemplate TargetType="TabControl">
                         <Grid>
@@ -241,7 +241,9 @@ ItemContainerStyle="{StaticResource CustomNavigationRailTabItemStyle}" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                <TextBox Text="{Binding NewMessageContent, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Top" Padding="0" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" Height="Auto" materialDesign:HintAssist.Hint="Enter message...">
+                <TextBox Text="{Binding NewMessageContent, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Top" Padding="0" 
+                         Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True" 
+                         Height="Auto" materialDesign:HintAssist.Hint="Enter message..." Name="InputBox">
                     <TextBox.InputBindings>
                         <KeyBinding Command="{Binding Path=SendMessageCommand}" Key="Enter" />
                     </TextBox.InputBindings>

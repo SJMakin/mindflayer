@@ -1,49 +1,48 @@
-﻿namespace OpenAI
+﻿namespace OpenAI;
+
+public abstract class BaseEndPoint
 {
-    public abstract class BaseEndPoint
+    protected BaseEndPoint(OpenAIClient api) => Api = api;
+
+    protected readonly OpenAIClient Api;
+
+    /// <summary>
+    /// The root endpoint address.
+    /// </summary>
+    protected abstract string Root { get; }
+
+    /// <summary>
+    /// Gets the full formatted url for the API endpoint.
+    /// </summary>
+    /// <param name="endpoint">The endpoint url.</param>
+    /// <param name="queryParameters">Optional, parameters to add to the endpoint.</param>
+    protected string GetUrl(string endpoint = "", Dictionary<string, string> queryParameters = null)
     {
-        protected BaseEndPoint(OpenAIClient api) => Api = api;
+        var result = string.Format(Api.OpenAIClientSettings.BaseRequestUrlFormat, $"{Root}{endpoint}");
 
-        protected readonly OpenAIClient Api;
-
-        /// <summary>
-        /// The root endpoint address.
-        /// </summary>
-        protected abstract string Root { get; }
-
-        /// <summary>
-        /// Gets the full formatted url for the API endpoint.
-        /// </summary>
-        /// <param name="endpoint">The endpoint url.</param>
-        /// <param name="queryParameters">Optional, parameters to add to the endpoint.</param>
-        protected string GetUrl(string endpoint = "", Dictionary<string, string> queryParameters = null)
+        foreach (var defaultQueryParameter in Api.OpenAIClientSettings.DefaultQueryParameters)
         {
-            var result = string.Format(Api.OpenAIClientSettings.BaseRequestUrlFormat, $"{Root}{endpoint}");
-
-            foreach (var defaultQueryParameter in Api.OpenAIClientSettings.DefaultQueryParameters)
-            {
-                queryParameters ??= new Dictionary<string, string>();
-                queryParameters.Add(defaultQueryParameter.Key, defaultQueryParameter.Value);
-            }
-
-            if (queryParameters is { Count: not 0 })
-            {
-                result += $"?{string.Join("&", queryParameters.Select(parameter => $"{parameter.Key}={parameter.Value}"))}";
-            }
-
-            return result;
+            queryParameters ??= new Dictionary<string, string>();
+            queryParameters.Add(defaultQueryParameter.Key, defaultQueryParameter.Value);
         }
 
-        private bool enableDebug;
-
-        /// <summary>
-        /// Enables or disables the logging of all http responses of header and body information for this endpoint.<br/>
-        /// WARNING! Enabling this in your production build, could potentially leak sensitive information!
-        /// </summary>
-        public bool EnableDebug
+        if (queryParameters is { Count: not 0 })
         {
-            get => enableDebug || Api.EnableDebug;
-            set => enableDebug = value;
+            result += $"?{string.Join("&", queryParameters.Select(parameter => $"{parameter.Key}={parameter.Value}"))}";
         }
+
+        return result;
+    }
+
+    private bool enableDebug;
+
+    /// <summary>
+    /// Enables or disables the logging of all http responses of header and body information for this endpoint.<br/>
+    /// WARNING! Enabling this in your production build, could potentially leak sensitive information!
+    /// </summary>
+    public bool EnableDebug
+    {
+        get => enableDebug || Api.EnableDebug;
+        set => enableDebug = value;
     }
 }

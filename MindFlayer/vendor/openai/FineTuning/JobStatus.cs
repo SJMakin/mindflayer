@@ -1,13 +1,12 @@
-﻿namespace OpenAI.FineTuning
+﻿namespace OpenAI.FineTuning;
+
+public enum JobStatus
 {
-    public enum JobStatus
-    {
-        NotStarted = 0,
-        ValidatingFiles,
-        Queued,
-        Running,
-        Succeeded,
-        Failed,
-        Cancelled
-    }
+    NotStarted = 0,
+    ValidatingFiles,
+    Queued,
+    Running,
+    Succeeded,
+    Failed,
+    Cancelled
 }

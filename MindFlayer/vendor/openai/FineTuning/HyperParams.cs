@@ -1,19 +1,18 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace OpenAI.FineTuning
+namespace OpenAI.FineTuning;
+
+public sealed class HyperParams
 {
-    public sealed class HyperParams
-    {
-        [JsonInclude]
-        [JsonPropertyName("n_epochs")]
-        public object Epochs { get; private set; }
+    [JsonInclude]
+    [JsonPropertyName("n_epochs")]
+    public object Epochs { get; private set; }
 
-        [JsonInclude]
-        [JsonPropertyName("batch_size")]
-        public object BatchSize { get; private set; }
+    [JsonInclude]
+    [JsonPropertyName("batch_size")]
+    public object BatchSize { get; private set; }
 
-        [JsonInclude]
-        [JsonPropertyName("learning_rate_multiplier")]
-        public object LearningRateMultiplier { get; private set; }
-    }
+    [JsonInclude]
+    [JsonPropertyName("learning_rate_multiplier")]
+    public object LearningRateMultiplier { get; private set; }
 }

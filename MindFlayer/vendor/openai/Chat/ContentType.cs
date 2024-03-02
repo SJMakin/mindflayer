@@ -1,12 +1,11 @@
 using System.Runtime.Serialization;
 
-namespace OpenAI.Chat
+namespace OpenAI.Chat;
+
+public enum ContentType
 {
-    public enum ContentType
-    {
-        [EnumMember(Value = "text")]
-        Text,
-        [EnumMember(Value = "image_url")]
-        ImageUrl
-    }
+    [EnumMember(Value = "text")]
+    Text,
+    [EnumMember(Value = "image_url")]
+    ImageUrl
 }
