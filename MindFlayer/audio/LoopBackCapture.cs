@@ -1,10 +1,8 @@
 ﻿using NAudio.Wave;
-using OpenAI.Chat;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace MindFlayer.audio;
 
@@ -14,8 +12,10 @@ public static class AudioCapture
     private static string outputFolder;
     private static int fileCount = 1;
     private static readonly float silenceThreshold = 0.01f; // Adjust based on your silence detection needs
-    private static readonly int silenceDuration = 500; // milliseconds of silence before splitting
-    private static int silencePassed = 0;
+    private static readonly int silenceDuration = 300; // milliseconds of silence before splitting
+    private static readonly int audioDuration = 1500; // milliseconds of silence before splitting
+    private static int silencePassed = 0; 
+    private static int audioPassed = 0;
 
     public static async Task Capture(ObservableCollection<AudioSegment> audioSegments, CancellationToken cancellation)
     {
@@ -26,7 +26,7 @@ public static class AudioCapture
         var capture = new WasapiLoopbackCapture();
 
         capture.DataAvailable += (s, a) =>
-        {
+        {   
             // Calculate the max audio level in this buffer
             float max = 0f;
             var buffer = new WaveBuffer(a.Buffer);
@@ -41,22 +41,23 @@ public static class AudioCapture
             {
                 silencePassed += (int)((float)a.BytesRecorded / capture.WaveFormat.AverageBytesPerSecond * 1000);
                 Debug.WriteLine($"Silence {silencePassed}");
-                if (silencePassed >= silenceDuration)
+                //Manage the transition from audio to silence
+                if (silencePassed >= silenceDuration && audioPassed > audioDuration) // Check for more than 1.5 seconds of audio
                 {
                     EndCurrentWriterAndStartNewOne(audioSegments);
                     silencePassed = 0;
+                    audioPassed = 0; // Reset after processing
                 }
             }
             else
             {
-
                 Debug.WriteLine($"Audio");
                 silencePassed = 0;
                 writer.Write(a.Buffer, 0, a.BytesRecorded);
-
+                audioPassed += (int)((float)a.BytesRecorded / capture.WaveFormat.AverageBytesPerSecond * 1000); // Update audio duration
             }
 
-            // Example condition to stop recording after 20 seconds.
+            // Example condition to stop recording after 90 seconds.
             if (writer.Position > capture.WaveFormat.AverageBytesPerSecond * 90 || cancellation.IsCancellationRequested)
             {
                 capture.StopRecording();
@@ -102,39 +103,33 @@ public static class AudioCapture
         string wavFilePath = writer.Filename;
         string mp3FilePath = Path.ChangeExtension(wavFilePath, ".mp3");
 
+        writer?.Flush();
         writer?.Dispose();
 
         var segment = audioSegments.Last();
-        segment.EndTime = DateTime.Now;                                         
+        segment.EndTime = DateTime.Now;
         segment.Status = TranscriptionStatus.Processing;
         segment.FilePath = mp3FilePath;
 
         SetupNewWriter(audioSegments);
 
-        try
+        Task.Run(async () =>
         {
-            // Convert and Transcribe in a background thread (simple example, adjust for real-world use)
-            Task.Run(async () =>
-            {
-                await Task.Delay(500);
-                
-                new WavToMp3.AudioConverter().EncodeWavToMp3(wavFilePath, mp3FilePath);
-                await Task.Delay(500);
-                var transcription = Engine.Transcribe(mp3FilePath);
+            await Task.Delay(500);
 
-                segment.Transcription = transcription;
-                segment.Status = TranscriptionStatus.Completed;
-            }).ContinueWith((t) =>
-            {
-                if (File.Exists(wavFilePath)) File.Delete(wavFilePath);
-                if (File.Exists(mp3FilePath)) File.Delete(mp3FilePath);
+            new WavToMp3.AudioConverter().EncodeWavToMp3(wavFilePath, mp3FilePath);
+            await Task.Delay(500);
+            var transcription = Engine.Transcribe(mp3FilePath);
 
-            }, TaskScheduler.Current);
-        }
-        catch
+            segment.Transcription = transcription;
+            segment.Status = TranscriptionStatus.Completed;
+        }).ContinueWith((t) =>
         {
-            audioSegments.Last().Status = TranscriptionStatus.Failed;
-        }
+            if (File.Exists(wavFilePath)) File.Delete(wavFilePath);
+            if (File.Exists(mp3FilePath)) File.Delete(mp3FilePath);
+            if (t.IsFaulted) { segment.Status = TranscriptionStatus.Failed; }
+
+        }, TaskScheduler.Current);
     }
 
 }

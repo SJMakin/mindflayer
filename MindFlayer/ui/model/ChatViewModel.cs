@@ -212,13 +212,13 @@ namespace MindFlayer
         {
             if (Recording)
             {
-                NewMessageContent = _dictaphone.StopAndTranscribe();
+                NewMessageContent = _dictaphone.StopRecordingAndTranscribe();
                 Recording = false;
             }
             else
             {
                 Recording = true;
-                _dictaphone.Record();
+                _dictaphone.StartRecording();
             }
         }
 

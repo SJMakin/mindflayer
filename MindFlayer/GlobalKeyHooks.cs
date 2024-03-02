@@ -21,17 +21,18 @@ namespace MindFlayer
         {
             HotkeyManager.Current.AddOrReplace("Replace", Keys.Control | Keys.Alt | Keys.G, ReplaceText);
             HotkeyManager.Current.AddOrReplace("Pick", Keys.Control | Keys.Alt | Keys.P, Pick);
+            HotkeyManager.Current.AddOrReplace("Record", Keys.Control | Keys.Alt | Keys.R, Record);
         }
 
         private void Record(object? sender, HotkeyEventArgs e)
         {
-            if (_dictaphone.Recording)
+            if (_dictaphone.IsRecording)
             {
-                SetText(_dictaphone.StopAndTranscribe());
+                SetText(_dictaphone.StopRecordingAndTranscribe());
             }
             else
             {
-                _dictaphone.Record();
+                _dictaphone.StartRecording();
             }
             e.Handled = true;
         }

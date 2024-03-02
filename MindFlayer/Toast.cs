@@ -57,7 +57,7 @@ public class Toast : Form
         Location = new Point(x, y);
     }
 
-    private void SetText(string text, Color backColor)
+    public void SetText(string text, Color backColor)
     {
         _label.Text = text;
         _label.BackColor = backColor;
