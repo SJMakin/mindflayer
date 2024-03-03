@@ -72,7 +72,7 @@ internal class GlobalKeyHooks
             var clonedChat = op.Messages.Select(m => new ChatMessage { Role = m.Role, Content = m.Content }).ToList();
             var lastMessage = clonedChat.Last();
             lastMessage.Content = lastMessage.Content.Replace("<{input}>", input, StringComparison.OrdinalIgnoreCase);
-            var result = Engine.Chat(clonedChat, 0.1, Model.GPT4Preview);
+            var result = ModelToOpenAi.Chat(clonedChat, 0.1, Model.GPT4Preview);
             SetText(result);
 
             toast.UpdateThenClose("Huzzah!", Color.LightGreen, 1500);
