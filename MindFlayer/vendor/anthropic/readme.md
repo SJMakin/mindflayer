@@ -1,0 +1,1 @@
+Trimmed and tweaked version of https://github.com/tghamm/Anthropic.SDK
