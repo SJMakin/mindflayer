@@ -54,10 +54,8 @@ namespace Anthropic.SDK
             {
                 throw new AuthenticationException("You must provide API authentication.");
             }
-
-            var clientFactory = Client.HttpClientFactory;
-            
-            var client = clientFactory != null ? clientFactory.CreateClient() : new HttpClient();
+                        
+            var client = new HttpClient();
 
             client.DefaultRequestHeaders.Add("x-api-key", Client.Auth.ApiKey);
             client.DefaultRequestHeaders.Add("anthropic-version", Client.AnthropicVersion);

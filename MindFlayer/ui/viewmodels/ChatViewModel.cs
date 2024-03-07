@@ -179,7 +179,7 @@ public class ChatViewModel : INotifyPropertyChanged
             new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
             new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Think of a topic name for this. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
         };
-        activeConversation.Name = await ModelToOpenAi.ChatAsync(prompt, Temperature, SelectedChatModel);
+        activeConversation.Name = await ModelToOpenAi.Chat(prompt, Temperature, SelectedChatModel);
     }
 
     private ICommand _recordInputCommand;
@@ -217,7 +217,7 @@ public class ChatViewModel : INotifyPropertyChanged
     {
         var convo = string.Join(Environment.NewLine, ActiveConversation.ChatMessages.Skip(1).Select(m => $"[{m.Role}]: {m.Content}"));
         var (literal, question) = suggestion.Query(convo);
-        var result = literal ?? ModelToOpenAi.Chat(question, Temperature, SelectedChatModel);
+        var result = literal ?? ModelToOpenAi.Chat(question, Temperature, SelectedChatModel).Result;
         NewMessageContent = result;
     }
 

@@ -57,12 +57,9 @@ internal class GlobalKeyHooks
 
     private void Replace()
     {
-        var input = GetText();
-        if (input.acquired) Replace(input.value);
-    }
+        var (input, acquired) = GetText();
+        if (!acquired) return;
 
-    private void Replace(string input)
-    {
         var toast = new Toast("Working...");
 
         if (SelectedOperation is not { } op) return;
@@ -72,7 +69,7 @@ internal class GlobalKeyHooks
             var clonedChat = op.Messages.Select(m => new ChatMessage { Role = m.Role, Content = m.Content }).ToList();
             var lastMessage = clonedChat.Last();
             lastMessage.Content = lastMessage.Content.Replace("<{input}>", input, StringComparison.OrdinalIgnoreCase);
-            var result = ModelToOpenAi.Chat(clonedChat, 0.1, Model.GPT4Preview);
+            var result = ModelToOpenAi.Chat(clonedChat, 0.1, Model.GPT4Preview).Result;
             SetText(result);
 
             toast.UpdateThenClose("Huzzah!", Color.LightGreen, 1500);

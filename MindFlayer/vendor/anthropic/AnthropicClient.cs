@@ -25,11 +25,6 @@ namespace Anthropic.SDK
         /// </summary>
         public APIAuthentication Auth { get; set; }
 
-        /// <summary>
-        /// Optionally provide an IHttpClientFactory to create the client to send requests.
-        /// </summary>
-        public IHttpClientFactory HttpClientFactory { get; set; }
-
         public AnthropicClient(APIAuthentication apiKeys = null)
         {
             this.Auth = apiKeys.ThisOrDefault();
