@@ -40,7 +40,7 @@ internal class Dictaphone
         audioConverter.EncodeWavToMp3(wavFilePath, mp3FilePath);
 
         toast.SetText("Transcribing...", Color.AliceBlue);
-        var transcriptionResult = ModelToOpenAi.Transcribe(mp3FilePath);
+        var transcriptionResult = ApiWrapper.Transcribe(mp3FilePath);
         DeleteFileIfExists(wavFilePath);
 
         toast.UpdateThenClose("Done!", Color.LightGreen, 1500);

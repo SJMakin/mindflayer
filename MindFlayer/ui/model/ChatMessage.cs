@@ -73,7 +73,7 @@ public class ChatMessage : INotifyPropertyChanged
     {
         Task.Run(() =>
         {
-            var audioData = ModelToOpenAi.Client.AudioEndpoint.CreateSpeechAsync(new OpenAI.Audio.SpeechRequest(Content, Model.TTS_1)).Result;
+            var audioData = ApiWrapper.OpenAiClient.AudioEndpoint.CreateSpeechAsync(new OpenAI.Audio.SpeechRequest(Content, Model.TTS_1)).Result;
             Mp3Player.PlayFromMemory(audioData.ToArray());
         });
     }

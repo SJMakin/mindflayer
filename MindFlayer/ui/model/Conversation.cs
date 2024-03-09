@@ -120,12 +120,12 @@ public class Conversation : INotifyPropertyChanged
 
         ChatMessages.Add(msg);
 
-        Task.Run(() => ModelToOpenAi.ChatStream(ChatMessages, _parent.Temperature, (t) =>
+        Task.Run(() => ApiWrapper.ChatStream(ChatMessages, _parent.Temperature, (t) =>
         {
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
-                if (t.FirstChoice == null) return;
-                msg.Content = msg.Content + t.FirstChoice.Delta.Content;
+                if (t == null) return;
+                msg.Content = msg.Content + t;
 
             });
         }, _parent.SelectedChatModel));

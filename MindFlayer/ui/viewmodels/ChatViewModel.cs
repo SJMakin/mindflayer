@@ -1,9 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
+using Anthropic.SDK.Constants;
 using MindFlayer.audio;
 using MindFlayer.ui.model;
 using NAudio.Wave;
+using OpenAI;
 using OpenAI.Models;
 
 namespace MindFlayer;
@@ -80,7 +82,9 @@ public class ChatViewModel : INotifyPropertyChanged
         Model.GPT3_5_Turbo,
         Model.GPT3_5_Turbo_16K,
         Model.GPT4,
-        Model.GPT4Preview
+        Model.GPT4Preview,
+        AnthropicModels.Claude3Sonnet,
+        AnthropicModels.Claude3Opus
     };
 
     private Model _selectedChatModel = Model.GPT4Preview;
@@ -153,18 +157,17 @@ public class ChatViewModel : INotifyPropertyChanged
             Content = ""
         };
 
-        ActiveConversation.ChatMessages.Add(msg);
+        ActiveConversation.ChatMessages.Add(msg); 
 
         var input = NewMessageContent;
         NewMessageContent = string.Empty;
 
-        _ = ModelToOpenAi.ChatStream(ActiveConversation.ChatMessages, Temperature, (t) =>
+        _ = ApiWrapper.ChatStream(ActiveConversation.ChatMessages, Temperature, (t) =>
         {
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
-                if (t.FirstChoice == null) return;
-                msg.Content = msg.Content + t.FirstChoice.Delta.Content;
-                ActiveConversation.TokenCount = t.Usage?.TotalTokens;
+                if (t == null) return;
+                msg.Content = msg.Content + t;
             });
         }, SelectedChatModel)
         .ContinueWith(_ => msg.TokenCount = _tokenCalculator.NumTokensFromMessage(msg.Content), TaskScheduler.Current);
@@ -179,7 +182,7 @@ public class ChatViewModel : INotifyPropertyChanged
             new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
             new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Think of a topic name for this. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
         };
-        activeConversation.Name = await ModelToOpenAi.Chat(prompt, Temperature, SelectedChatModel);
+        activeConversation.Name = await ApiWrapper.Chat(prompt, Temperature, SelectedChatModel);
     }
 
     private ICommand _recordInputCommand;
@@ -217,7 +220,7 @@ public class ChatViewModel : INotifyPropertyChanged
     {
         var convo = string.Join(Environment.NewLine, ActiveConversation.ChatMessages.Skip(1).Select(m => $"[{m.Role}]: {m.Content}"));
         var (literal, question) = suggestion.Query(convo);
-        var result = literal ?? ModelToOpenAi.Chat(question, Temperature, SelectedChatModel).Result;
+        var result = literal ?? ApiWrapper.Chat(question, Temperature, SelectedChatModel).Result;
         NewMessageContent = result;
     }
 

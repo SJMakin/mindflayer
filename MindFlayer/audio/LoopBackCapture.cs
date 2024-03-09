@@ -119,7 +119,7 @@ public static class AudioCapture
 
             new WavToMp3.AudioConverter().EncodeWavToMp3(wavFilePath, mp3FilePath);
             await Task.Delay(500);
-            var transcription = ModelToOpenAi.Transcribe(mp3FilePath);
+            var transcription = ApiWrapper.Transcribe(mp3FilePath);
 
             segment.Transcription = transcription;
             segment.Status = TranscriptionStatus.Completed;
