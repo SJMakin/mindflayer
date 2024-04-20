@@ -70,6 +70,12 @@ public sealed class Model
     public string Parent { get; private set; }
 
 
+
+    /// <summary>
+    /// GPT-4 Turbo with Vision. The latest GPT-4 Turbo model with vision capabilities.Vision requests can now use JSON mode and function calling.
+    /// </summary>
+    public static Model GPT4Turbo { get; } = new("gpt-4-turbo", "openai");
+
     /// <summary>
     /// The latest GPT-4 model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more. Returns a maximum of 4,096 output tokens. 
     /// This preview model is not yet suited for production traffic.

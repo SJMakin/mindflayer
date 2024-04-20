@@ -11,6 +11,8 @@ internal class TranscribeModel : INotifyPropertyChanged
 
     public ObservableCollection<AudioSegment> AudioSegments { get; set; } = new();
 
+    public ObservableCollection<AudioSegment> SelectedItems { get; set; } = new();
+
     private RelayCommand startCommand;
     public ICommand StartCommand => startCommand ??= new RelayCommand(Start);
 
@@ -28,5 +30,24 @@ internal class TranscribeModel : INotifyPropertyChanged
     private void Stop()
     {
         cancellationTokenSource.Cancel();
+    }
+
+    private RelayCommand saveCommand;
+    public ICommand SaveCommand => saveCommand ??= new RelayCommand(Save);
+
+    private void Save()
+    {
+        cancellationTokenSource.Cancel();
+    }
+
+    private RelayCommand deleteCommand;
+    public ICommand DeleteCommand => deleteCommand ??= new RelayCommand(DeleteMethod);
+
+    public void DeleteMethod()
+    {
+        foreach (var selected in SelectedItems.ToList())
+        {
+            AudioSegments.Remove(selected);
+        }
     }
 }

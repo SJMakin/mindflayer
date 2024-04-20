@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows.Input;
 using Anthropic.SDK.Constants;
 using MindFlayer.audio;
+using MindFlayer.saas;
 using MindFlayer.ui.model;
 using NAudio.Wave;
 using OpenAI;
@@ -83,11 +84,12 @@ public class ChatViewModel : INotifyPropertyChanged
         Model.GPT3_5_Turbo_16K,
         Model.GPT4,
         Model.GPT4Preview,
+        Model.GPT4Turbo,
         AnthropicModels.Claude3Sonnet,
         AnthropicModels.Claude3Opus
     };
 
-    private Model _selectedChatModel = Model.GPT4Preview;
+    private Model _selectedChatModel = Model.GPT4Turbo;
 
     public Model SelectedChatModel
     {
@@ -179,7 +181,10 @@ public class ChatViewModel : INotifyPropertyChanged
     {
         var prompt = new List<ChatMessage>
         {
-            new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
+            new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "Be terse, but smart. Always be concise; prioritize clarity and brevity. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
+            
+            //"Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
+
             new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Think of a topic name for this. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
         };
         activeConversation.Name = await ApiWrapper.Chat(prompt, Temperature, SelectedChatModel);

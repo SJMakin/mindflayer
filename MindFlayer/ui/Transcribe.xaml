@@ -15,9 +15,14 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0">
             <Button Content="Start" Command="{Binding StartCommand}" Margin="5"/>
             <Button Content="Stop" Command="{Binding StopCommand}" Margin="5"/>
+            <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"/>
         </StackPanel>
-        <ListView ItemsSource="{Binding AudioSegments}" Grid.Row="1" Margin="5">
-            <ListView.View>
+        <ListView ItemsSource="{Binding AudioSegments}" local:ListViewExtensions.SelectedValues="{Binding SelectedItem}"  Grid.Row="1" Margin="5" >
+            <ListView.InputBindings>
+                <KeyBinding Key="Delete" Command="{Binding DeleteCommand }"></KeyBinding>
+            
+            </ListView.InputBindings>
+            <ListView.View>                
                 <GridView>
                     <GridViewColumn Header="Timestamp" DisplayMemberBinding="{Binding StartTime}" Width="139"/>
                     <GridViewColumn Header="Text" Width="500">

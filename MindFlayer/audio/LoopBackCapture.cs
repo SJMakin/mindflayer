@@ -1,6 +1,8 @@
-﻿using NAudio.Wave;
+﻿using log4net;
+using log4net.Repository.Hierarchy;
+using MindFlayer.saas;
+using NAudio.Wave;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 
@@ -9,13 +11,18 @@ namespace MindFlayer.audio;
 public static class AudioCapture
 {
     private static WaveFileWriter writer;
+
     private static string outputFolder;
     private static int fileCount = 1;
-    private static readonly float silenceThreshold = 0.01f; // Adjust based on your silence detection needs
-    private static readonly int silenceDuration = 300; // milliseconds of silence before splitting
-    private static readonly int audioDuration = 1500; // milliseconds of silence before splitting
-    private static int silencePassed = 0; 
+
+    private static int silencePassed = 0;
     private static int audioPassed = 0;
+
+    private static readonly ILog Logger = LogManager.GetLogger(typeof(AudioCapture));
+
+    private const float SilenceThreshold = 0.01f; // Adjust based on your silence detection needs
+    private const int SilenceDuration = 300; // milliseconds of silence before splitting
+    private const int AudioDuration = 700; // milliseconds of silence before splitting
 
     public static async Task Capture(ObservableCollection<AudioSegment> audioSegments, CancellationToken cancellation)
     {
@@ -26,7 +33,7 @@ public static class AudioCapture
         var capture = new WasapiLoopbackCapture();
 
         capture.DataAvailable += (s, a) =>
-        {   
+        {
             // Calculate the max audio level in this buffer
             float max = 0f;
             var buffer = new WaveBuffer(a.Buffer);
@@ -37,12 +44,12 @@ public static class AudioCapture
             }
 
             // If silence is detected
-            if (max < silenceThreshold)
+            if (max < SilenceThreshold)
             {
                 silencePassed += (int)((float)a.BytesRecorded / capture.WaveFormat.AverageBytesPerSecond * 1000);
                 Debug.WriteLine($"Silence {silencePassed}");
                 //Manage the transition from audio to silence
-                if (silencePassed >= silenceDuration && audioPassed > audioDuration) // Check for more than 1.5 seconds of audio
+                if (silencePassed >= SilenceDuration && audioPassed > AudioDuration)
                 {
                     EndCurrentWriterAndStartNewOne(audioSegments);
                     silencePassed = 0;
@@ -74,7 +81,7 @@ public static class AudioCapture
         capture.StartRecording();
         while (capture.CaptureState != NAudio.CoreAudioApi.CaptureState.Stopped)
         {
-            await Task.Delay(500);
+            await Task.Delay(500, cancellation);
         }
     }
 
@@ -114,63 +121,31 @@ public static class AudioCapture
         SetupNewWriter(audioSegments);
 
         Task.Run(async () =>
-        {
-            await Task.Delay(500);
+            {
+                await Task.Delay(500);
 
-            new WavToMp3.AudioConverter().EncodeWavToMp3(wavFilePath, mp3FilePath);
-            await Task.Delay(500);
-            var transcription = ApiWrapper.Transcribe(mp3FilePath);
+                new WavToMp3.AudioConverter().EncodeWavToMp3(wavFilePath, mp3FilePath);
+                await Task.Delay(500);
+                var transcription = ApiWrapper.Transcribe(mp3FilePath);
 
-            segment.Transcription = transcription;
-            segment.Status = TranscriptionStatus.Completed;
-        }).ContinueWith((t) =>
-        {
-            if (File.Exists(wavFilePath)) File.Delete(wavFilePath);
-            if (File.Exists(mp3FilePath)) File.Delete(mp3FilePath);
-            if (t.IsFaulted) { segment.Status = TranscriptionStatus.Failed; }
+                segment.Transcription = transcription;
+                segment.Status = TranscriptionStatus.Completed;
 
-        }, TaskScheduler.Current);
+                Logger.Info($@"Audio transcribed. transcription=""{segment.Transcription}""");
+            }
+        ).ContinueWith((t) =>
+            {
+                if (File.Exists(wavFilePath)) File.Delete(wavFilePath);
+                if (File.Exists(mp3FilePath)) File.Delete(mp3FilePath);
+                if (t.IsFaulted)
+                {
+                    segment.Status = TranscriptionStatus.Failed;
+                    Logger.Warn($@"Transcription failed. ex=""{t.Exception}""");
+
+                }
+
+            }
+        , TaskScheduler.Current);
     }
 
-}
-
-
-public class AudioSegment : INotifyPropertyChanged
-{
-    private string transcription;
-    private TranscriptionStatus status;
-
-    public DateTime StartTime { get; set; }
-    public DateTime EndTime { get; set; }
-    public string FilePath { get; set; }
-    public string Transcription
-    {
-        get => transcription; set
-        {
-            transcription = value;
-            OnPropertyChanged(nameof(Transcription));
-        }
-    }
-    public TranscriptionStatus Status
-    {
-        get => status; set
-        {
-            status = value;
-            OnPropertyChanged(nameof(Status));
-        }
-    }
-
-    public event PropertyChangedEventHandler PropertyChanged;
-    protected void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-}
-
-public enum TranscriptionStatus
-{
-    Pending,
-    Processing,
-    Completed,
-    Failed // Option to handle errors
 }
