@@ -72,6 +72,11 @@ public sealed class Model
 
 
     /// <summary>
+    /// GPT-4o (“o” for “omni”) is our most advanced model. It is multimodal (accepting text or image inputs and outputting text), and it has the same high intelligence as GPT-4 Turbo but is much more efficient—it generates text 2x faster and is 50% cheaper. 
+    /// </summary>
+    public static Model GPT4o { get; } = new("gpt-4o", "openai");
+
+    /// <summary>
     /// GPT-4 Turbo with Vision. The latest GPT-4 Turbo model with vision capabilities.Vision requests can now use JSON mode and function calling.
     /// </summary>
     public static Model GPT4Turbo { get; } = new("gpt-4-turbo", "openai");

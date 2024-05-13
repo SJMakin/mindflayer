@@ -85,11 +85,12 @@ public class ChatViewModel : INotifyPropertyChanged
         Model.GPT4,
         Model.GPT4Preview,
         Model.GPT4Turbo,
+        Model.GPT4o,
         AnthropicModels.Claude3Sonnet,
         AnthropicModels.Claude3Opus
     };
 
-    private Model _selectedChatModel = Model.GPT4Turbo;
+    private Model _selectedChatModel = Model.GPT4o;
 
     public Model SelectedChatModel
     {
