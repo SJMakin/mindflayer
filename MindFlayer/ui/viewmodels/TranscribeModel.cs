@@ -1,6 +1,7 @@
 ﻿using MindFlayer.audio;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Input;
 
 namespace MindFlayer.ui.model;
@@ -37,7 +38,21 @@ internal class TranscribeModel : INotifyPropertyChanged
 
     private void Save()
     {
-        cancellationTokenSource.Cancel();
+        File.WriteAllText(@$"c:\temp\transription.{DateTime.Now:yyyyMMddhhmmss}.txt", RenderTranscript());
+    }
+
+    private RelayCommand copyCommand;
+    public ICommand CopyCommand => copyCommand ??= new RelayCommand(Copy);
+
+    private void Copy()
+    {
+        Clipboard.SetText(RenderTranscript());
+    }
+
+    private string RenderTranscript()
+    {
+        var source = SelectedItems.Any() ? SelectedItems : AudioSegments;
+        return string.Join(Environment.NewLine, source.Select(i => i.Transcription));
     }
 
     private RelayCommand deleteCommand;

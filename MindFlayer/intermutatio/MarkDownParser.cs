@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace MindFlayer;
+﻿namespace MindFlayer;
 
 internal class MarkDownParser
 {

@@ -6,7 +6,6 @@ using MindFlayer.audio;
 using MindFlayer.saas;
 using MindFlayer.ui.model;
 using NAudio.Wave;
-using OpenAI;
 using OpenAI.Models;
 
 namespace MindFlayer;
@@ -87,7 +86,8 @@ public class ChatViewModel : INotifyPropertyChanged
         Model.GPT4Turbo,
         Model.GPT4o,
         AnthropicModels.Claude3Sonnet,
-        AnthropicModels.Claude3Opus
+        AnthropicModels.Claude3Opus,
+        AnthropicModels.Claude35Sonnet,
     };
 
     private Model _selectedChatModel = Model.GPT4o;

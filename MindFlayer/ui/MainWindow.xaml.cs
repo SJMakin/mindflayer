@@ -1,5 +1,4 @@
 ﻿using MaterialDesignThemes.Wpf;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -57,6 +56,19 @@ public partial class MainWindow : Window
 
         if (!Equals(eventArgs.Parameter, true))
             return;
+    }
+
+    private void FlowDocument_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        var viewModel = (ChatMessage)DataContext;
+        if (viewModel.ToggleTextBoxVisibilityCommand.CanExecute(null))
+            viewModel.ToggleTextBoxVisibilityCommand.Execute(null);
+    }
+    private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        var viewModel = (ChatMessage)DataContext;
+        if (viewModel.ToggleTextBoxVisibilityCommand.CanExecute(null))
+            viewModel.ToggleTextBoxVisibilityCommand.Execute(null);
     }
 
     private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
