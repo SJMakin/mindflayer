@@ -377,7 +377,7 @@
                                                         materialDesign:ShadowAssist.ShadowDepth="Depth1"
                                                         BorderThickness="0">
                                                         <GroupBox.Header>
-                                                            <Grid >
+                                                            <Grid>
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition Width="*" />
                                                                     <ColumnDefinition Width="Auto" />
@@ -386,9 +386,9 @@
                                                                 <TextBlock
                                                                     Grid.Column="0"
                                                                     Margin="5,0"
+                                                                    FontWeight="Bold"
                                                                     Foreground="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
-                                                                    Text="{Binding Role}" 
-                                                                    FontWeight="Bold"/>
+                                                                    Text="{Binding Role}" />
                                                                 <Button
                                                                     Grid.Column="1"
                                                                     Height="14"
@@ -411,7 +411,6 @@
                                                         </GroupBox.Header>
                                                         <Grid>
                                                             <FlowDocumentScrollViewer
-                                                                S
                                                                 HorizontalAlignment="Stretch"
                                                                 VerticalAlignment="Stretch"
                                                                 Document="{Binding Content, Converter={StaticResource TextToFlowDocumentConverter}}">
