@@ -377,7 +377,7 @@
                                                         materialDesign:ShadowAssist.ShadowDepth="Depth1"
                                                         BorderThickness="0">
                                                         <GroupBox.Header>
-                                                            <Grid>
+                                                            <Grid >
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition Width="*" />
                                                                     <ColumnDefinition Width="Auto" />
@@ -411,6 +411,7 @@
                                                         </GroupBox.Header>
                                                         <Grid>
                                                             <FlowDocumentScrollViewer
+                                                                S
                                                                 HorizontalAlignment="Stretch"
                                                                 VerticalAlignment="Stretch"
                                                                 Document="{Binding Content, Converter={StaticResource TextToFlowDocumentConverter}}">
@@ -422,9 +423,6 @@
                                                                         <MenuItem Command="{Binding EditCommand}" Header="Edit" />
                                                                     </ContextMenu>
                                                                 </FlowDocumentScrollViewer.ContextMenu>
-                                                                <FlowDocumentScrollViewer.InputBindings>
-                                                                    <MouseBinding Command="{Binding ToggleTextBoxVisibilityCommand}" Gesture="LeftClick" />
-                                                                </FlowDocumentScrollViewer.InputBindings>
                                                             </FlowDocumentScrollViewer>
                                                         </Grid>
                                                     </GroupBox>

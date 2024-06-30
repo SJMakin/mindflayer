@@ -989,6 +989,7 @@ RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Com
     private static readonly Regex _codeSpan = new Regex(@"
                     (?<!\\)   # Character before opening ` can't be a backslash
                     (`+)      # $1 = Opening run of `
+                    (?:\w+\s*\n)? # Optional syntax highlighting hint
                     (.+?)     # $2 = The code block
                     (?<!`)
                     \1

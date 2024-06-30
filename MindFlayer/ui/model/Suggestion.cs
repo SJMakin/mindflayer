@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 
 namespace MindFlayer.ui.model;
 
@@ -94,4 +95,15 @@ For clarity, your entire response should be in a markdown table. The question is
             new ChatMessage { Role = OpenAI.Chat.Role.User, Content = userPrompt }
         });
     }
+
+    public static ObservableCollection<Suggestion> All { get; } = new ObservableCollection<Suggestion>()
+    {
+        ZeroShotCoTPrompt,
+        ZeroShotCoTAPEPrompt,
+        TreeOfThoughV1,
+        TreeOfThoughV2,
+        Reply,
+        Summarise,
+        Retort
+    };
 }

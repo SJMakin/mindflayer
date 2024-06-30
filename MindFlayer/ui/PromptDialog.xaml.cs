@@ -12,6 +12,11 @@ public partial class PromptDialog : Window
         PromptTextBox.Text = prompt;
     }
 
+    private void PromptButton_Click(object sender, RoutedEventArgs e)
+    {
+        PromptTextBox.Text = ((System.Windows.Controls.Button)sender).Tag?.ToString();
+    }
+
     private void OkButton_Click(object sender, RoutedEventArgs e)
     {
         PromptResult = PromptTextBox.Text;

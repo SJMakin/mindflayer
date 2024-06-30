@@ -30,7 +30,12 @@ public partial class MainWindow : Window
 
     private void PromptsButtonClickHandler_Click(object sender, RoutedEventArgs e) => new PromptEditor().Show();
 
-    private void ImagesButtonClickHandler_Click(object sender, RoutedEventArgs e) => new ui.ImageViewer().Show();
+    private void ImagesButtonClickHandler_Click(object sender, RoutedEventArgs e)
+    {
+        var im = new ui.ImageViewer();
+        im.Show();
+        im.Activate();
+    }
 
     private void TranscribeButtonClickHandler_Click(object sender, RoutedEventArgs e) => new ui.Transcribe().Show();
 
