@@ -70,6 +70,13 @@
                 <Setter Property="FontFamily" Value="Consolas" />
                 <Setter Property="FontSize" Value="12" />
                 <Setter Property="TextDecorations" Value="None" />
+                <Setter Property="Background" Value="LightGray" />
+            </Style>
+            <Style x:Key="CodeBlockStyle" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Consolas" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="TextDecorations" Value="None" />
+                <Setter Property="Background" Value="LightGray" />
             </Style>
 
             <Style x:Key="ImageStyle" TargetType="Image">
@@ -114,7 +121,8 @@
 
             <localUi:Markdown
                 x:Key="Markdown"
-                CodeStyle="{StaticResource CodeStyle}"
+                CodeSpanStyle="{StaticResource CodeStyle}"
+                CodeBlockStyle="{StaticResource CodeBlockStyle}"
                 DocumentStyle="{StaticResource DocumentStyle}"
                 Heading1Style="{StaticResource H1Style}"
                 Heading2Style="{StaticResource H2Style}"

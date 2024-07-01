@@ -14,8 +14,8 @@ public static class AudioCapture
     private static string outputFolder;
     private static int fileCount = 1;
 
-    private static int silencePassed = 0;
-    private static int audioPassed = 0;
+    private static int silencePassed;
+    private static int audioPassed;
 
     private static readonly ILog Logger = LogManager.GetLogger(typeof(AudioCapture));
 
@@ -29,7 +29,7 @@ public static class AudioCapture
         Directory.CreateDirectory(outputFolder);
         SetupNewWriter(audioSegments);
 
-        var capture = new WasapiLoopbackCapture();
+        using var capture = new WasapiLoopbackCapture();
 
         capture.DataAvailable += (s, a) =>
         {
@@ -80,7 +80,7 @@ public static class AudioCapture
         capture.StartRecording();
         while (capture.CaptureState != NAudio.CoreAudioApi.CaptureState.Stopped)
         {
-            await Task.Delay(500, cancellation);
+            await Task.Delay(500, cancellation).ConfigureAwait(false);
         }
     }
 
@@ -121,10 +121,10 @@ public static class AudioCapture
 
         Task.Run(async () =>
             {
-                await Task.Delay(500);
+                await Task.Delay(500).ConfigureAwait(false);
 
                 new WavToMp3.AudioConverter().EncodeWavToMp3(wavFilePath, mp3FilePath);
-                await Task.Delay(500);
+                await Task.Delay(500).ConfigureAwait(false);
                 var transcription = ApiWrapper.Transcribe(mp3FilePath);
 
                 segment.Transcription = transcription;

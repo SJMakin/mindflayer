@@ -5,7 +5,7 @@ using static MindFlayer.audio.WavToMp3;
 
 namespace MindFlayer.audio;
 
-internal class Dictaphone
+internal class Dictaphone : IDisposable
 {
     private WaveInEvent waveSource;
     private WaveFileWriter waveFile;
@@ -77,5 +77,11 @@ internal class Dictaphone
         {
             File.Delete(filePath);
         }
+    }
+
+    public void Dispose()
+    {
+        StopAndCleanupRecording();
+        toast?.Dispose();
     }
 }

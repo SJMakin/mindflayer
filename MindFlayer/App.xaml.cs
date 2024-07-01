@@ -22,7 +22,7 @@ public partial class App : System.Windows.Application
         AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
     }
 
-    private static void FirstChanceHandler(object? source, FirstChanceExceptionEventArgs e)
+    private static void FirstChanceHandler(object source, FirstChanceExceptionEventArgs e)
     {
         log.Warn($"FirstChanceException event raised in {AppDomain.CurrentDomain.FriendlyName}: {e.Exception.Message}");
     }
