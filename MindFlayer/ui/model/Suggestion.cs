@@ -86,6 +86,17 @@ For clarity, your entire response should be in a markdown table. The question is
 {question}", null)
     };
 
+    /// <summary>
+    /// Summarize meeting transcriptions.
+    /// </summary>
+    public static Suggestion MeetingNotes => new()
+    {
+        Summary = "Meeting Notes",
+        Query = (_) => (@"Analyze the provided meeting transcription and summarize the key points, action items, and decisions. Highlight any follow-up tasks with assigned individuals and deadlines if they are mentioned. Use emojis liberally.
+
+{transcript}", null)
+    };
+
     private static (string literal, List<ChatMessage> question) QuestionFactory(string systemPrompt, string userPrompt)
     {
         return (null, new List<ChatMessage>
