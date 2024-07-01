@@ -36,7 +36,8 @@ public class ChatViewModel : INotifyPropertyChanged
         Suggestion.TreeOfThoughV2,
         Suggestion.Reply,
         Suggestion.Summarise,
-        Suggestion.Retort
+        Suggestion.Retort,
+        Suggestion.MeetingNotes,
     };
 
     private Conversation _activeConversation;
