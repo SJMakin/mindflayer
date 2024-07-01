@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Net;
-using System.Text;
 using TiktokenSharp.Model;
 using TiktokenSharp.Utils;
 

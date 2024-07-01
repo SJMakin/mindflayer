@@ -1,7 +1,4 @@
 ﻿using Anthropic.SDK.Completions;
-using System;
-using System.Net.Http;
-using System.Reflection;
 using Anthropic.SDK.Messaging;
 
 namespace Anthropic.SDK

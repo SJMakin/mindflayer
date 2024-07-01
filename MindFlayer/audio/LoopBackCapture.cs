@@ -1,5 +1,4 @@
 ﻿using log4net;
-using log4net.Repository.Hierarchy;
 using MindFlayer.saas;
 using NAudio.Wave;
 using System.Collections.ObjectModel;

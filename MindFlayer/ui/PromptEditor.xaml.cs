@@ -1,14 +1,10 @@
 ﻿
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Windows;
 using System.Windows.Input;
 
 namespace MindFlayer;
 
-/// <summary>
-/// Interaction logic for PromptEditor.xaml
-/// </summary>
 public partial class PromptEditor : Window
 {
     public ObservableCollection<Header> Headers { get; } = new ObservableCollection<Header>();
@@ -24,7 +20,7 @@ public partial class PromptEditor : Window
             this.DragMove();
     }
 
-    private void Button_PrintCrew_Click(object sender, RoutedEventArgs e)
+    private void Button_Refresh_Click(object sender, RoutedEventArgs e)
     {
         Headers.Clear();
         Headers.Add(MarkDownParser.Parse(textBoxCrew.Text));

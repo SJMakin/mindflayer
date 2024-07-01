@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Anthropic.SDK.Messaging
+﻿namespace Anthropic.SDK.Messaging
 {
     public static class RoleType
     {

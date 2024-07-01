@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Anthropic.SDK.Constants
+﻿namespace Anthropic.SDK.Constants
 {
     public static class AnthropicSignals
     {

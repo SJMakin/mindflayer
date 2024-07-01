@@ -1,5 +1,4 @@
-﻿using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using TiktokenSharp.Utils;
 
 namespace TiktokenSharp;

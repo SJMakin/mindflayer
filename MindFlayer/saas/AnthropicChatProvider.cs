@@ -1,7 +1,6 @@
 ﻿using log4net;
 using OpenAI.Chat;
 using System.Text.Json;
-using System.Text;
 using Anthropic.SDK.Messaging;
 using System.Diagnostics.CodeAnalysis;
 

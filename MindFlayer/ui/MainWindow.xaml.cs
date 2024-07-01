@@ -1,5 +1,4 @@
 ﻿using MaterialDesignThemes.Wpf;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -31,7 +30,12 @@ public partial class MainWindow : Window
 
     private void PromptsButtonClickHandler_Click(object sender, RoutedEventArgs e) => new PromptEditor().Show();
 
-    private void ImagesButtonClickHandler_Click(object sender, RoutedEventArgs e) => new ui.ImageViewer().Show();
+    private void ImagesButtonClickHandler_Click(object sender, RoutedEventArgs e)
+    {
+        var im = new ui.ImageViewer();
+        im.Show();
+        im.Activate();
+    }
 
     private void TranscribeButtonClickHandler_Click(object sender, RoutedEventArgs e) => new ui.Transcribe().Show();
 
@@ -57,6 +61,19 @@ public partial class MainWindow : Window
 
         if (!Equals(eventArgs.Parameter, true))
             return;
+    }
+
+    private void FlowDocument_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        var viewModel = (ChatMessage)DataContext;
+        if (viewModel.ToggleTextBoxVisibilityCommand.CanExecute(null))
+            viewModel.ToggleTextBoxVisibilityCommand.Execute(null);
+    }
+    private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        var viewModel = (ChatMessage)DataContext;
+        if (viewModel.ToggleTextBoxVisibilityCommand.CanExecute(null))
+            viewModel.ToggleTextBoxVisibilityCommand.Execute(null);
     }
 
     private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
