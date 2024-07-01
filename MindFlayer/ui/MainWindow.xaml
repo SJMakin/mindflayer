@@ -36,7 +36,6 @@
             </Style>
 
             <!--#region Markdown-->
-
             <Style x:Key="DocumentStyle" TargetType="FlowDocument">
                 <Setter Property="FontFamily" Value="Calibri" />
                 <Setter Property="TextAlignment" Value="Justify" />
@@ -45,26 +44,45 @@
             </Style>
 
             <Style x:Key="H1Style" TargetType="Paragraph">
-                <Setter Property="FontSize" Value="22" />
-                <Setter Property="FontWeight" Value="Light" />
+                <Setter Property="FontSize" Value="24" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Margin" Value="5,10,5,5" />
             </Style>
 
             <Style x:Key="H2Style" TargetType="Paragraph">
-                <Setter Property="FontSize" Value="20" />
-                <Setter Property="FontWeight" Value="Light" />
+                <Setter Property="FontSize" Value="22" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Margin" Value="5,10,5,5" />
             </Style>
 
             <Style x:Key="H3Style" TargetType="Paragraph">
-                <Setter Property="FontSize" Value="18" />
-                <Setter Property="FontWeight" Value="Light" />
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Margin" Value="5,10,5,5" />
             </Style>
 
             <Style x:Key="H4Style" TargetType="Paragraph">
-                <Setter Property="FontSize" Value="14" />
-                <Setter Property="FontWeight" Value="Light" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Margin" Value="5,10,5,5" />
             </Style>
 
-            <Style x:Key="LinkStyle" TargetType="Hyperlink" />
+            <Style x:Key="H5Style" TargetType="Paragraph">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Margin" Value="5,10,5,5" />
+            </Style>
+
+            <Style x:Key="H6Style" TargetType="Paragraph">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Margin" Value="5,10,5,5" />
+            </Style>
+
+            <Style x:Key="LinkStyle" TargetType="Hyperlink">
+                <Setter Property="Foreground" Value="#03A9F4" />
+                <Setter Property="TextDecorations" Value="None" />
+            </Style>
 
             <Style x:Key="CodeStyle" TargetType="Run">
                 <Setter Property="FontFamily" Value="Consolas" />
@@ -74,9 +92,10 @@
             </Style>
             <Style x:Key="CodeBlockStyle" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="Consolas" />
-                <Setter Property="FontSize" Value="12" />
+                <Setter Property="FontSize" Value="11" />
                 <Setter Property="TextDecorations" Value="None" />
-                <Setter Property="Background" Value="LightGray" />
+                <Setter Property="Background" Value="{StaticResource MaterialDesignLightSeparatorBackground}"/>
+                <Setter Property="TextWrapping" Value="Wrap" />
             </Style>
 
             <Style x:Key="ImageStyle" TargetType="Image">
@@ -119,6 +138,10 @@
                 <Setter Property="Background" Value="LightGray" />
             </Style>
 
+            <Style x:Key="NormalParagraphStyle" TargetType="Paragraph">
+                <Setter Property="Margin" Value="5,10,5,5" />
+            </Style>
+
             <localUi:Markdown
                 x:Key="Markdown"
                 CodeSpanStyle="{StaticResource CodeStyle}"
@@ -128,11 +151,14 @@
                 Heading2Style="{StaticResource H2Style}"
                 Heading3Style="{StaticResource H3Style}"
                 Heading4Style="{StaticResource H4Style}"
+                Heading5Style="{StaticResource H5Style}"
+                Heading6Style="{StaticResource H6Style}"
                 ImageStyle="{StaticResource ImageStyle}"
                 LinkStyle="{StaticResource LinkStyle}"
                 SeparatorStyle="{StaticResource SeparatorStyle}"
                 TableHeaderStyle="{StaticResource TableHeaderStyle}"
-                TableStyle="{StaticResource TableStyle}" />
+                TableStyle="{StaticResource TableStyle}"
+                NormalParagraphStyle="{StaticResource NormalParagraphStyle}"/>
 
             <localUi:TextToFlowDocumentConverter x:Key="TextToFlowDocumentConverter" Markdown="{StaticResource Markdown}" />
 

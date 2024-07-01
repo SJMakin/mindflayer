@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MaterialDesignThemes.Wpf;
+using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Globalization;
@@ -304,14 +305,15 @@ public class Markdown : DependencyObject
             throw new ArgumentNullException(nameof(text));
         }
 
-        return DoHeaders(text,
+        return DoCodeBlock(text,
+            h => DoHeaders(h,
             n => DoNote(n,
             hr => DoHorizontalRules(hr,
             l => DoLists(l,
             t => DoTable(t,
             q => DoBlockQuotes(q,
             c => DoCodeBlock(c,
-            FormParagraphs)))))));
+            FormParagraphs))))))));
 
         //// We already ran HashHTMLBlocks() before, in Markdown(), but that
         //// was to escape raw HTML in the original Markdown source. This time,
@@ -604,7 +606,7 @@ public class Markdown : DependencyObject
                 // TODO
                 // MarkdownFlowDocument.Properties.Resources.ImageFailed.Save(stream, ImageFormat.Bmp);
 
-                
+
 
                 stream.Position = 0;
                 var result = new BitmapImage();
@@ -1513,14 +1515,14 @@ public class Markdown : DependencyObject
 
     #region CodeBlock
     private static readonly Regex CodeBlock = new Regex(@"
-                \n
-                \s*```               # starting marker ```
-                (?<lang>\w+?)?       # language (for syntax highlighting)
-                \s*\n
-                (?<code>.+?)         # code text
-                \s*```\s*            # closing marker ```
-                \n+
-            ", RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline | RegexOptions.Compiled);
+            (^|\n)
+            \s*```               # starting marker ```
+            (?<lang>\w+?)?       # language (for syntax highlighting)
+            \s*\n
+            (?<code>.+?)         # code text
+            \s*```\s*            # closing marker ```
+            \n+
+        ", RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline | RegexOptions.Compiled);
 
     /// <summary>
     /// Turn Markdown « code block » into HTML code tags
@@ -1552,9 +1554,27 @@ public class Markdown : DependencyObject
             stack.Children.Add(new TextBlock { Style = CodeBlockStyle, Text = t, TextWrapping = TextWrapping.NoWrap });
         }
 
+        var button = new System.Windows.Controls.Button
+        {
+            Content = new PackIcon { Kind = PackIconKind.ContentCopy },
+            Style = (Style)System.Windows.Application.Current.FindResource("MaterialDesignToolButton"),
+            Width = 24,
+            Height = 24,
+            Margin = new Thickness(5)
+        };
+        button.Click += (sender, args) => System.Windows.Clipboard.SetText(text);
+
+        var grid = new Grid();
+        grid.Children.Add(stack);
+        grid.Children.Add(button);
+
+        // Position button in the top right corner
+        button.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
+        button.VerticalAlignment = VerticalAlignment.Top;
+
         var scroller = new ScrollViewer
         {
-            Content = stack,
+            Content = grid,
             HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch,
             HorizontalContentAlignment = System.Windows.HorizontalAlignment.Stretch,
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
@@ -1701,7 +1721,7 @@ public class Markdown : DependencyObject
         }
 
         var content = match.Groups[contentGroup].Value;
-        return Create<Underline, Inline>(RunSpanGamut(content));
+        return Create<System.Windows.Documents.Underline, Inline>(RunSpanGamut(content));
     }
     #endregion Text Decorations
 
