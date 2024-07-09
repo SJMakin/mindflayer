@@ -94,7 +94,7 @@
                 <Setter Property="FontFamily" Value="Consolas" />
                 <Setter Property="FontSize" Value="11" />
                 <Setter Property="TextDecorations" Value="None" />
-                <Setter Property="Background" Value="{StaticResource MaterialDesignLightSeparatorBackground}"/>
+                <Setter Property="Background" Value="{StaticResource MaterialDesignLightSeparatorBackground}" />
                 <Setter Property="TextWrapping" Value="Wrap" />
             </Style>
 
@@ -144,8 +144,8 @@
 
             <localUi:Markdown
                 x:Key="Markdown"
-                CodeSpanStyle="{StaticResource CodeStyle}"
                 CodeBlockStyle="{StaticResource CodeBlockStyle}"
+                CodeSpanStyle="{StaticResource CodeStyle}"
                 DocumentStyle="{StaticResource DocumentStyle}"
                 Heading1Style="{StaticResource H1Style}"
                 Heading2Style="{StaticResource H2Style}"
@@ -155,10 +155,10 @@
                 Heading6Style="{StaticResource H6Style}"
                 ImageStyle="{StaticResource ImageStyle}"
                 LinkStyle="{StaticResource LinkStyle}"
+                NormalParagraphStyle="{StaticResource NormalParagraphStyle}"
                 SeparatorStyle="{StaticResource SeparatorStyle}"
                 TableHeaderStyle="{StaticResource TableHeaderStyle}"
-                TableStyle="{StaticResource TableStyle}"
-                NormalParagraphStyle="{StaticResource NormalParagraphStyle}"/>
+                TableStyle="{StaticResource TableStyle}" />
 
             <localUi:TextToFlowDocumentConverter x:Key="TextToFlowDocumentConverter" Markdown="{StaticResource Markdown}" />
 
@@ -244,7 +244,9 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
                                         <RowDefinition />
+                                        <RowDefinition />
                                     </Grid.RowDefinitions>
+
                                     <TextBlock Margin="0,0,10,0" Text="Light" />
                                     <ToggleButton
                                         x:Name="DarkModeToggleButton"
@@ -255,13 +257,30 @@
                                         Grid.Column="2"
                                         Margin="10,0,0,0"
                                         Text="Dark" />
-                                    <TextBlock
+
+                                    <materialDesign:PackIcon
                                         Grid.Row="1"
+                                        Margin="0,10,10,0"
+                                        Kind="FormatFont" />
+                                    <ToggleButton
+                                        x:Name="MarkdownToggleButton"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Margin="0,10,10,0"
+                                        HorizontalAlignment="Center" />
+                                    <materialDesign:PackIcon
+                                        Grid.Row="1"
+                                        Grid.Column="2"
+                                        Margin="10,10,10,0"
+                                        Kind="FormTextbox" />
+
+                                    <TextBlock
+                                        Grid.Row="2"
                                         Margin="0,10,10,0"
                                         Text="Temp" />
                                     <Slider
                                         x:Name="slVolume"
-                                        Grid.Row="1"
+                                        Grid.Row="2"
                                         Grid.Column="1"
                                         Width="40"
                                         Margin="0,10,10,0"
@@ -269,13 +288,14 @@
                                         Maximum="2"
                                         Value="{Binding Temperature}" />
                                     <TextBox
-                                        Grid.Row="1"
+                                        Grid.Row="2"
                                         Grid.Column="2"
                                         Width="29"
                                         Height="22"
                                         Margin="10,0,0,0"
                                         Text="{Binding ElementName=slVolume, Path=Value, StringFormat=N2, UpdateSourceTrigger=PropertyChanged}"
                                         TextWrapping="Wrap" />
+
                                 </Grid>
                                 <Separator />
                                 <Button Click="PromptsButtonClickHandler_Click" Content="Prompts..." />
@@ -448,6 +468,16 @@
                                                                 HorizontalAlignment="Stretch"
                                                                 VerticalAlignment="Stretch"
                                                                 Document="{Binding Content, Converter={StaticResource TextToFlowDocumentConverter}}">
+                                                                <FlowDocumentScrollViewer.Style>
+                                                                    <Style TargetType="FlowDocumentScrollViewer">
+                                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding IsChecked, Converter={StaticResource InvertBooleanConverter}, ElementName=MarkdownToggleButton}" Value="True">
+                                                                                <Setter Property="Visibility" Value="Visible" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </FlowDocumentScrollViewer.Style>
                                                                 <FlowDocumentScrollViewer.ContextMenu>
                                                                     <ContextMenu Visibility="{Binding MessageButtonVisibility}">
                                                                         <MenuItem Command="{Binding ReplayCommand}" Header="Replay" />
@@ -457,6 +487,47 @@
                                                                     </ContextMenu>
                                                                 </FlowDocumentScrollViewer.ContextMenu>
                                                             </FlowDocumentScrollViewer>
+                                                            <TextBox
+                                                                Grid.RowSpan="2"
+                                                                Grid.Column="0"
+                                                                materialDesign:HintAssist.HelperText="{Binding TokenCount}"
+                                                                AcceptsReturn="True"
+                                                                Background="Transparent"
+                                                                Text="{Binding Content}"
+                                                                TextWrapping="Wrap">
+                                                                <materialDesign:HintAssist.HelperTextStyle>
+                                                                    <Style BasedOn="{StaticResource MaterialDesignHelperTextBlock}" TargetType="TextBlock">
+                                                                        <Setter Property="Foreground" Value="DimGray" />
+                                                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                                                        <Setter Property="FontSize" Value="7" />
+                                                                    </Style>
+                                                                </materialDesign:HintAssist.HelperTextStyle>
+                                                                <TextBox.Style>
+                                                                    <Style BasedOn="{StaticResource MaterialDesignTextBox}" TargetType="TextBox">
+                                                                        <Setter Property="SpellCheck.IsEnabled" Value="False" />
+                                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                                        <Style.Triggers>
+                                                                            <Trigger Property="IsFocused" Value="True">
+                                                                                <Setter Property="SpellCheck.IsEnabled" Value="True" />
+                                                                            </Trigger>
+                                                                            <Trigger Property="IsFocused" Value="False">
+                                                                                <Setter Property="SpellCheck.IsEnabled" Value="False" />
+                                                                            </Trigger>
+
+                                                                            <DataTrigger Binding="{Binding IsChecked, ElementName=MarkdownToggleButton}" Value="True">
+                                                                                <Setter Property="Visibility" Value="Visible" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </TextBox.Style>
+                                                                <TextBox.ContextMenu>
+                                                                    <ContextMenu Visibility="{Binding MessageButtonVisibility}">
+                                                                        <MenuItem Command="{Binding ReplayCommand}" Header="Replay" />
+                                                                        <MenuItem Command="{Binding CopyCommand}" Header="Copy" />
+                                                                        <MenuItem Command="{Binding ReadCommand}" Header="Read" />
+                                                                    </ContextMenu>
+                                                                </TextBox.ContextMenu>
+                                                            </TextBox>
                                                         </Grid>
                                                     </GroupBox>
                                                 </Grid>

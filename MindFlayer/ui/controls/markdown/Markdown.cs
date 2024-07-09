@@ -1135,7 +1135,7 @@ public class Markdown : DependencyObject
 
     #region List
     private const string MarkerUl = @"[*+=-]";
-    private const string MarkerOl = @"\d+[.]|\p{L}+[.,]";
+    private const string MarkerOl = @"\d+[.]|\p{L}[.,]";
 
     // Unordered List
     private const string MarkerUlDisc = @"[*]";
