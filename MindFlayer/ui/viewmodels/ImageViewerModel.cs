@@ -1,7 +1,12 @@
-﻿using OpenAI;
+﻿using Microsoft.Win32;
+using OpenAI;
+using OpenAI.Files;
 using OpenAI.Images;
 using System.ComponentModel;
+using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -33,7 +38,7 @@ internal class ImageViewerModel : INotifyPropertyChanged
     {
         var ofd = new OpenFileDialog();
         ofd.Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG|All files (*.*)|*.*";
-        if (!(ofd.ShowDialog() == DialogResult.OK)) return;
+        if (!(ofd.ShowDialog() == true)) return;
         CurrentImage = new BitmapImage(new Uri(ofd.FileName));
     }
 
@@ -42,12 +47,16 @@ internal class ImageViewerModel : INotifyPropertyChanged
 
     private void Save()
     {
-        using var img = BitmapFromSource(CurrentImage);
-        using var sfd = new SaveFileDialog();
+        var sfd = new SaveFileDialog();
         sfd.Filter = "Image Files(*.PNG)|*.png|All files (*.*)|*.*";
-        if (!(sfd.ShowDialog() == DialogResult.OK)) return;
-        img.Save(sfd.FileName, ImageFormat.Png);
-        Clipboard.SetImage(img);
+        if (!(sfd.ShowDialog() == true)) return;
+        using (var fileStream = new FileStream(sfd.FileName, FileMode.Create))
+        {
+            BitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(CurrentImage));
+            encoder.Save(fileStream);
+        }
+        Clipboard.SetImage(CurrentImage);
     }
 
     private ICommand _promptCommand;
@@ -68,9 +77,14 @@ internal class ImageViewerModel : INotifyPropertyChanged
 
     private void Edit()
     {
-        using var img = BitmapFromSource(CurrentImage);
         const string imagePath = @"c:\temp\edit.png";
-        img.Save(imagePath, ImageFormat.Png);
+        using (var fileStream = new FileStream(imagePath, FileMode.Create))
+        {
+            BitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(CurrentImage));
+            encoder.Save(fileStream);
+        }
+
         using var req = new ImageVariationRequest(imagePath);
         var result = Client.ImagesEndPoint.CreateImageVariationAsync(req).Result;
         var images = result.Select(DownloadImage).ToList();
@@ -82,26 +96,7 @@ internal class ImageViewerModel : INotifyPropertyChanged
 
     private void Copy()
     {
-        using var img = BitmapFromSource(CurrentImage);
-        Clipboard.SetImage(img);
-    }
-
-    public static Bitmap BitmapFromSource(BitmapSource bitmapsource)
-    {
-        //convert image format
-        var src = new FormatConvertedBitmap();
-        src.BeginInit();
-        src.Source = bitmapsource;
-        src.DestinationFormat = System.Windows.Media.PixelFormats.Bgra32;
-        src.EndInit();
-
-        //copy to bitmap
-        Bitmap bitmap = new Bitmap(src.PixelWidth, src.PixelHeight, PixelFormat.Format32bppArgb);
-        var data = bitmap.LockBits(new Rectangle(Point.Empty, bitmap.Size), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-        src.CopyPixels(System.Windows.Int32Rect.Empty, data.Scan0, data.Height * data.Stride, data.Stride);
-        bitmap.UnlockBits(data);
-
-        return bitmap;
+        Clipboard.SetImage(CurrentImage);
     }
 
     public BitmapSource DownloadImage(string url)

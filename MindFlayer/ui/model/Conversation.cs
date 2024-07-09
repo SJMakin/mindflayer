@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Win32;
 using MindFlayer.saas;
 
 namespace MindFlayer;
@@ -73,10 +74,10 @@ public class Conversation : INotifyPropertyChanged
 
     private void Save()
     {
-        using var sfd = new SaveFileDialog();
+        var sfd = new SaveFileDialog();
         sfd.Filter = "Conversation Files (*.convo)|*.convo";
         var result = sfd.ShowDialog();
-        if (result != DialogResult.OK) return;
+        if (result != true) return;
         var convo = JsonSerializer.Serialize(ChatMessages.ToList(), new JsonSerializerOptions() {WriteIndented = true});
         File.WriteAllText(sfd.FileName, convo);
     }
@@ -86,10 +87,10 @@ public class Conversation : INotifyPropertyChanged
 
     private void Load()
     {
-        using var sfd = new OpenFileDialog();
+        var sfd = new OpenFileDialog();
         sfd.Filter = "Conversation Files (*.convo)|*.convo";
         var result = sfd.ShowDialog();
-        if (result != DialogResult.OK) return;
+        if (result != true) return;
         var convoText = File.ReadAllText(sfd.FileName);
         var convoMessages = JsonSerializer.Deserialize<ObservableCollection<ChatMessage>>(convoText);
         var convo = new Conversation(_parent) { ChatMessages = convoMessages, Name = Path.GetFileNameWithoutExtension(sfd.FileName) };

@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -33,11 +34,11 @@ public partial class PromptEditor : Window
 
     private void Button_Save_Click(object sender, RoutedEventArgs e)
     {
-        using var sfd = new SaveFileDialog();
+        var sfd = new SaveFileDialog();
         sfd.Filter = "Metadata files (*.md)|*.md|All files (*.*)|*.*";
         var result = sfd.ShowDialog();
 
-        if (result != System.Windows.Forms.DialogResult.OK)
+        if (result != true)
             return;
 
         System.IO.File.WriteAllText(sfd.FileName, SelectedContent());
@@ -45,11 +46,11 @@ public partial class PromptEditor : Window
 
     private void Button_Load_Click(object sender, RoutedEventArgs e)
     {
-        using var ofd = new OpenFileDialog();
+        var ofd = new OpenFileDialog();
         ofd.Filter = "Metadata files (*.md)|*.md|All files (*.*)|*.*"; ;
         var result = ofd.ShowDialog();
 
-        if (result != System.Windows.Forms.DialogResult.OK)
+        if (result != true)
             return;
 
         textBoxCrew.Text = System.IO.File.ReadAllText(ofd.FileName);
