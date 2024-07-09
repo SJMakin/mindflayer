@@ -95,6 +95,7 @@ internal class GlobalKeyHooks
 
     private void SetText(string text)
     {
+        if (string.IsNullOrWhiteSpace(text)) return;
         Clipboard.SetText(NormalizeLineEndings(text));
         SendKeys.SendWait("^{v}");
     }
