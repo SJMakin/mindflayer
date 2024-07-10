@@ -127,6 +127,7 @@ internal class GlobalKeyHooks
 
     private void SetText(string text)
     {
+        if (string.IsNullOrWhiteSpace(text)) return;
         Clipboard.SetText(NormalizeLineEndings(text));
         AdvancedSendKeys.SendKeyDown(KeyCode.CONTROL);
         AdvancedSendKeys.SendKeyPress(KeyCode.KEY_V);
