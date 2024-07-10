@@ -24,10 +24,10 @@ internal class GlobalKeyHooks
 
     public void Init()
     {
-        //HotkeyManager.Current.AddOrReplace(nameof(Replace), Key.LeftCtrl | Key.LeftAlt | Key.G, ReplaceText);
-        //HotkeyManager.Current.AddOrReplace(nameof(Pick), Key.LeftCtrl | Key.LeftAlt | Key.P, Pick);
-        //HotkeyManager.Current.AddOrReplace(nameof(Record), Key.LeftCtrl | Key.LeftAlt | Key.Y, Record);
-        //HotkeyManager.Current.AddOrReplace(nameof(RecordAndDo), Key.LeftCtrl | Key.LeftAlt | Key.R, RecordAndDo);
+        HotkeyManager.Current.AddOrReplace(nameof(Replace), WinformKeys.Control | WinformKeys.Alt | WinformKeys.G, ReplaceText);
+        HotkeyManager.Current.AddOrReplace(nameof(Pick), WinformKeys.Control | WinformKeys.Alt | WinformKeys.P, Pick);
+        HotkeyManager.Current.AddOrReplace(nameof(Record), WinformKeys.Control | WinformKeys.Alt | WinformKeys.Y, Record);
+        HotkeyManager.Current.AddOrReplace(nameof(RecordAndDo), WinformKeys.Control | WinformKeys.Alt | WinformKeys.R, RecordAndDo);
     }
 
     private void Record(object? sender, HotkeyEventArgs e)

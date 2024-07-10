@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using MindFlayer.keys;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -30,33 +31,34 @@ public class HotkeyManager : HotkeyManagerBase
     {
         _messageWindow = new MessageWindow(this);
         _messageWindow.Show();
+        _messageWindow.Hide();
         SetHwnd(new WindowInteropHelper(_messageWindow).Handle);
     }
 
-    public void AddOrReplace(string name, Key keys, bool noRepeat, EventHandler<HotkeyEventArgs> handler)
+    public void AddOrReplace(string name, WinformKeys keys, bool noRepeat, EventHandler<HotkeyEventArgs> handler)
     {
         var flags = GetFlags(keys, noRepeat);
-        var vk = unchecked((uint)(keys & ~(Key.LeftAlt | Key.RightAlt | Key.LeftCtrl | Key.RightCtrl | Key.LeftShift | Key.RightShift | Key.LWin | Key.RWin)));
+        var vk = unchecked((uint)(keys & ~WinformKeys.Modifiers));
         AddOrReplace(name, vk, flags, handler);
     }
 
-    public void AddOrReplace(string name, Key keys, EventHandler<HotkeyEventArgs> handler)
+    public void AddOrReplace(string name, WinformKeys keys, EventHandler<HotkeyEventArgs> handler)
     {
         AddOrReplace(name, keys, false, handler);
     }
 
 
-    private static HotkeyFlags GetFlags(Key hotkey, bool noRepeat)
+    private static HotkeyFlags GetFlags(WinformKeys hotkey, bool noRepeat)
     {
-        var noMod = hotkey & ~(Key.LeftAlt | Key.RightAlt | Key.LeftCtrl | Key.RightCtrl | Key.LeftShift | Key.RightShift | Key.LWin | Key.RWin);
+        var noMod = hotkey & ~WinformKeys.Modifiers;
         var flags = HotkeyFlags.None;
-        if ((hotkey & Key.LeftAlt) == Key.LeftAlt || (hotkey & Key.RightAlt) == Key.RightAlt)
+        if (hotkey.HasFlag(WinformKeys.Alt))
             flags |= HotkeyFlags.Alt;
-        if ((hotkey & Key.LeftCtrl) == Key.LeftCtrl || (hotkey & Key.RightCtrl) == Key.RightCtrl)
+        if (hotkey.HasFlag(WinformKeys.Control))
             flags |= HotkeyFlags.Control;
-        if ((hotkey & Key.LeftShift) == Key.LeftShift || (hotkey & Key.RightShift) == Key.RightShift)
+        if (hotkey.HasFlag(WinformKeys.Shift))
             flags |= HotkeyFlags.Shift;
-        if (noMod == Key.LWin || noMod == Key.RWin)
+        if (noMod == WinformKeys.LWin || noMod == WinformKeys.RWin)
             flags |= HotkeyFlags.Windows;
         if (noRepeat)
             flags |= HotkeyFlags.NoRepeat;
