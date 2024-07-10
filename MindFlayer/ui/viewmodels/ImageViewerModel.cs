@@ -1,10 +1,7 @@
 ﻿using Microsoft.Win32;
 using OpenAI;
-using OpenAI.Files;
 using OpenAI.Images;
 using System.ComponentModel;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;

@@ -16,7 +16,6 @@ public static class AudioCapture
 
     private static int silencePassed;
     private static int audioPassed;
-
     private static readonly ILog Logger = LogManager.GetLogger(typeof(AudioCapture));
 
     private const float SilenceThreshold = 0.01f; // Adjust based on your silence detection needs
@@ -96,7 +95,7 @@ public static class AudioCapture
             Status = TranscriptionStatus.Pending
         };
 
-        App.Current.Dispatcher.Invoke(() =>
+        System.Windows.Application.Current.Dispatcher.Invoke(() =>
         {
             audioSegments.Add(segment);
         });

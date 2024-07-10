@@ -26,10 +26,10 @@ public class ChatViewModel : INotifyPropertyChanged
         Conversations.Add(_addNewConvoButton);
     }
 
-    public ObservableCollection<Conversation> Conversations { get; } = new ObservableCollection<Conversation>();
+    public ObservableCollection<Conversation> Conversations { get; } = [];
 
-    public ObservableCollection<Suggestion> Suggestions { get; } = new ObservableCollection<Suggestion>()
-    {
+    public ObservableCollection<Suggestion> Suggestions { get; } =
+    [
         Suggestion.ZeroShotCoTPrompt,
         Suggestion.ZeroShotCoTAPEPrompt,
         Suggestion.TreeOfThoughV1,
@@ -38,7 +38,7 @@ public class ChatViewModel : INotifyPropertyChanged
         Suggestion.Summarise,
         Suggestion.Retort,
         Suggestion.MeetingNotes,
-    };
+    ];
 
     private Conversation _activeConversation;
 
@@ -78,8 +78,8 @@ public class ChatViewModel : INotifyPropertyChanged
         }
     }
 
-    public ObservableCollection<Model> ChatModels { get; } = new ObservableCollection<Model>()
-    {
+    public ObservableCollection<Model> ChatModels { get; } =
+    [
         Model.GPT3_5_Turbo,
         Model.GPT3_5_Turbo_16K,
         Model.GPT4,
@@ -89,7 +89,7 @@ public class ChatViewModel : INotifyPropertyChanged
         AnthropicModels.Claude3Sonnet,
         AnthropicModels.Claude3Opus,
         AnthropicModels.Claude35Sonnet,
-    };
+    ];
 
     private Model _selectedChatModel = Model.GPT4o;
 
@@ -171,7 +171,7 @@ public class ChatViewModel : INotifyPropertyChanged
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 if (t == null) return;
-                msg.Content = msg.Content + t;
+                msg.Content += t;
             });
         }, SelectedChatModel)
         .ContinueWith(_ => msg.TokenCount = _tokenCalculator.NumTokensFromMessage(msg.Content), TaskScheduler.Current);
@@ -183,11 +183,11 @@ public class ChatViewModel : INotifyPropertyChanged
     {
         var prompt = new List<ChatMessage>
         {
-            new ChatMessage { Role = OpenAI.Chat.Role.System, Content = "Be terse, but smart. Always be concise; prioritize clarity and brevity. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
+            new() { Role = OpenAI.Chat.Role.System, Content = "Be terse, but smart. Always be concise; prioritize clarity and brevity. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
             
-            //"Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
+            // "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
 
-            new ChatMessage { Role = OpenAI.Chat.Role.User, Content = $"Think of a topic name for this. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
+            new() { Role = OpenAI.Chat.Role.User, Content = $"Think of a topic name for this. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
         };
         activeConversation.Name = await ApiWrapper.Chat(prompt, Temperature, SelectedChatModel);
     }

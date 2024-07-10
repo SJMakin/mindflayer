@@ -101,7 +101,7 @@ public sealed class ChatResponse : BaseResponse
 
         if (other?.Choices is { Count: > 0 })
         {
-            choices ??= new List<Choice>();
+            choices ??= [];
 
             foreach (var otherChoice in other.Choices)
             {

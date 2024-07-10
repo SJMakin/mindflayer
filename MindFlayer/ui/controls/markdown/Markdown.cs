@@ -1,12 +1,7 @@
 ﻿using MaterialDesignThemes.Wpf;
-using System;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net.Cache;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -1557,26 +1552,26 @@ public class Markdown : DependencyObject
         var button = new System.Windows.Controls.Button
         {
             Content = new PackIcon { Kind = PackIconKind.ContentCopy },
-            Style = (Style)System.Windows.Application.Current.FindResource("MaterialDesignToolButton"),
+            Style = (Style)Application.Current.FindResource("MaterialDesignToolButton"),
             Width = 24,
             Height = 24,
             Margin = new Thickness(5)
         };
-        button.Click += (sender, args) => System.Windows.Clipboard.SetText(text);
+        button.Click += (sender, args) => Clipboard.SetText(text);
 
         var grid = new Grid();
         grid.Children.Add(stack);
         grid.Children.Add(button);
 
         // Position button in the top right corner
-        button.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
+        button.HorizontalAlignment = HorizontalAlignment.Right;
         button.VerticalAlignment = VerticalAlignment.Top;
 
         var scroller = new ScrollViewer
         {
             Content = grid,
-            HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch,
-            HorizontalContentAlignment = System.Windows.HorizontalAlignment.Stretch,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
             HorizontalScrollBarVisibility = ScrollBarVisibility.Auto
         };
@@ -1791,14 +1786,6 @@ public class Markdown : DependencyObject
     #endregion Color
 
     private static readonly Regex OutDent = new Regex(@"^[ ]{1," + TabWidth + @"}", RegexOptions.Multiline | RegexOptions.Compiled);
-
-    /// <summary>
-    /// Remove one level of line-leading spaces
-    /// </summary>
-    private string Outdent(string block)
-    {
-        return OutDent.Replace(block, "");
-    }
 
     /// <summary>
     /// convert all tabs to _tabWidth spaces; 

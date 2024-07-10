@@ -1,8 +1,6 @@
 ﻿using log4net;
 using System.IO;
 using System.Runtime.ExceptionServices;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Windows;
 
 namespace MindFlayer;

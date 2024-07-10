@@ -66,7 +66,7 @@ public class BytePairEncoding
     {
         if (piece.Length == 1)
         {
-            return new List<int> { ranks[piece] };
+            return [ranks[piece]];
         }
         return BytePairMerge(piece, ranks, p => ranks[piece[p.Start..p.End]]);
     }
@@ -75,7 +75,7 @@ public class BytePairEncoding
     {
         if (piece.Length == 1)
         {
-            return new List<byte[]> { piece };
+            return [piece];
         }
         return BytePairMerge(piece, ranks, p => piece[p.Start..p.End]);
     }

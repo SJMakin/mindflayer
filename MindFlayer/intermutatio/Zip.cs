@@ -9,7 +9,7 @@ internal class Zip
     {
         using var output = new MemoryStream();
         using var gzip = new DeflateStream(output, CompressionMode.Compress);
-        using var writer = new StreamWriter(gzip, System.Text.Encoding.UTF8);
+        using var writer = new StreamWriter(gzip, Encoding.UTF8);
         writer.Write(str);
         return output.ToArray();
     }
@@ -18,7 +18,7 @@ internal class Zip
     {
         using var inputStream = new MemoryStream(input);
         using var gzip = new DeflateStream(inputStream, CompressionMode.Decompress);
-        using var reader = new StreamReader(gzip, System.Text.Encoding.UTF8);
+        using var reader = new StreamReader(gzip, Encoding.UTF8);
         return reader.ReadToEnd();
     }
 }

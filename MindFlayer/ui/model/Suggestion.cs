@@ -100,15 +100,15 @@ For clarity, your entire response should be in a markdown table. The question is
 
     private static (string literal, List<ChatMessage> question) QuestionFactory(string systemPrompt, string userPrompt)
     {
-        return (null, new List<ChatMessage>
-        {
+        return (null,
+        [
             new ChatMessage { Role = OpenAI.Chat.Role.System, Content = systemPrompt },
             new ChatMessage { Role = OpenAI.Chat.Role.User, Content = userPrompt }
-        });
+        ]);
     }
 
-    public static ObservableCollection<Suggestion> All { get; } = new ObservableCollection<Suggestion>()
-    {
+    public static ObservableCollection<Suggestion> All { get; } =
+    [
         ZeroShotCoTPrompt,
         ZeroShotCoTAPEPrompt,
         TreeOfThoughV1,
@@ -116,5 +116,5 @@ For clarity, your entire response should be in a markdown table. The question is
         Reply,
         Summarise,
         Retort
-    };
+    ];
 }

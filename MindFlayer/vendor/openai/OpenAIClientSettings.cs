@@ -111,7 +111,7 @@ public sealed class OpenAIClientSettings
 
     internal bool IsAzureDeployment => BaseRequestUrlFormat.Contains(AzureOpenAIDomain);
 
-    private readonly Dictionary<string, string> defaultQueryParameters = new Dictionary<string, string>();
+    private readonly Dictionary<string, string> defaultQueryParameters = [];
 
     internal IReadOnlyDictionary<string, string> DefaultQueryParameters => defaultQueryParameters;
 

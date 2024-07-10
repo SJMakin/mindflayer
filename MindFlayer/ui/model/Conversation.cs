@@ -11,7 +11,7 @@ namespace MindFlayer;
 
 public class Conversation : INotifyPropertyChanged
 {
-    private ObservableCollection<ChatMessage> _chatMessages = new ObservableCollection<ChatMessage>();
+    private ObservableCollection<ChatMessage> _chatMessages = [];
     private string _name;
     private readonly ChatViewModel _parent;
 
@@ -124,7 +124,7 @@ public class Conversation : INotifyPropertyChanged
 
         Task.Run(() => ApiWrapper.ChatStream(ChatMessages, _parent.Temperature, (t) =>
         {
-            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            Application.Current.Dispatcher.Invoke(() =>
             {
                 if (t == null) return;
                 msg.Content = msg.Content + t;

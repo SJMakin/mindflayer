@@ -2,8 +2,8 @@
 
 public abstract class HotkeyManagerBase
 {
-    private readonly Dictionary<int, string> _hotkeyNames = new Dictionary<int, string>();
-    private readonly Dictionary<string, Hotkey> _hotkeys = new Dictionary<string, Hotkey>();
+    private readonly Dictionary<int, string> _hotkeyNames = [];
+    private readonly Dictionary<string, Hotkey> _hotkeys = [];
     private IntPtr _hwnd;
     internal static readonly IntPtr HwndMessage = (IntPtr)(-3);
 

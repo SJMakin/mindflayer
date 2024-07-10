@@ -10,9 +10,9 @@ namespace OpenAI.Extensions;
 internal sealed class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum : struct, Enum
 {
     private readonly JsonNamingPolicy namingPolicy;
-    private readonly Dictionary<int, TEnum> numberToEnum = new();
-    private readonly Dictionary<TEnum, string> enumToString = new();
-    private readonly Dictionary<string, TEnum> stringToEnum = new();
+    private readonly Dictionary<int, TEnum> numberToEnum = [];
+    private readonly Dictionary<TEnum, string> enumToString = [];
+    private readonly Dictionary<string, TEnum> stringToEnum = [];
 
     public JsonStringEnumConverter()
     {

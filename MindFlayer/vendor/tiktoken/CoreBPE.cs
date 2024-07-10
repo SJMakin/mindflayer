@@ -121,7 +121,7 @@ public class CoreBPE
             {
                 if (_specialTokensDecoder.TryGetValue(token, out var valueS))
                 {
-                    tokenBytes = UTF8Encoding.UTF8.GetBytes(valueS);
+                    tokenBytes = Encoding.UTF8.GetBytes(valueS);
                 }
             }
 

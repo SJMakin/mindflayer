@@ -139,23 +139,6 @@ internal class EncodingManager
         }
     }
 
-
-    private Dictionary<byte[], int> LoadTikTokenBpeFromLocal(string tikTokenBpeFile)
-    {
-        var contents = File.ReadAllLines(tikTokenBpeFile, Encoding.UTF8);
-        var bpeDict = new Dictionary<byte[], int>(contents.Length, new ByteArrayComparer());
-
-        foreach (var line in contents.Where(l => !string.IsNullOrWhiteSpace(l)))
-        {
-            var tokens = line.Split();
-            var tokenBytes = Convert.FromBase64String(tokens[0]);
-            var rank = int.Parse(tokens[1]);
-            bpeDict.Add(tokenBytes, rank);
-        }
-
-        return bpeDict;
-    }
-
     private Dictionary<byte[], int> LoadTikTokenBpe(string tikTokenBpeFile)
     {
         string localFilePath;

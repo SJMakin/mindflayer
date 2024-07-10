@@ -22,7 +22,7 @@ public abstract class BaseEndPoint
 
         foreach (var defaultQueryParameter in Api.OpenAIClientSettings.DefaultQueryParameters)
         {
-            queryParameters ??= new Dictionary<string, string>();
+            queryParameters ??= [];
             queryParameters.Add(defaultQueryParameter.Key, defaultQueryParameter.Value);
         }
 

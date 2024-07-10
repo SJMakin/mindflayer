@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 using MindFlayer.audio;
 using MindFlayer.keys;

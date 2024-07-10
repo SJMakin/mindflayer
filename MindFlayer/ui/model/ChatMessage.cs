@@ -107,7 +107,7 @@ public class ChatMessage : INotifyPropertyChanged
 
     private void Copy()
     {
-        System.Windows.Clipboard.SetText(Content);
+        Clipboard.SetText(Content);
     }
 
     private void Read()

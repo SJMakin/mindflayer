@@ -144,7 +144,7 @@ public sealed class Message
 
         if (other is { ToolCalls: not null })
         {
-            toolCalls ??= new List<Tool>();
+            toolCalls ??= [];
 
             foreach (var otherToolCall in other.ToolCalls)
             {

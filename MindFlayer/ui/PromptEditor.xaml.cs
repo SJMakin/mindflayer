@@ -8,7 +8,7 @@ namespace MindFlayer;
 
 public partial class PromptEditor : Window
 {
-    public ObservableCollection<Header> Headers { get; } = new ObservableCollection<Header>();
+    public ObservableCollection<Header> Headers { get; } = [];
 
     public PromptEditor()
     {
@@ -29,7 +29,7 @@ public partial class PromptEditor : Window
 
     private void Button_Copy_Click(object sender, RoutedEventArgs e)
     {
-        System.Windows.Clipboard.SetText(SelectedContent());
+        Clipboard.SetText(SelectedContent());
     }
 
     private void Button_Save_Click(object sender, RoutedEventArgs e)

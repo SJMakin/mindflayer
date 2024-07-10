@@ -1,11 +1,9 @@
-﻿<UserControl x:Class="MindFlayer.ui.controls.chatmessage.ChatMessageControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:MindFlayer.ui">
-    <UserControl.Resources>
-
-
-    </UserControl.Resources>
-    <Grid>
-    </Grid>
+﻿<UserControl
+    x:Class="MindFlayer.ui.controls.chatmessage.ChatMessageControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:MindFlayer.ui">
+    <UserControl.Resources />
+    <Grid />
 
 </UserControl>

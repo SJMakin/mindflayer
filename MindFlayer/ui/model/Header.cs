@@ -7,7 +7,7 @@ public class Header : DependencyObject, IParent<object>
 {
     public string Title { get; set; }
     public int Level { get; set; }
-    public List<Header> Children { get; set; } = new List<Header>();
+    public List<Header> Children { get; set; } = [];
     public string Content { get; internal set; }
 
     public IEnumerable<object> GetChildren() => Children;

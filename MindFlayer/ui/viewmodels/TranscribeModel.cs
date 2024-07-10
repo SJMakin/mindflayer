@@ -11,9 +11,9 @@ internal class TranscribeModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public ObservableCollection<AudioSegment> AudioSegments { get; set; } = new();
+    public ObservableCollection<AudioSegment> AudioSegments { get; set; } = [];
 
-    public ObservableCollection<AudioSegment> SelectedItems { get; set; } = new();
+    public ObservableCollection<AudioSegment> SelectedItems { get; set; } = [];
 
     private RelayCommand startCommand;
     public ICommand StartCommand => startCommand ??= new RelayCommand(Start);
