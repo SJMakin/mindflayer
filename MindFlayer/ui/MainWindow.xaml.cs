@@ -15,12 +15,18 @@ namespace MindFlayer;
 //  ░ ░      ░ ░    ░   ▒   ▒ ▒ ░░      ░    ░░   ░ 
 //        ░    ░        ░   ░ ░     ░   ░     ░     
 
+
 public partial class MainWindow : Window
 {
     public MainWindow()
     {
         InitializeComponent();
         AppContext.SetSwitch(@"Switch.System.Windows.Controls.DoNotAugmentWordBreakingUsingSpeller", true);
+    }
+
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
         GlobalKeyHooks.Instance.Init();
     }
 

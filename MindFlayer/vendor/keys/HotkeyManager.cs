@@ -24,15 +24,17 @@ public class HotkeyManager : HotkeyManagerBase
 
     #endregion
 
-    // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
-    private readonly MessageWindow _messageWindow;
-
     private HotkeyManager()
     {
-        _messageWindow = new MessageWindow(this);
-        _messageWindow.Show();
-        _messageWindow.Hide();
-        SetHwnd(new WindowInteropHelper(_messageWindow).Handle);
+        SetHwnd(new WindowInteropHelper(Application.Current.MainWindow).Handle);
+        HwndSource source = PresentationSource.FromVisual(Application.Current.MainWindow) as HwndSource;
+        source.AddHook(WndProc);
+    }
+
+    private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        Hotkey hotkey;
+        return HandleHotkeyMessage(hwnd, msg, wParam, lParam, ref handled, out hotkey);
     }
 
     public void AddOrReplace(string name, WinformKeys keys, bool noRepeat, EventHandler<HotkeyEventArgs> handler)
@@ -46,7 +48,6 @@ public class HotkeyManager : HotkeyManagerBase
     {
         AddOrReplace(name, keys, false, handler);
     }
-
 
     private static HotkeyFlags GetFlags(WinformKeys hotkey, bool noRepeat)
     {
@@ -63,32 +64,5 @@ public class HotkeyManager : HotkeyManagerBase
         if (noRepeat)
             flags |= HotkeyFlags.NoRepeat;
         return flags;
-    }
-
-
-    class MessageWindow : Window
-    {
-        private readonly HotkeyManager _hotkeyManager;
-
-        public MessageWindow(HotkeyManager hotkeyManager)
-        {
-            _hotkeyManager = hotkeyManager;
-        }
-
-
-        protected override void OnSourceInitialized(EventArgs e)
-        {
-            base.OnSourceInitialized(e);
-            HwndSource source = PresentationSource.FromVisual(this) as HwndSource;
-            source.AddHook(WndProc);
-        }
-
-
-
-        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            Hotkey hotkey;
-            return _hotkeyManager.HandleHotkeyMessage(hwnd, msg, wParam, lParam, ref handled, out hotkey);
-        }
     }
 }
