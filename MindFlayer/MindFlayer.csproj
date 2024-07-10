@@ -9,6 +9,7 @@
 		<ApplicationIcon>flayer.ico</ApplicationIcon>
 		<AnalysisLevel>6.0-all</AnalysisLevel>
 		<LangVersion>latest</LangVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<ItemGroup>
