@@ -88,10 +88,13 @@ internal class GlobalKeyHooks
 
     private void SetTextBasedOnAiResult(string input)
     {
-
         var toast = new ToastWindow("Working...");
 
-        if (SelectedOperation is not { } op) return;
+        if (SelectedOperation is not { } op)
+        {
+            toast.UpdateThenClose("Choose an operation! (Ctrl+Alt+P)", Brushes.OrangeRed, 3000);
+            return;
+        }
 
         try
         {
