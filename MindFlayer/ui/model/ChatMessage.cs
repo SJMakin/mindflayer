@@ -31,6 +31,21 @@ public class ChatMessage : INotifyPropertyChanged
         }
     }
 
+    [JsonInclude]
+    [JsonPropertyName("image")]
+    public string Image
+    {
+        get
+        {
+            return _image;
+        }
+        set
+        {
+            _image = value;
+            OnPropertyChanged(nameof(Image));
+        }
+    }
+
     public int TokenCount
     {
         get
@@ -68,6 +83,7 @@ public class ChatMessage : INotifyPropertyChanged
     private ICommand _editCommand;
     private ICommand _toggleTextBoxVisibilityCommand;
     private string _content;
+    private string _image;
     private int _tokenCount;
     private bool _isTextBoxVisible;
 

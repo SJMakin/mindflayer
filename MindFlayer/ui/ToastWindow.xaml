@@ -31,25 +31,27 @@
                 Foreground="Black"
                 Text="Testing" />
             <materialDesign:PopupBox
-                Margin="0"
-                Padding="0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
-                PlacementMode="TopAndAlignRightEdges">
-                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                PlacementMode="TopAndAlignRightEdges"
+                >
+                <StackPanel Orientation="Vertical">
                     <Button
-                        Margin="0,0,8,0"
+                        Margin="2"
                         Click="AttachText_Click"
                         Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
                         <materialDesign:PackIcon Kind="TextBox" />
                     </Button>
                     <Button
-                        Margin="0,0,8,0"
+                        Margin="2"
                         Click="AttachImage_Click"
                         Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
                         <materialDesign:PackIcon Kind="Image" />
                     </Button>
-                    <Button Click="AttachClipboard_Click" Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
+                    <Button
+                        Margin="2"
+                        Click="AttachClipboard_Click"
+                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
                         <materialDesign:PackIcon Kind="ContentPaste" />
                     </Button>
                 </StackPanel>

@@ -35,7 +35,19 @@ public class OpenAIChatProvider : ChatProvider
 
     private static ChatRequest CreateChatRequest(IEnumerable<ChatMessage> messages, double? temp, string model)
     {
-        var prompt = messages.Select(prompt => new OpenAI.Chat.Message(prompt.Role, prompt.Content)).ToList();
+        var prompt = messages.Select(prompt => new Message(prompt.Role, CreateContent(prompt))).ToList();
         return new ChatRequest(messages: prompt, model: model, temperature: temp);
     }
+
+    private static IEnumerable<Content> CreateContent(ChatMessage message)
+    {
+        if (!string.IsNullOrWhiteSpace(message.Content))
+            yield return new Content(ContentType.Text, message.Content);
+
+        if (!string.IsNullOrEmpty(message.Image))
+            yield return new Content(ContentType.ImageUrl, message.Image);
+    }
+
+
+
 }

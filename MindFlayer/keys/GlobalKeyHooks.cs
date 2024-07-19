@@ -2,7 +2,9 @@
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using MindFlayer.audio;
+using MindFlayer.intermutatio;
 using MindFlayer.keys;
 using MindFlayer.saas;
 using MindFlayer.ui;
@@ -23,10 +25,22 @@ internal class GlobalKeyHooks
 
     public void Init()
     {
+        // TODO UI..
         HotkeyManager.Current.AddOrReplace(nameof(Replace), WinformKeys.Control | WinformKeys.Alt | WinformKeys.G, ReplaceText);
         HotkeyManager.Current.AddOrReplace(nameof(Pick), WinformKeys.Control | WinformKeys.Alt | WinformKeys.P, Pick);
         HotkeyManager.Current.AddOrReplace(nameof(Record), WinformKeys.Control | WinformKeys.Alt | WinformKeys.R, Record);
         HotkeyManager.Current.AddOrReplace(nameof(RecordAndDo), WinformKeys.Control | WinformKeys.Alt | WinformKeys.Y, RecordAndDo);
+        HotkeyManager.Current.AddOrReplace(nameof(ScreenshotAndDo), WinformKeys.Control | WinformKeys.Alt | WinformKeys.S, ScreenshotAndDo);
+    }
+
+    private void ScreenshotAndDo(object sender, HotkeyEventArgs e)
+    {
+        var capture = ScreenCapture.CaptureScreen();
+
+        SetTextBasedOnAiResult(string.Empty, capture);
+
+        e.Handled = true;
+
     }
 
     private void Record(object? sender, HotkeyEventArgs e)
@@ -86,7 +100,7 @@ internal class GlobalKeyHooks
         SetTextBasedOnAiResult(input);
     }
 
-    private void SetTextBasedOnAiResult(string input)
+    private void SetTextBasedOnAiResult(string input, BitmapSource image = null)
     {
         var toast = new ToastWindow("Working...");
 
@@ -98,7 +112,7 @@ internal class GlobalKeyHooks
 
         try
         {
-            var clonedChat = op.Messages.Select(m => new ChatMessage { Role = m.Role, Content = m.Content }).ToList();
+            var clonedChat = op.Messages.Select(m => new ChatMessage { Role = m.Role, Content = m.Content, Image = m.Image }).ToList();
             var lastMessage = clonedChat.Last();
             lastMessage.Content = lastMessage.Content.Replace("<{input}>", input, StringComparison.OrdinalIgnoreCase);
             var result = ApiWrapper.Chat(clonedChat, 0.1, Model.GPT4o).Result;
