@@ -25,8 +25,8 @@ internal class GlobalKeyHooks
     {
         HotkeyManager.Current.AddOrReplace(nameof(Replace), WinformKeys.Control | WinformKeys.Alt | WinformKeys.G, ReplaceText);
         HotkeyManager.Current.AddOrReplace(nameof(Pick), WinformKeys.Control | WinformKeys.Alt | WinformKeys.P, Pick);
-        HotkeyManager.Current.AddOrReplace(nameof(Record), WinformKeys.Control | WinformKeys.Alt | WinformKeys.Y, Record);
-        HotkeyManager.Current.AddOrReplace(nameof(RecordAndDo), WinformKeys.Control | WinformKeys.Alt | WinformKeys.R, RecordAndDo);
+        HotkeyManager.Current.AddOrReplace(nameof(Record), WinformKeys.Control | WinformKeys.Alt | WinformKeys.R, Record);
+        HotkeyManager.Current.AddOrReplace(nameof(RecordAndDo), WinformKeys.Control | WinformKeys.Alt | WinformKeys.Y, RecordAndDo);
     }
 
     private void Record(object? sender, HotkeyEventArgs e)

@@ -21,12 +21,39 @@
         Padding="10"
         Background="LightYellow"
         CornerRadius="5">
-        <TextBlock
-            x:Name="MessageText"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            FontFamily="Arial"
-            FontSize="14"
-            Foreground="Black" />
+        <Grid>
+            <TextBlock
+                x:Name="MessageText"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontFamily="Arial"
+                FontSize="14"
+                Foreground="Black"
+                Text="Testing" />
+            <materialDesign:PopupBox
+                Margin="0"
+                Padding="0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                PlacementMode="TopAndAlignRightEdges">
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Button
+                        Margin="0,0,8,0"
+                        Click="AttachText_Click"
+                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
+                        <materialDesign:PackIcon Kind="TextBox" />
+                    </Button>
+                    <Button
+                        Margin="0,0,8,0"
+                        Click="AttachImage_Click"
+                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
+                        <materialDesign:PackIcon Kind="Image" />
+                    </Button>
+                    <Button Click="AttachClipboard_Click" Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
+                        <materialDesign:PackIcon Kind="ContentPaste" />
+                    </Button>
+                </StackPanel>
+            </materialDesign:PopupBox>
+        </Grid>
     </Border>
 </Window>
