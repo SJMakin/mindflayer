@@ -18,7 +18,7 @@ public class HotkeyAlreadyRegisteredException : Exception
         SerializationInfo info,
         StreamingContext context) : base(info, context)
     {
-        _name = (string) info.GetValue("_name", typeof (string));
+        _name = (string)info.GetValue("_name", typeof(string));
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)

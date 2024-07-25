@@ -32,7 +32,7 @@ public abstract class BaseResponse
     /// The maximum number of requests that are permitted before exhausting the rate limit.
     /// </summary>
 
-    [JsonIgnore] 
+    [JsonIgnore]
     public int? LimitRequests { get; internal set; }
 
     /// <summary>

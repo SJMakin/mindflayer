@@ -38,7 +38,7 @@ public class TikToken
         return new TikToken(setting);
     }
 
-    
+
 
 
     public static Regex SpecialTokenRegex(HashSet<string> tokens)

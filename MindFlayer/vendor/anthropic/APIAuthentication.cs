@@ -38,7 +38,7 @@
                     return _cachedDefault;
 
                 APIAuthentication auth = LoadFromEnv();
-                
+
                 _cachedDefault = auth;
                 return auth;
             }

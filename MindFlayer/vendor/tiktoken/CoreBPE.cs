@@ -116,7 +116,7 @@ public class CoreBPE
             if (Decoder.TryGetValue(token, out var value))
             {
                 tokenBytes = value;
-            } 
+            }
             else
             {
                 if (_specialTokensDecoder.TryGetValue(token, out var valueS))
@@ -128,7 +128,7 @@ public class CoreBPE
             if (tokenBytes.Length > 0)
             {
                 ret.AddRange(tokenBytes);
-            } 
+            }
         }
         return ret.ToArray();
     }

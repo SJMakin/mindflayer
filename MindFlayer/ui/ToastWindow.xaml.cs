@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Threading;
-using Microsoft.Win32;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace MindFlayer.ui
 {

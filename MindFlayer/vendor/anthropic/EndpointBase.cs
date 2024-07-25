@@ -49,13 +49,13 @@ namespace Anthropic.SDK
             {
                 throw new AuthenticationException("You must provide API authentication.");
             }
-                        
+
             var client = new HttpClient();
 
             client.DefaultRequestHeaders.Add("x-api-key", Client.Auth.ApiKey);
             client.DefaultRequestHeaders.Add("anthropic-version", Client.AnthropicVersion);
             client.DefaultRequestHeaders.Add("User-Agent", UserAgent);
-            
+
             return client;
         }
 

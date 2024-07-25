@@ -47,7 +47,7 @@ internal class Hotkey
         {
             var hr = Marshal.GetHRForLastWin32Error();
             var ex = Marshal.GetExceptionForHR(hr);
-            if ((uint) hr == 0x80070581)
+            if ((uint)hr == 0x80070581)
                 throw new HotkeyAlreadyRegisteredException(name, ex);
             throw ex;
         }

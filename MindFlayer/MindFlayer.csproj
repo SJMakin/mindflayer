@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net8.0-windows</TargetFramework>
+		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
 		<!--<Nullable>enable</Nullable>-->
 		<UseWPF>true</UseWPF>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -34,8 +35,5 @@
 		<PackageReference Include="NAudio" Version="1.8.5" />
 		<PackageReference Include="System.Drawing.Common" Version="*" />
 		<PackageReference Include="System.Memory" Version="1.8.5" />
-	</ItemGroup>
-	
-	<ItemGroup>
 	</ItemGroup>
 </Project>

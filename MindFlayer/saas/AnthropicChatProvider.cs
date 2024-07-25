@@ -1,8 +1,8 @@
-﻿using log4net;
+﻿using Anthropic.SDK.Messaging;
+using log4net;
 using OpenAI.Chat;
-using System.Text.Json;
-using Anthropic.SDK.Messaging;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 
 namespace MindFlayer.saas;
 

@@ -20,10 +20,12 @@ public class EncodingSettingModel
     public Dictionary<string, int> SpecialTokens { get; set; }
 
 
-    public int MaxTokenValue { 
-        get {
+    public int MaxTokenValue
+    {
+        get
+        {
             return Math.Max(MergeableRanks.Values.Max(), SpecialTokens.Values.Max());
-        } 
+        }
     }
 
     public EncodingSettingModel() { }

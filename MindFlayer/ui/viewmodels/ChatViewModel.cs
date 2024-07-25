@@ -1,12 +1,12 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows.Input;
-using Anthropic.SDK.Constants;
+﻿using Anthropic.SDK.Constants;
 using MindFlayer.audio;
 using MindFlayer.saas;
 using MindFlayer.ui.model;
 using NAudio.Wave;
 using OpenAI.Models;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Input;
 
 namespace MindFlayer;
 
@@ -161,7 +161,7 @@ public class ChatViewModel : INotifyPropertyChanged
             Content = ""
         };
 
-        ActiveConversation.ChatMessages.Add(msg); 
+        ActiveConversation.ChatMessages.Add(msg);
 
         var input = NewMessageContent;
         NewMessageContent = string.Empty;

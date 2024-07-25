@@ -12,7 +12,7 @@ internal class MarkDownParser
         var contentBuffer = new StringBuilder();
         foreach (var line in lines)
         {
-            
+
 
             var level = line.TakeWhile(c => c == '#').Count();
 

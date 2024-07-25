@@ -24,7 +24,7 @@ namespace Anthropic.SDK.Messaging
         /// <summary>
         /// Type of Content (Text, pre-set)
         /// </summary>
-        [JsonPropertyName("type")] 
+        [JsonPropertyName("type")]
         public string Type => ContentType.Text;
 
         /// <summary>

@@ -24,8 +24,8 @@ public partial class ChatMessageControl : System.Windows.Controls.UserControl
 
     private void MarkdownEditor_LostFocus(object sender, RoutedEventArgs e)
     {
-    //    MessageContainer.Visibility = Visibility.Visible;
-    //    MarkdownEditor.Visibility = Visibility.Collapsed;
-    //    SetMarkdown(MarkdownEditor.Text);
+        //    MessageContainer.Visibility = Visibility.Visible;
+        //    MarkdownEditor.Visibility = Visibility.Collapsed;
+        //    SetMarkdown(MarkdownEditor.Text);
     }
 }

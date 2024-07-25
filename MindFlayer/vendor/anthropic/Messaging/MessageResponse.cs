@@ -78,7 +78,7 @@ namespace Anthropic.SDK.Messaging
         [JsonPropertyName("type")]
         public string Type { get; set; }
 
-        [JsonPropertyName("text")] 
+        [JsonPropertyName("text")]
         public string Text { get; set; }
         [JsonPropertyName("usage")]
         public Usage Usage { get; set; }

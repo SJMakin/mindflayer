@@ -1,9 +1,4 @@
-﻿using System.Diagnostics;
-using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using MindFlayer.audio;
+﻿using MindFlayer.audio;
 using MindFlayer.intermutatio;
 using MindFlayer.keys;
 using MindFlayer.saas;
@@ -11,6 +6,11 @@ using MindFlayer.ui;
 using NHotkey;
 using NHotkey.WindowsForms;
 using OpenAI.Models;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace MindFlayer;
 

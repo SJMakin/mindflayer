@@ -3,7 +3,7 @@
 namespace MindFlayer.keys
 {
     // This is from System.Windows.Forms.
-    
+
     public enum WinformKeys
     {
         /// <include file='doc\Keys.uex' path='docs/doc[@for="Keys.KeyCode"]/*' />

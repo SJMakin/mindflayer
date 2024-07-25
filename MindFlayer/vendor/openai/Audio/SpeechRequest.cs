@@ -1,5 +1,5 @@
-using System.Text.Json.Serialization;
 using OpenAI.Models;
+using System.Text.Json.Serialization;
 
 namespace OpenAI.Audio;
 

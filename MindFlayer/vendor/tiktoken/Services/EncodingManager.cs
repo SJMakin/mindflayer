@@ -157,7 +157,7 @@ internal class EncodingManager
                 {
                     //client.DownloadFile(tikTokenBpeFile, localFilePath);
                     var data = client.DownloadData(tikTokenBpeFile);
-                    File.WriteAllBytes(localFilePath, data); 
+                    File.WriteAllBytes(localFilePath, data);
                 }
             }
         }

@@ -6,7 +6,7 @@ internal class AdvancedSendKeys
 {
     [DllImport("user32.dll", SetLastError = true)]
     private static extern uint SendInput(uint numberOfInputs, INPUT[] inputs, int sizeOfInputStructure);
-    
+
     [DllImport("user32.dll")]
     private static extern ushort MapVirtualKey(uint uCode, uint uMapType);
 

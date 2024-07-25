@@ -42,7 +42,7 @@ public class ScrollViewerAttachedProperties
     private static void GoToEnd(ScrollViewer? scrollViewer)
     {
         if (scrollViewer == null) return;
-        
+
         scrollViewer.ScrollToRightEnd();
         scrollViewer.ScrollToBottom();
     }

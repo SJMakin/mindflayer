@@ -1,11 +1,11 @@
-﻿using System.Collections.ObjectModel;
+﻿using Microsoft.Win32;
+using MindFlayer.saas;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
-using Microsoft.Win32;
-using MindFlayer.saas;
 
 namespace MindFlayer;
 
@@ -78,7 +78,7 @@ public class Conversation : INotifyPropertyChanged
         sfd.Filter = "Conversation Files (*.convo)|*.convo";
         var result = sfd.ShowDialog();
         if (result != true) return;
-        var convo = JsonSerializer.Serialize(ChatMessages.ToList(), new JsonSerializerOptions() {WriteIndented = true});
+        var convo = JsonSerializer.Serialize(ChatMessages.ToList(), new JsonSerializerOptions() { WriteIndented = true });
         File.WriteAllText(sfd.FileName, convo);
     }
 
@@ -99,7 +99,7 @@ public class Conversation : INotifyPropertyChanged
             msg.Parent = convo;
         }
         _parent.Conversations.Insert(_parent.Conversations.Count - 1, convo);
-        
+
     }
 
     public void ReplayFromThisMessage(ChatMessage message)
@@ -132,5 +132,5 @@ public class Conversation : INotifyPropertyChanged
             });
         }, _parent.SelectedChatModel));
     }
-    
+
 }
