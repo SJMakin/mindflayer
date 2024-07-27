@@ -15,6 +15,9 @@ public class Conversation : INotifyPropertyChanged
     private string _name;
     private readonly ChatViewModel _parent;
 
+    private string filenameDateTime = DateTime.Now.ToString("yyyyMMdd-HHmmss");
+    public string Filename => $"{filenameDateTime} {Name}.convo";
+
     public Conversation(ChatViewModel parent)
     {
         this._parent = parent;
@@ -99,7 +102,14 @@ public class Conversation : INotifyPropertyChanged
             msg.Parent = convo;
         }
         _parent.Conversations.Insert(_parent.Conversations.Count - 1, convo);
+    }
 
+    public void Archive()
+    {
+        var convo = JsonSerializer.Serialize(ChatMessages.ToList(), new JsonSerializerOptions() { WriteIndented = true });
+        var dir = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"\Mindflayer\");
+        if (!Directory.Exists(dir)) { Directory.CreateDirectory(dir); }
+        File.WriteAllText(Path.Join(dir, Filename), convo);
     }
 
     public void ReplayFromThisMessage(ChatMessage message)

@@ -2,7 +2,6 @@
 
 namespace MindFlayer;
 
-
 public class Header : DependencyObject, IParent<object>
 {
     public string Title { get; set; }

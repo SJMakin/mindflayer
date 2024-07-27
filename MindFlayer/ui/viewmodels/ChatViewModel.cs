@@ -6,6 +6,7 @@ using NAudio.Wave;
 using OpenAI.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace MindFlayer;
@@ -54,7 +55,7 @@ public class ChatViewModel : INotifyPropertyChanged
                 _addingNew = true;
                 var newConvo = NewConversation();
                 Conversations.Insert(Conversations.Count - 1, newConvo);
-                ActiveConversation = newConvo;
+                _activeConversation = newConvo;
                 OnPropertyChanged(nameof(ActiveConversation));
                 _addingNew = false;
             }
@@ -144,6 +145,8 @@ public class ChatViewModel : INotifyPropertyChanged
 
     private void SendMessage()
     {
+
+        SendEnabled = false;
         ActiveConversation.ChatMessages.Add(new ChatMessage(ActiveConversation)
         {
             Role = OpenAI.Chat.Role.User,
@@ -152,8 +155,6 @@ public class ChatViewModel : INotifyPropertyChanged
         });
 
         if (ActiveConversation.ChatMessages.Count == 2) _ = GenerateConversationTitle(ActiveConversation);
-
-        SendEnabled = false;
 
         var msg = new ChatMessage(ActiveConversation)
         {
@@ -166,17 +167,17 @@ public class ChatViewModel : INotifyPropertyChanged
         var input = NewMessageContent;
         NewMessageContent = string.Empty;
 
-        _ = ApiWrapper.ChatStream(ActiveConversation.ChatMessages, Temperature, (t) =>
-        {
-            System.Windows.Application.Current.Dispatcher.Invoke(() =>
-            {
-                if (t == null) return;
-                msg.Content += t;
-            });
-        }, SelectedChatModel)
-        .ContinueWith(_ => msg.TokenCount = _tokenCalculator.NumTokensFromMessage(msg.Content), TaskScheduler.Current);
+        void chatStreamCallback(string t) => Application.Current.Dispatcher.Invoke(() => msg.Content += t ?? "");
 
-        SendEnabled = true;
+        void responseRecievedActions(Task _)
+        {
+            msg.TokenCount = _tokenCalculator.NumTokensFromMessage(msg.Content);
+            ActiveConversation.Archive();
+            SendEnabled = true;
+        }
+
+        _ = ApiWrapper.ChatStream(ActiveConversation.ChatMessages, Temperature, chatStreamCallback, SelectedChatModel)
+                      .ContinueWith(responseRecievedActions, TaskScheduler.Current);
     }
 
     private async Task GenerateConversationTitle(Conversation activeConversation)
@@ -189,7 +190,7 @@ public class ChatViewModel : INotifyPropertyChanged
 
             new() { Role = OpenAI.Chat.Role.User, Content = $"Think of a topic name for this. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
         };
-        activeConversation.Name = await ApiWrapper.Chat(prompt, Temperature, SelectedChatModel);
+        activeConversation.Name = await ApiWrapper.Chat(prompt, Temperature, SelectedChatModel).ConfigureAwait(false);
     }
 
     private ICommand _recordInputCommand;
