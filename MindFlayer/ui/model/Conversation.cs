@@ -4,19 +4,20 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 
 namespace MindFlayer;
 
-public class Conversation : INotifyPropertyChanged
+public partial class Conversation : INotifyPropertyChanged
 {
     private ObservableCollection<ChatMessage> _chatMessages = [];
     private string _name;
     private readonly ChatViewModel _parent;
 
     private string filenameDateTime = DateTime.Now.ToString("yyyyMMdd-HHmmss");
-    public string Filename => $"{filenameDateTime} {Name}.convo";
+    public string Filename => $"{FilenameDateTime} {Name}.convo";
 
     public Conversation(ChatViewModel parent)
     {
@@ -48,7 +49,7 @@ public class Conversation : INotifyPropertyChanged
         get => _name;
         set
         {
-            _name = value;
+            _name = SanitizeFileName(value);
             OnPropertyChanged(nameof(Name));
         }
     }
@@ -88,6 +89,8 @@ public class Conversation : INotifyPropertyChanged
     private ICommand _loadCommand;
     public ICommand LoadCommand => _loadCommand ??= new RelayCommand(() => true, Load);
 
+    public string FilenameDateTime { get => filenameDateTime; set => filenameDateTime = value; }
+
     private void Load()
     {
         var sfd = new OpenFileDialog();
@@ -104,11 +107,14 @@ public class Conversation : INotifyPropertyChanged
         _parent.Conversations.Insert(_parent.Conversations.Count - 1, convo);
     }
 
+    public static string SanitizeFileName(string fileName) => IlligalFilePathChars().Replace(fileName, "_");
+
     public void Archive()
     {
         var convo = JsonSerializer.Serialize(ChatMessages.ToList(), new JsonSerializerOptions() { WriteIndented = true });
         var dir = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"\Mindflayer\");
         if (!Directory.Exists(dir)) { Directory.CreateDirectory(dir); }
+
         File.WriteAllText(Path.Join(dir, Filename), convo);
     }
 
@@ -143,4 +149,6 @@ public class Conversation : INotifyPropertyChanged
         }, _parent.SelectedChatModel));
     }
 
+    [GeneratedRegex(@"[<>:""/\\|?*]")]
+    private static partial Regex IlligalFilePathChars();
 }

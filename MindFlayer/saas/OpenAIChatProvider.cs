@@ -44,10 +44,9 @@ public class OpenAIChatProvider : ChatProvider
         if (!string.IsNullOrWhiteSpace(message.Content))
             yield return new Content(ContentType.Text, message.Content);
 
-        if (!string.IsNullOrEmpty(message.Image))
-            yield return new Content(ContentType.ImageUrl, message.Image);
+        if (message.Images is null) yield break;
+
+        foreach (var image in message.Images)
+            yield return new Content(ContentType.ImageUrl, $"data:image/jpeg;base64,{image}");
     }
-
-
-
 }

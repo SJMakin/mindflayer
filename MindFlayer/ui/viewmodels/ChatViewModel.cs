@@ -6,8 +6,11 @@ using NAudio.Wave;
 using OpenAI.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
+using System.Net.Mail;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace MindFlayer;
 
@@ -21,11 +24,68 @@ public class ChatViewModel : INotifyPropertyChanged
     private bool _removing;
     private MessageTokenCalculator _tokenCalculator = new MessageTokenCalculator();
 
+    public ICommand PasteCommand { get; }
+
     public ChatViewModel()
     {
         Conversations.Add(NewConversation());
         Conversations.Add(_addNewConvoButton);
+        PasteCommand = new RelayCommand(OnPaste);
     }
+
+    private void OnPaste()
+    {
+        if (Clipboard.ContainsImage())
+        {
+            var image = Clipboard.GetImage();
+            if (image != null)
+            {
+                BitmapImage bitmapImage = CreateBitmapImageFromBitmapSource(image);
+                var attachment = new Attachment
+                {
+                    FileName = "",
+                    Base64Content = ConvertBitmapImageToBase64(bitmapImage),
+                    AttachmentType = Attachment.FileType.Image
+                };
+                Attachments.Add(attachment);
+            }
+        }
+        else if (Clipboard.ContainsText())
+        {
+            NewMessageContent += Clipboard.GetText();
+        }
+    }
+
+    private BitmapImage CreateBitmapImageFromBitmapSource(BitmapSource bitmapSource)
+    {
+        using (MemoryStream memStream = new MemoryStream())
+        {
+            BitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+            encoder.Save(memStream);
+
+            BitmapImage bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.StreamSource = memStream;
+            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapImage.EndInit();
+            bitmapImage.Freeze();
+            return bitmapImage;
+        }
+    }
+
+    private string ConvertBitmapImageToBase64(BitmapImage bitmapImage)
+    {
+        using (MemoryStream memStream = new MemoryStream())
+        {
+            BitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bitmapImage));
+            encoder.Save(memStream);
+            byte[] imageBytes = memStream.ToArray();
+            return Convert.ToBase64String(imageBytes);
+        }
+    }
+
 
     public ObservableCollection<Conversation> Conversations { get; } = [];
 
@@ -116,6 +176,18 @@ public class ChatViewModel : INotifyPropertyChanged
         }
     }
 
+    private ObservableCollection<Attachment> _attachments = [];
+
+    public ObservableCollection<Attachment> Attachments
+    {
+        get => _attachments;
+        set
+        {
+            _attachments = value;
+            OnPropertyChanged(nameof(Attachments));
+        }
+    }
+
     private double _temperature = 1.00;
 
     public double Temperature
@@ -145,16 +217,28 @@ public class ChatViewModel : INotifyPropertyChanged
 
     private void SendMessage()
     {
-
         SendEnabled = false;
-        ActiveConversation.ChatMessages.Add(new ChatMessage(ActiveConversation)
+
+        var newMessage = new ChatMessage(ActiveConversation)
         {
             Role = OpenAI.Chat.Role.User,
             Content = NewMessageContent,
-            TokenCount = _tokenCalculator.NumTokensFromMessage(NewMessageContent)
-        });
+            TokenCount = _tokenCalculator.NumTokensFromMessage(NewMessageContent)            
+        };
+
+        foreach (var a in _attachments)
+        {
+            if (a.AttachmentType == Attachment.FileType.Image)
+            {
+                newMessage.Images.Add(a.Base64Content);
+            }
+        }
+
+        ActiveConversation.ChatMessages.Add(newMessage);
 
         if (ActiveConversation.ChatMessages.Count == 2) _ = GenerateConversationTitle(ActiveConversation);
+
+        Attachments.Clear();
 
         var msg = new ChatMessage(ActiveConversation)
         {
@@ -185,9 +269,6 @@ public class ChatViewModel : INotifyPropertyChanged
         var prompt = new List<ChatMessage>
         {
             new() { Role = OpenAI.Chat.Role.System, Content = "Be terse, but smart. Always be concise; prioritize clarity and brevity. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
-            
-            // "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
-
             new() { Role = OpenAI.Chat.Role.User, Content = $"Think of a topic name for this. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
         };
         activeConversation.Name = await ApiWrapper.Chat(prompt, Temperature, SelectedChatModel).ConfigureAwait(false);

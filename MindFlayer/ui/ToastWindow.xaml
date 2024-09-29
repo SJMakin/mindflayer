@@ -33,8 +33,7 @@
             <materialDesign:PopupBox
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
-                PlacementMode="TopAndAlignRightEdges"
-                >
+                PlacementMode="TopAndAlignRightEdges">
                 <StackPanel Orientation="Vertical">
                     <Button
                         Margin="2"

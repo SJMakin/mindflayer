@@ -60,6 +60,18 @@ public partial class MainWindow : Window
             DragMove();
     }
 
+    private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.V && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+        {
+            if (Clipboard.ContainsImage())
+            {
+                e.Handled = true; 
+                ((ChatViewModel)DataContext).PasteCommand.Execute(null);
+            }
+        }
+    }
+
     private void Settings_DialogHost_OnDialogClosing(object sender, DialogClosingEventArgs eventArgs)
     {
         //you can cancel the dialog close:

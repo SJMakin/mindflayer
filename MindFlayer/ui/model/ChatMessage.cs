@@ -3,10 +3,13 @@ using MindFlayer.saas;
 using MindFlayer.ui;
 using OpenAI.Chat;
 using OpenAI.Models;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace MindFlayer;
 
@@ -33,17 +36,39 @@ public class ChatMessage : INotifyPropertyChanged
 
     [JsonInclude]
     [JsonPropertyName("image")]
-    public string Image
+    public ObservableCollection<string> Images
     {
         get
         {
-            return _image;
+            return _images;
         }
         set
         {
-            _image = value;
-            OnPropertyChanged(nameof(Image));
+            _images = value;
+            OnPropertyChanged(nameof(Images));
         }
+    }
+
+    [JsonIgnore]
+    public ObservableCollection<BitmapImage> ImagesAsImageSource => LoadImages();
+
+    private ObservableCollection<BitmapImage> LoadImages()
+    {
+        var result = new ObservableCollection<BitmapImage>();
+        foreach (var base64Image in Images)
+        {
+            byte[] imageBytes = Convert.FromBase64String(base64Image);
+            using (MemoryStream ms = new MemoryStream(imageBytes))
+            {
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.StreamSource = ms;
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                result.Add(bitmap);
+            }
+        }
+        return result;
     }
 
     public int TokenCount
@@ -83,7 +108,7 @@ public class ChatMessage : INotifyPropertyChanged
     private ICommand _editCommand;
     private ICommand _toggleTextBoxVisibilityCommand;
     private string _content;
-    private string _image;
+    private ObservableCollection<string> _images = new();
     private int _tokenCount;
     private bool _isTextBoxVisible;
 
