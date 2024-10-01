@@ -104,6 +104,7 @@ public class ChatViewModel : INotifyPropertyChanged
     private Conversation _activeConversation;
 
     private readonly Dictaphone _dictaphone = new();
+    private readonly AudioProcessor _audio = new();
 
     public Conversation ActiveConversation
     {
@@ -152,7 +153,7 @@ public class ChatViewModel : INotifyPropertyChanged
         AnthropicModels.Claude35Sonnet,
     ];
 
-    private Model _selectedChatModel = Model.GPT4o;
+    private Model _selectedChatModel = AnthropicModels.Claude35Sonnet;
 
     public Model SelectedChatModel
     {
@@ -271,7 +272,10 @@ public class ChatViewModel : INotifyPropertyChanged
             new() { Role = OpenAI.Chat.Role.System, Content = "Be terse, but smart. Always be concise; prioritize clarity and brevity. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
             new() { Role = OpenAI.Chat.Role.User, Content = $"Think of a topic name for this. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
         };
-        activeConversation.Name = await ApiWrapper.Chat(prompt, Temperature, SelectedChatModel).ConfigureAwait(false);
+
+        var chatResult = await ApiWrapper.Chat(prompt, Temperature, SelectedChatModel).ConfigureAwait(false);
+
+        activeConversation.Name = chatResult.Split(Environment.NewLine.ToCharArray())[0].Trim();
     }
 
     private ICommand _recordInputCommand;
@@ -292,13 +296,14 @@ public class ChatViewModel : INotifyPropertyChanged
     {
         if (Recording)
         {
-            NewMessageContent = _dictaphone.StopRecordingAndTranscribe();
+            _audio.StopRecording();
             Recording = false;
         }
         else
         {
             Recording = true;
-            _dictaphone.StartRecording();
+            _audio.StartRecording(false, c => NewMessageContent += c.Transcription);
+            //_dictaphone.StartRecording();
         }
     }
 
@@ -320,7 +325,7 @@ public class ChatViewModel : INotifyPropertyChanged
         newConvo.ChatMessages.Add(new ChatMessage
         {
             Role = OpenAI.Chat.Role.System,
-            Content = "Be terse. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize.",
+            Content = "Be terse and helpful. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize.",
             TokenCount = _tokenCalculator.NumTokensFromMessage("You are a helpful concise assistant.")
         });
         return newConvo;
