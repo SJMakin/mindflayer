@@ -3,6 +3,7 @@ using log4net;
 using OpenAI.Chat;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using MindFlayer.intermutatio;
 
 namespace MindFlayer.saas;
 
@@ -41,9 +42,20 @@ public class AnthropicChatProvider : ChatProvider
             Model = model,
             Temperature = Convert.ToDecimal(temp.GetValueOrDefault() / 2),
             SystemMessage = messages.FirstOrDefault(m => m.Role == Role.System).Content,
-            Messages = messages.SkipWhile(m => m.Role == Role.System).Select(prompt => new Anthropic.SDK.Messaging.Message() { Role = prompt.Role.ToString().ToLowerInvariant(), Content = prompt.Content }).ToList(),
+            Messages = messages.SkipWhile(m => m.Role == Role.System).Select(prompt => new Anthropic.SDK.Messaging.Message() { Role = prompt.Role.ToString().ToLowerInvariant(), Content = CreateContent(prompt).ToArray() }).ToList(),
             MaxTokens = 4096
         };
         return request;
+    }
+
+    private static IEnumerable<object> CreateContent(ChatMessage message)
+    {
+        if (!string.IsNullOrWhiteSpace(message.Content))
+            yield return new TextContent() {Text = message.Content };
+
+        if (message.Images is null) yield break;
+
+        foreach (var image in message.Images)
+            yield return new ImageContent() { Source = new ImageSource() { Data = image, MediaType = MediaTypes.FromBase64(image) } };
     }
 }

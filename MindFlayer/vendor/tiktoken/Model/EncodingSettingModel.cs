@@ -1,33 +1,42 @@
-﻿namespace TiktokenSharp.Model;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using TiktokenSharp.Utils;
 
-public class EncodingSettingModel
+namespace TiktokenSharp.Model
 {
-    public string Name { get; set; }
-
-    /// <summary>
-    /// regex
-    /// </summary>
-    public string PatStr { get; set; }
-
-
-    public int? ExplicitNVocab { get; set; }
-
-    /// <summary>
-    /// tiktoken file
-    /// </summary>
-    public Dictionary<byte[], int> MergeableRanks { get; set; }
-
-    public Dictionary<string, int> SpecialTokens { get; set; }
-
-
-    public int MaxTokenValue
+    public class EncodingSettingModel
     {
-        get
+        public string Name { get; set; }
+
+        /// <summary>
+        /// regex
+        /// </summary>
+        public string PatStr { get; set; }
+
+
+        public int? ExplicitNVocab { get; set; }
+
+        /// <summary>
+        /// tiktoken file
+        /// </summary>
+        public Dictionary<ReadOnlyMemory<byte>, int> MergeableRanks { get; set; }
+
+        public Dictionary<string, int> SpecialTokens { get; set; }
+
+
+        public int MaxTokenValue
         {
-            return Math.Max(MergeableRanks.Values.Max(), SpecialTokens.Values.Max());
+            get
+            {
+                return Math.Max(MergeableRanks.Values.Max(), SpecialTokens.Values.Max());
+            }
         }
+
+        public EncodingSettingModel() { }
+
     }
-
-    public EncodingSettingModel() { }
-
 }

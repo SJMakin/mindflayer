@@ -97,4 +97,5 @@ public static class ImageProcessor
 
         return bitmapImage;
     }
+
 }
