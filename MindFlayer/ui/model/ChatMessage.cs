@@ -210,9 +210,9 @@ public class ChatMessage : INotifyPropertyChanged
     {
         foreach (var toolCall in ToolCalls)
         {
-            toolCall.Result = "User denied tool call.";
+            toolCall.Result = "User refused request.";
         }
 
-        Parent.ReplayFromThisMessage(this);
+        Parent.RequestCompletion();
     }
 }

@@ -15,9 +15,9 @@ public class AnthropicChatProvider : ChatProvider
 
     public override async Task<string> Chat(IEnumerable<ChatMessage> messages, double? temp, string model)
     {
-        var request = CreateMessageParameters(messages, temp, model);
+        var request = CreateMessageParameters(messages, temp, model, false);
         var result = await ApiWrapper.AnthropicClient.Messages.GetClaudeMessageAsync(request).ConfigureAwait(false);
-        return result.Content.Last().Text.Trim();
+        return result.Content.Last(c => c.Text is not null).Text.Trim();
     }
 
     public override async Task ChatStream(IEnumerable<ChatMessage> messages, double? temp, Action<string> callback, string model, Action<tools.ToolCall> toolCallback)
@@ -66,7 +66,7 @@ public class AnthropicChatProvider : ChatProvider
     }
 
     [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Required to meet api specification.")]
-    private static MessageParameters CreateMessageParameters(IEnumerable<ChatMessage> messages, double? temp, string model)
+    private static MessageParameters CreateMessageParameters(IEnumerable<ChatMessage> messages, double? temp, string model, bool withTools = true)
     {
         var request = new MessageParameters
         {
@@ -75,9 +75,14 @@ public class AnthropicChatProvider : ChatProvider
             SystemMessage = messages.FirstOrDefault(m => m.Role == Role.System).Content,
             Messages = messages.SkipWhile(m => m.Role == Role.System).SelectMany(CreateMessages).ToList(),
             MaxTokens = 8192,
-            ToolChoice = new ToolChoice() { Type = "auto" },
-            Tools = ToolMapper.MapToolsFromAssembly().ToArray()
         };
+
+        if (withTools)
+        {
+            request.ToolChoice = new ToolChoice() { Type = "auto" };
+            request.Tools = ToolMapper.MapToolsFromAssembly().ToArray();
+        }
+
         return request;
     }
 
@@ -118,7 +123,7 @@ public class AnthropicChatProvider : ChatProvider
         foreach (var toolCall in message.ToolCalls)
             yield return new ToolResultContent() { ToolUseId = toolCall.ID, Content = toolCall.Result };
 
-        yield return new TextContent() { Text = "Here you go..." };
+        yield return new TextContent() { Text = "Tool call results:" };
     }
 }
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Diagnostics;
@@ -56,7 +56,7 @@ public static class CodeTools
                             .OfType<TypeDeclarationSyntax>()
                             .Take(5);
 
-                        sb.AppendLine($"{indent} {fi.Name} ({fi.Length}b)");
+                        sb.AppendLine($"{indent} {fi.Name} ({FormatFileSize(fi.Length)})");
                         foreach (var type in types)
                         {
                             sb.AppendLine($"{indent}  {type.Identifier}");
@@ -77,7 +77,7 @@ public static class CodeTools
                     }
                     else
                     {
-                        sb.AppendLine($"{indent} {fi.Name} ({fi.Length}b)");
+                        sb.AppendLine($"{indent} {fi.Name} ({FormatFileSize(fi.Length)})");
                     }
                 }
             }
@@ -95,6 +95,13 @@ public static class CodeTools
         }
 
         return sb.ToString();
+    }
+
+    private static string FormatFileSize(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes}B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1}KB";
+        return $"{bytes / (1024.0 * 1024):F1}MB";
     }
 
     // Code Reading
