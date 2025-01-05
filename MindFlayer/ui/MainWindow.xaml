@@ -27,6 +27,11 @@
     mc:Ignorable="d">
     <Window.Resources>
         <ResourceDictionary>
+
+            <local:NumberToVisibilityConverter x:Key="NumberToVisibilityConverter" />
+            <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+            <local:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter" />
+
             <Style
                 x:Key="CustomNavigationRailTabItemStyle"
                 BasedOn="{StaticResource MaterialDesignNavigationRailTabItem}"
@@ -468,8 +473,10 @@
                                                             <Grid.RowDefinitions>
                                                                 <RowDefinition Height="Auto" />
                                                                 <RowDefinition Height="*" />
+                                                                <RowDefinition Height="Auto" />
                                                             </Grid.RowDefinitions>
 
+                                                            <!--  Markdown content view  -->
                                                             <FlowDocumentScrollViewer
                                                                 HorizontalAlignment="Stretch"
                                                                 VerticalAlignment="Stretch"
@@ -493,14 +500,15 @@
                                                                     </ContextMenu>
                                                                 </FlowDocumentScrollViewer.ContextMenu>
                                                             </FlowDocumentScrollViewer>
+
+                                                            <!--  Text based content view  -->
                                                             <TextBox
                                                                 Grid.Column="0"
                                                                 materialDesign:HintAssist.HelperText="{Binding TokenCount}"
                                                                 AcceptsReturn="True"
                                                                 Background="Transparent"
                                                                 Text="{Binding Content}"
-                                                                TextWrapping="Wrap"
-                                                                >
+                                                                TextWrapping="Wrap">
                                                                 <materialDesign:HintAssist.HelperTextStyle>
                                                                     <Style BasedOn="{StaticResource MaterialDesignHelperTextBlock}" TargetType="TextBlock">
                                                                         <Setter Property="Foreground" Value="DimGray" />
@@ -535,6 +543,7 @@
                                                                 </TextBox.ContextMenu>
                                                             </TextBox>
 
+                                                            <!--  Image content  -->
                                                             <ItemsControl Grid.Row="1" ItemsSource="{Binding ImagesAsImageSource}">
                                                                 <ItemsControl.ItemTemplate>
                                                                     <DataTemplate>
@@ -542,8 +551,58 @@
                                                                             MaxWidth="400"
                                                                             MaxHeight="400"
                                                                             Margin="3"
-                                                                            
                                                                             Source="{Binding}" />
+                                                                    </DataTemplate>
+                                                                </ItemsControl.ItemTemplate>
+                                                            </ItemsControl>
+
+                                                            <!--  Tools  -->
+                                                            <ItemsControl
+                                                                Grid.Row="2"
+                                                                Margin="0,8,0,0"
+                                                                ItemsSource="{Binding ToolCalls}"
+                                                                Visibility="{Binding ToolCalls.Count, Converter={StaticResource NumberToVisibilityConverter}}">
+                                                                <ItemsControl.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <materialDesign:Card Margin="4" Padding="8">
+                                                                            <StackPanel>
+                                                                                <Grid>
+                                                                                    <Grid.ColumnDefinitions>
+                                                                                        <ColumnDefinition Width="*" />
+                                                                                        <ColumnDefinition Width="Auto" />
+                                                                                    </Grid.ColumnDefinitions>
+                                                                                    <TextBlock>
+                                                                                        <Run FontWeight="Bold" Text="Tool: " />
+                                                                                        <Run Text="{Binding Name}" />
+                                                                                    </TextBlock>
+                                                                                    <StackPanel
+                                                                                        Grid.Column="1"
+                                                                                        Orientation="Horizontal"
+                                                                                        Visibility="{Binding Result, Converter={StaticResource NullToVisibilityConverter}}">
+                                                                                        <Button Margin="4,0" Command="{Binding DataContext.ApproveToolCallCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                                                                            <materialDesign:PackIcon Kind="Check" />
+                                                                                        </Button>
+                                                                                        <Button Command="{Binding DataContext.DenyToolCallCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                                                                            <materialDesign:PackIcon Kind="Close" />
+                                                                                        </Button>
+                                                                                    </StackPanel>
+                                                                                </Grid>
+                                                                                <TextBlock
+                                                                                    Margin="0,4,0,2"
+                                                                                    FontWeight="Bold"
+                                                                                    Text="Parameters:" />
+                                                                                <TextBlock
+                                                                                    Margin="8,0,0,0"
+                                                                                    FontFamily="Consolas"
+                                                                                    Text="{Binding Parameters}"
+                                                                                    TextWrapping="Wrap" />
+                                                                                <TextBlock Margin="0,8,0,0" Visibility="{Binding Result, Converter={StaticResource NotNullToVisibilityConverter}}">
+                                                                                    <Run FontWeight="Bold" Text="Result:" />
+                                                                                    <LineBreak />
+                                                                                    <Run Text="{Binding Result}" />
+                                                                                </TextBlock>
+                                                                            </StackPanel>
+                                                                        </materialDesign:Card>
                                                                     </DataTemplate>
                                                                 </ItemsControl.ItemTemplate>
                                                             </ItemsControl>

@@ -85,12 +85,13 @@ namespace MindFlayer.saas.tools
         // File System
         [Tool("find", "Find files using glob patterns")]
         public static string Find(
+            [ToolParameter("path", "Absolute path of the directory to search")] string path,
             [ToolParameter("pattern", "Glob pattern (eg: *.cs)")] string pattern,
             [ToolParameter("maxResults", "Maximum results to return", "integer", MaxLines)] int max = MaxLines)
         {
             try
             {
-                var files = Directory.GetFiles(".", pattern, SearchOption.AllDirectories)
+                var files = Directory.GetFiles(path, pattern, SearchOption.AllDirectories)
                     .Take(max)
                     .Select(f => new FileInfo(f))
                     .Select(f => $"{f.FullName} ({f.Length} bytes, modified {f.LastWriteTime})");
@@ -106,23 +107,25 @@ namespace MindFlayer.saas.tools
         // Text Search
         [Tool("grep", "Search file contents using regex")]
         public static string Grep(
-           [ToolParameter("pattern", "Regex pattern to search for")] string pattern,
+           [ToolParameter("path", "Absolute path of the directory to search")] string path,
+           [ToolParameter("file_pattern", "Glob pattern (eg: *.cs)")] string filePattern,
+           [ToolParameter("content_pattern", "Regex pattern to search for")] string contentPattern,
            [ToolParameter("maxResults", "Maximum results to return", "integer", MaxLines)] int max = MaxLines)
         {
             try
             {
-                var matches = Directory.GetFiles(".", "*.cs", SearchOption.AllDirectories)
+                var matches = Directory.GetFiles(path, filePattern, SearchOption.AllDirectories)
                     .SelectMany(file => File.ReadLines(file)
                         .Select((line, i) => new { file, line, lineNo = i + 1 })
-                        .Where(x => Regex.IsMatch(x.line, pattern))
+                        .Where(x => Regex.IsMatch(x.line, contentPattern))
                         .Take(max)
                         .Select(x => $"{x.file}:{x.lineNo}: {x.line.Trim()}"));
 
-                return $"Found {matches.Count()} matches for '{pattern}':\n{string.Join("\n", matches)}";
+                return $"Found {matches.Count()} matches:\n{string.Join("\n", matches)}\n{(MaxLines == matches.Count() ? "\n\nResults likely truncated. Consider tweaking args. " : "")}";
             }
             catch (Exception ex)
             {
-                return $"Error searching for {pattern}: {ex.Message}";
+                return $"Error: {ex.Message}";
             }
         }
 

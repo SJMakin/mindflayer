@@ -7,15 +7,12 @@ namespace Anthropic.SDK.Messaging
     /// </summary>
     public static class ContentType
     {
-        /// <summary>
-        /// Text Content Type
-        /// </summary>
         public static string Text => "text";
-        /// <summary>
-        /// Image Content Type
-        /// </summary>
         public static string Image => "image";
+        public static string ToolUse => "tool_use";
+        public static string ToolResult => "tool_result";
     }
+
     /// <summary>
     /// Helper Class for Text Content to Send to Claude
     /// </summary>
@@ -85,5 +82,32 @@ namespace Anthropic.SDK.Messaging
         /// </summary>
         [JsonPropertyName("data")]
         public string Data { get; set; }
+    }
+
+    public class ToolUseContent
+    {
+        [JsonPropertyName("type")]
+        public string Type => ContentType.ToolUse;
+
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("input")]
+        public dynamic Input { get; set; }
+    }
+
+    public class ToolResultContent
+    {
+        [JsonPropertyName("type")]
+        public string Type => ContentType.ToolResult;
+
+        [JsonPropertyName("tool_use_id")]
+        public string ToolUseId { get; set; }
+
+        [JsonPropertyName("content")]
+        public string Content { get; set; }
     }
 }

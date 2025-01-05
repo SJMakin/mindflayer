@@ -229,7 +229,9 @@ namespace Anthropic.SDK
                 else // an empty line indicates the end of an event
                 {
                     if (currentEvent.EventType == "message_start" ||
+                        currentEvent.EventType == "content_block_start" ||
                         currentEvent.EventType == "content_block_delta" ||
+                        currentEvent.EventType == "content_block_stop" ||
                         currentEvent.EventType == "message_delta")
                     {
                         var res = await JsonSerializer.DeserializeAsync<T>(

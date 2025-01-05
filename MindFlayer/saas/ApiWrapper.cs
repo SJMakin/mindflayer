@@ -1,5 +1,6 @@
 ﻿using Anthropic.SDK;
 using log4net;
+using MindFlayer.saas.tools;
 using OpenAI;
 using OpenAI.Audio;
 using System.Text.Json;
@@ -23,10 +24,10 @@ public static class ApiWrapper
         return await provider.Chat(messages, temp, model).ConfigureAwait(false);
     }
 
-    public static async Task ChatStream(IEnumerable<ChatMessage> messages, double? temp, Action<string> callback, string model)
+    public static async Task ChatStream(IEnumerable<ChatMessage> messages, double? temp, Action<string> callback, string model, Action<ToolCall> toolCallback)
     {
         var provider = ChatProviderFactory.CreateProvider(model);
-        await provider.ChatStream(messages, temp, callback, model).ConfigureAwait(false);
+        await provider.ChatStream(messages, temp, callback, model, toolCallback).ConfigureAwait(false);
     }
 
     public static string Transcribe(string file)

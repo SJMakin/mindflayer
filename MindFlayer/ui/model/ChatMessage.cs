@@ -1,5 +1,6 @@
 ﻿using MindFlayer.audio;
 using MindFlayer.saas;
+using MindFlayer.saas.tools;
 using MindFlayer.ui;
 using OpenAI.Chat;
 using OpenAI.Models;
@@ -46,6 +47,21 @@ public class ChatMessage : INotifyPropertyChanged
         {
             _images = value;
             OnPropertyChanged(nameof(Images));
+        }
+    }
+
+    [JsonInclude]
+    [JsonPropertyName("tool_call")]
+    public ObservableCollection<ToolCall> ToolCalls
+    {
+        get
+        {
+            return _toolCalls;
+        }
+        set
+        {
+            _toolCalls = value;
+            OnPropertyChanged(nameof(ToolCalls));
         }
     }
 
@@ -109,6 +125,7 @@ public class ChatMessage : INotifyPropertyChanged
     private ICommand _toggleTextBoxVisibilityCommand;
     private string _content;
     private ObservableCollection<string> _images = new();
+    private ObservableCollection<ToolCall> _toolCalls = new();
     private int _tokenCount;
     private bool _isTextBoxVisible;
 
@@ -171,5 +188,31 @@ public class ChatMessage : INotifyPropertyChanged
     protected void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    private ICommand _approveToolCallCommand;
+    private ICommand _denyToolCallCommand;
+
+    public ICommand ApproveToolCallCommand => _approveToolCallCommand ??= new RelayCommand(ApproveToolCall);
+    public ICommand DenyToolCallCommand => _denyToolCallCommand ??= new RelayCommand(DenyToolCall);
+
+    private void ApproveToolCall()
+    {
+        foreach (var toolCall in ToolCalls)
+        {
+            toolCall.Result = ToolExecutor.ExecuteTool(toolCall.Name, toolCall.Parameters);            
+        }
+
+        Parent.RequestCompletion();
+    }
+
+    private void DenyToolCall()
+    {
+        foreach (var toolCall in ToolCalls)
+        {
+            toolCall.Result = "User denied tool call.";
+        }
+
+        Parent.ReplayFromThisMessage(this);
     }
 }

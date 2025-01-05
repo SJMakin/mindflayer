@@ -16,7 +16,7 @@ public class OpenAIChatProvider : ChatProvider
         return result.FirstChoice.Message.Content.ToString().Trim();
     }
 
-    public override async Task ChatStream(IEnumerable<ChatMessage> messages, double? temp, Action<string> callback, string model)
+    public override async Task ChatStream(IEnumerable<ChatMessage> messages, double? temp, Action<string> callback, string model, Action<tools.ToolCall> toolCallback)
     {
         if (callback is null) throw new ArgumentNullException(nameof(callback));
 

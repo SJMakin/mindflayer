@@ -167,7 +167,7 @@ namespace TiktokenSharp.Services
                         }
                     case "p50k_base":
                         {
-                            return p50k_base().Result;
+                            return Task.Run(p50k_base).GetAwaiter().GetResult();
                         }
                     case "p50k_edit":
                         {
@@ -176,11 +176,11 @@ namespace TiktokenSharp.Services
                         }
                     case "cl100k_base":
                         {
-                            return cl100k_base().Result;
+                            return Task.Run(cl100k_base).GetAwaiter().GetResult();
                         }
                     case "o200k_base":
                         {
-                            return o200k_base().Result;
+                            return Task.Run(o200k_base).GetAwaiter().GetResult(); 
                         }
 
 

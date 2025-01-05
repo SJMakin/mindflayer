@@ -30,7 +30,7 @@ public static class CodeTools
             {
                 if (Directory.Exists(current))
                 {
-                    sb.AppendLine($"{indent}📁 {Path.GetFileName(current)}/");
+                    sb.AppendLine($"{indent} {Path.GetFileName(current)}/");
 
                     if (depth < MaxDepth)
                     {
@@ -56,7 +56,7 @@ public static class CodeTools
                             .OfType<TypeDeclarationSyntax>()
                             .Take(5);
 
-                        sb.AppendLine($"{indent}📄 {fi.Name} ({fi.Length}b)");
+                        sb.AppendLine($"{indent} {fi.Name} ({fi.Length}b)");
                         foreach (var type in types)
                         {
                             sb.AppendLine($"{indent}  {type.Identifier}");
@@ -77,13 +77,13 @@ public static class CodeTools
                     }
                     else
                     {
-                        sb.AppendLine($"{indent}📄 {fi.Name} ({fi.Length}b)");
+                        sb.AppendLine($"{indent} {fi.Name} ({fi.Length}b)");
                     }
                 }
             }
             catch (Exception ex)
             {
-                sb.AppendLine($"{indent}❌ Error: {ex.Message}");
+                sb.AppendLine($"{indent} Error: {ex.Message}");
             }
 
             if (sb.Length >= MaxChars)

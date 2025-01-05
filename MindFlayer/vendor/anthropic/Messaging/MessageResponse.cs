@@ -9,7 +9,23 @@ namespace Anthropic.SDK.Messaging
 
         [JsonPropertyName("type")]
         public string Type { get; set; }
+
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("input")]
+        public dynamic Input { get; set; }
+
+        [JsonPropertyName("tool_use_id")]
+        public string ToolUseId { get; set; }
+
+        [JsonPropertyName("content")]
+        public string ToolContent { get; set; }
     }
+
     public class MessageResponse
     {
         [JsonPropertyName("content")]
@@ -41,6 +57,21 @@ namespace Anthropic.SDK.Messaging
 
         [JsonPropertyName("message")]
         public StreamMessage StreamStartMessage { get; set; }
+
+        [JsonPropertyName("content_block")]
+        public ContentBlock ContentBlock { get; set; }
+    }
+
+    public class ContentBlock
+    {
+        [JsonPropertyName("type")]
+        public string Type { get; set; }
+
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
     }
 
     public class StreamMessage
@@ -80,6 +111,10 @@ namespace Anthropic.SDK.Messaging
 
         [JsonPropertyName("text")]
         public string Text { get; set; }
+
+        [JsonPropertyName("partial_json")]
+        public string PartialJson { get; set; }
+
         [JsonPropertyName("usage")]
         public Usage Usage { get; set; }
     }

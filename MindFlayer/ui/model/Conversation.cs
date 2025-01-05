@@ -2,6 +2,7 @@
 using MindFlayer.saas;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -130,6 +131,12 @@ public partial class Conversation : INotifyPropertyChanged
             }
         }
 
+        RequestCompletion();
+    }
+
+
+    public void RequestCompletion()
+    {
         var msg = new ChatMessage(this)
         {
             Role = OpenAI.Chat.Role.Assistant,
@@ -138,16 +145,28 @@ public partial class Conversation : INotifyPropertyChanged
 
         ChatMessages.Add(msg);
 
-        Task.Run(() => ApiWrapper.ChatStream(ChatMessages, _parent.Temperature, (t) =>
-        {
-            Application.Current.Dispatcher.Invoke(() =>
+        Task.Run(() => ApiWrapper.ChatStream(
+            ChatMessages, _parent.Temperature,
+            (t) =>
             {
-                if (t == null) return;
-                msg.Content = msg.Content + t;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    if (t == null) return;
+                    msg.Content = msg.Content + t;
 
-            });
-        }, _parent.SelectedChatModel));
+                });
+            },
+        _parent.SelectedChatModel,
+            (t) =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    msg.ToolCalls.Add(t);
+                });
+            }
+        ));
     }
+
 
     [GeneratedRegex(@"[<>:""/\\|?*]")]
     private static partial Regex IlligalFilePathChars();

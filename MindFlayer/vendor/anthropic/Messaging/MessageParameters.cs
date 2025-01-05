@@ -24,5 +24,29 @@ namespace Anthropic.SDK.Messaging
         public int? TopK { get; set; }
         [JsonPropertyName("top_p")]
         public decimal? TopP { get; set; }
+        [JsonPropertyName("tools")]
+        public Tool[] Tools { get; set; }
+        [JsonPropertyName("tool_choice")]
+        public ToolChoice ToolChoice { get; set; }
+    }
+
+    public class Tool
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        [JsonPropertyName("description")]
+        public string Description { get; set; }
+        [JsonPropertyName("input_schema")]
+        public dynamic InputSchema { get; set; }
+    }
+
+    public class ToolChoice
+    {
+        [JsonPropertyName("type")]
+        public string Type { get; set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        [JsonPropertyName("disable_parallel_tool_use")]
+        public bool? DisableParallelToolUse { get; set; }
     }
 }

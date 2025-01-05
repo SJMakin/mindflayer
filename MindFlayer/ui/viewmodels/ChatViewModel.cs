@@ -261,7 +261,7 @@ public class ChatViewModel : INotifyPropertyChanged
             SendEnabled = true;
         }
 
-        _ = ApiWrapper.ChatStream(ActiveConversation.ChatMessages, Temperature, chatStreamCallback, SelectedChatModel)
+        _ = ApiWrapper.ChatStream(ActiveConversation.ChatMessages, Temperature, chatStreamCallback, SelectedChatModel, msg.ToolCalls.Add)
                       .ContinueWith(responseRecievedActions, TaskScheduler.Current);
     }
 
