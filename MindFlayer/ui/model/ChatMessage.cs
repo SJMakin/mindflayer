@@ -212,7 +212,5 @@ public class ChatMessage : INotifyPropertyChanged
         {
             toolCall.Result = "User refused request.";
         }
-
-        Parent.RequestCompletion();
     }
 }
