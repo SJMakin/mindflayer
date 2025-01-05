@@ -36,6 +36,7 @@ public class OpenAIChatProvider : ChatProvider
     private static ChatRequest CreateChatRequest(IEnumerable<ChatMessage> messages, double? temp, string model)
     {
         var prompt = messages.Select(prompt => new Message(prompt.Role, CreateContent(prompt))).ToList();
+        if (model.StartsWith("o1", StringComparison.OrdinalIgnoreCase)) prompt = prompt.Where(m => m.Role != Role.System).ToList();
         return new ChatRequest(messages: prompt, model: model, temperature: temp);
     }
 

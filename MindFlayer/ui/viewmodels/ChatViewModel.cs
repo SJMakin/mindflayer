@@ -145,9 +145,9 @@ public class ChatViewModel : INotifyPropertyChanged
         Model.GPT3_5_Turbo,
         Model.GPT3_5_Turbo_16K,
         Model.GPT4,
-        Model.GPT4Preview,
-        Model.GPT4Turbo,
         Model.GPT4o,
+        Model.O1Mini,
+        Model.O1,
         AnthropicModels.Claude3Sonnet,
         AnthropicModels.Claude3Opus,
         AnthropicModels.Claude35Sonnet,
@@ -325,7 +325,7 @@ public class ChatViewModel : INotifyPropertyChanged
         newConvo.ChatMessages.Add(new ChatMessage
         {
             Role = OpenAI.Chat.Role.System,
-            Content = "Be terse and helpful. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize.",
+            Content = "Be terse and helpful. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize. Smart thinking.",
             TokenCount = _tokenCalculator.NumTokensFromMessage("You are a helpful concise assistant.")
         });
         return newConvo;

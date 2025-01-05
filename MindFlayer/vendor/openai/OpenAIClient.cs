@@ -1,7 +1,6 @@
 ﻿using OpenAI.Audio;
 using OpenAI.Chat;
 using OpenAI.Completions;
-using OpenAI.Edits;
 using OpenAI.Embeddings;
 using OpenAI.Extensions;
 using OpenAI.Files;
@@ -49,9 +48,6 @@ public sealed class OpenAIClient
         ModelsEndpoint = new ModelsEndpoint(this);
         CompletionsEndpoint = new CompletionsEndpoint(this);
         ChatEndpoint = new ChatEndpoint(this);
-#pragma warning disable CS0612 // Type or member is obsolete
-        EditsEndpoint = new EditsEndpoint(this);
-#pragma warning restore CS0612 // Type or member is obsolete
         ImagesEndPoint = new ImagesEndpoint(this);
         EmbeddingsEndpoint = new EmbeddingsEndpoint(this);
         AudioEndpoint = new AudioEndpoint(this);
@@ -147,13 +143,6 @@ public sealed class OpenAIClient
     /// <see href="https://platform.openai.com/docs/api-reference/chat"/>
     /// </summary>
     public ChatEndpoint ChatEndpoint { get; }
-
-    /// <summary>
-    /// Given a prompt and an instruction, the model will return an edited version of the prompt.<br/>
-    /// <see href="https://platform.openai.com/docs/api-reference/edits"/>
-    /// </summary>
-    [Obsolete]
-    public EditsEndpoint EditsEndpoint { get; }
 
     /// <summary>
     /// Given a prompt and/or an input image, the model will generate a new image.<br/>

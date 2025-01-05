@@ -6,6 +6,7 @@ public static class ChatProviderFactory
     {
         if (model is null) throw new ArgumentNullException(nameof(model));
         if (model.StartsWith("gpt", StringComparison.OrdinalIgnoreCase)) return new OpenAIChatProvider();
+        if (model.StartsWith("o1", StringComparison.OrdinalIgnoreCase)) return new OpenAIChatProvider();
         if (model.StartsWith("claude", StringComparison.OrdinalIgnoreCase)) return new AnthropicChatProvider();
         throw new InvalidOperationException("Unexpected model.");
     }
