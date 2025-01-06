@@ -1,8 +1,9 @@
 # TODO
 
-* Fix dialogs
-* Images in chat
-* Copy button on code blocks
-* Markdown fixes/tests
+* Fix odd dialog bug
 * More image gen models
-* Files/RAG
+* File picker/RAG
+* Web tools ('google'/llm friendly page view/etc)
+* Improve note taker (audio in + prompt in loop on updates) 
+* Add tools to OpenAI
+* Add 
