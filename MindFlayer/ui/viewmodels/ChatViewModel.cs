@@ -218,6 +218,16 @@ public class ChatViewModel : INotifyPropertyChanged
 
     private void SendMessage()
     {
+        if (string.IsNullOrWhiteSpace(NewMessageContent))
+        {
+            var lastMessage = ActiveConversation.ChatMessages.Last();
+            if (lastMessage.ToolCalls.Any())
+            {
+                lastMessage.ApproveToolCall();
+            }
+            return;
+        }
+
         SendEnabled = false;
 
         var newMessage = new ChatMessage(ActiveConversation)

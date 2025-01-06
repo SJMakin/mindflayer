@@ -196,7 +196,7 @@ public class ChatMessage : INotifyPropertyChanged
     public ICommand ApproveToolCallCommand => _approveToolCallCommand ??= new RelayCommand(ApproveToolCall);
     public ICommand DenyToolCallCommand => _denyToolCallCommand ??= new RelayCommand(DenyToolCall);
 
-    private void ApproveToolCall()
+    public void ApproveToolCall()
     {
         foreach (var toolCall in ToolCalls)
         {
