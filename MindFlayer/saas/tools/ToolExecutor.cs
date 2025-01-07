@@ -73,6 +73,7 @@ public class ToolExecutor
         }
 
         // Handle primitive types
+        if (element.ValueKind == JsonValueKind.Null) return null;
         if (element.ValueKind == JsonValueKind.String) return element.GetString();
         if (element.ValueKind == JsonValueKind.Number)
         {
