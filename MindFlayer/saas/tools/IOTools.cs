@@ -96,7 +96,10 @@ namespace MindFlayer.saas.tools
            [ToolParameter("path", "Path to file or directory to search")] string path,
            [ToolParameter("file_pattern", "The search string to match against file names. Supports * (any characters) and ? (single character)")] string filePattern,
            [ToolParameter("match_pattern", "Regex pattern to search for")] string matchPattern,
-           [ToolParameter("max_items", "Maximum results to return", "integer", MaxLines)] int maxItems = MaxLines)
+           [ToolParameter("max_items", "Maximum matches to return", "integer", 25)] int maxItems = 25,
+           [ToolParameter("start_pos", "Starting position in each file", "integer", 0)] int startPos = 0,
+           [ToolParameter("max_chars", "Maximum characters to search in each file", "integer", 50000)] int maxChars = 50000,
+           [ToolParameter("context_chars", "Number of characters to show before/after match", "integer", 20)] int contextChars = 20)
         {
             try
             {
@@ -107,10 +110,20 @@ namespace MindFlayer.saas.tools
                 var matches = filesToSearch
                     .SelectMany(file => {
                         var content = File.ReadAllText(file);
-                        return Regex.Matches(content, matchPattern)
+                        var searchContent = content.Length <= startPos ? "" :
+                            content.Substring(startPos, Math.Min(maxChars, content.Length - startPos));
+                        
+                        return Regex.Matches(searchContent, matchPattern)
                             .Cast<Match>()
                             .Take(maxItems)
-                            .Select(m => $"{file}:{m.Index}: {m.Value.Trim()}");
+                            .Select(m => {
+                                var start = Math.Max(0, m.Index - contextChars);
+                                var end = Math.Min(searchContent.Length, m.Index + m.Length + contextChars);
+                                var context = searchContent.Substring(start, end - start);
+                                if (start > 0) context = "..." + context;
+                                if (end < searchContent.Length) context = context + "...";
+                                return $"{file}:{startPos + m.Index}: {context}";
+                            });
                     });
 
                 var results = matches.ToList();
