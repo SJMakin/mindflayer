@@ -56,18 +56,52 @@ public class ToolExecutor
             return $"Error executing tool: {ex.Message}";
         }
     }
-
     private static object ConvertJsonValue(JsonElement element, Type targetType)
     {
-        return targetType.Name switch
+        // Handle List<T>
+        if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(List<>))
         {
-            "String" => element.GetString(),
-            "Int32" => element.GetInt32(),
-            "Boolean" => element.GetBoolean(),
-            "Double" => element.GetDouble(),
-            // Add other types as needed
-            _ => throw new NotSupportedException($"Conversion for type {targetType.Name} not supported")
-        };
+            var listType = targetType.GetGenericArguments()[0];
+            var list = Activator.CreateInstance(targetType);
+            var add = targetType.GetMethod("Add");
+
+            foreach (var item in element.EnumerateArray())
+            {
+                add.Invoke(list, new[] { ConvertJsonValue(item, listType) });
+            }
+            return list;
+        }
+
+        // Handle primitive types
+        if (element.ValueKind == JsonValueKind.String) return element.GetString();
+        if (element.ValueKind == JsonValueKind.Number)
+        {
+            if (targetType == typeof(int)) return element.GetInt32();
+            if (targetType == typeof(double)) return element.GetDouble();
+        }
+        if (element.ValueKind == JsonValueKind.True || element.ValueKind == JsonValueKind.False)
+            return element.GetBoolean();
+
+        // Handle complex objects
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            var instance = Activator.CreateInstance(targetType);
+            var properties = targetType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var property in properties)
+            {
+                var paramAttr = property.GetCustomAttribute<ToolParameterAttribute>();
+                if (paramAttr == null) continue;
+
+                if (element.TryGetProperty(paramAttr.Name, out var jsonValue) && property.CanWrite)
+                {
+                    property.SetValue(instance, ConvertJsonValue(jsonValue, property.PropertyType));
+                }
+            }
+            return instance;
+        }
+
+        throw new NotSupportedException($"Conversion for type {targetType.Name} not supported");
     }
 
     private static object GetDefaultValue(Type t)

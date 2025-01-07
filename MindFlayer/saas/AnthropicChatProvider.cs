@@ -126,14 +126,12 @@ public class AnthropicChatProvider : ChatProvider
         yield return new TextContent() { Text = "Tool call results:" };
     }
 }
-
 public static class ToolMapper
 {
     public static List<Anthropic.SDK.Messaging.Tool> MapToolsFromAssembly()
     {
         var tools = new List<Anthropic.SDK.Messaging.Tool>();
 
-        // Get all methods with Tool attribute
         var methods = typeof(IOTools).GetMethods(BindingFlags.Public | BindingFlags.Static)
             .Concat(typeof(CodeTools).GetMethods(BindingFlags.Public | BindingFlags.Static))
             .Where(m => m.GetCustomAttribute<ToolAttribute>() != null);
@@ -149,17 +147,15 @@ public static class ToolMapper
 
                     return new
                     {
-                        Name = paramAttr.Name,
-                        Description = paramAttr.Description,
-                        Type = paramAttr.Type,
-                        Default = paramAttr.Default,
-                        Required = paramAttr.IsRequired
+                        Parameter = paramAttr,
+                        IsArray = paramAttr.Type == "array",
+                        ArrayItemType = p.ParameterType.IsGenericType ?
+                            p.ParameterType.GetGenericArguments().FirstOrDefault() : null
                     };
                 })
                 .Where(p => p != null)
                 .ToList();
 
-            // Create the function schema
             var functionSchema = new
             {
                 name = toolAttr.Name,
@@ -170,21 +166,56 @@ public static class ToolMapper
                 {
                     type = "object",
                     properties = parameters.ToDictionary(
-                        p => p.Name,
-                        p => new
+                        keySelector: p => p.Parameter.Name,
+                        elementSelector: p =>
                         {
-                            type = p.Type,
-                            description = p.Description,
-                            @default = p.Default
+                            if (p.IsArray && p.ArrayItemType != null)
+                            {
+                                var itemProperties = p.ArrayItemType.GetProperties()
+                                    .Select(prop => prop.GetCustomAttribute<ToolParameterAttribute>())
+                                    .Where(attr => attr != null)
+                                    .ToDictionary(
+                                        attr => attr.Name,
+                                        attr => new Dictionary<string, object>
+                                        {
+                                            { "type", attr.Type },
+                                            { "description", attr.Description },
+                                            { "default", attr.Default }
+                                        }
+                                    );
+
+                                return new Dictionary<string, object>
+                                {
+                                    { "type", "array" },
+                                    { "items", new Dictionary<string, object>
+                                        {
+                                            { "type", "object" },
+                                            { "properties", itemProperties },
+                                            { "required", p.ArrayItemType.GetProperties()
+                                                .Select(prop => prop.GetCustomAttribute<ToolParameterAttribute>())
+                                                .Where(attr => attr != null && attr.IsRequired)
+                                                .Select(attr => attr.Name)
+                                                .ToList()
+                                            }
+                                        }
+                                    },
+                                    { "description", p.Parameter.Description }
+                                };
+                            }
+                            return new Dictionary<string, object>
+                            {
+                                { "type", p.Parameter.Type },
+                                { "description", p.Parameter.Description },
+                                { "default", p.Parameter.Default }
+                            };
                         }
                     ),
-                    required = parameters.Where(p => p.Required)
-                                       .Select(p => p.Name)
+                    required = parameters.Where(p => p.Parameter.IsRequired)
+                                       .Select(p => p.Parameter.Name)
                                        .ToList()
                 }
             };
 
-            // Create the tool using the Anthropic SDK format
             var tool = new Anthropic.SDK.Messaging.Tool()
             {
                 Name = toolAttr.Name,
