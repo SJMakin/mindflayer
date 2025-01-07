@@ -23,12 +23,12 @@ namespace MindFlayer.saas.tools
             [ToolParameter("max_chars", "Maximum characters to read", "integer", MaxChars)] int maxChars = MaxChars)
         {
             if (!File.Exists(path))
-                return $"Error: File not found: {path}";
+                return "Error: File not found";
 
             var text = File.ReadAllText(path);
             var available = text.Length - startPos;
             if (available <= 0)
-                return $"Error: Start position {startPos} beyond file length {text.Length}";
+                return "Error: Invalid start position";
 
             var chunk = text.Substring(startPos, Math.Min(maxChars, available));
             return $"{chunk}{(available > chunk.Length ? $"\n\n[Truncated: {available} chars remaining]" : "")}";
@@ -42,11 +42,11 @@ namespace MindFlayer.saas.tools
             try
             {
                 File.WriteAllText(path, content);
-                return $"Success";
+                return "Done";
             }
             catch (Exception ex)
             {
-                return $"Error writing to {path}: {ex.Message}";
+                return $"Error: {ex.Message}";
             }
         }
 
@@ -58,11 +58,11 @@ namespace MindFlayer.saas.tools
             try
             {
                 File.AppendAllText(path, content);
-                return $"Success";
+                return "Done";
             }
             catch (Exception ex)
             {
-                return $"Error appending to {path}: {ex.Message}";
+                return $"Error: {ex.Message}";
             }
         }
 
@@ -80,11 +80,13 @@ namespace MindFlayer.saas.tools
                     .Select(f => new FileInfo(f))
                     .Select(f => $"{f.FullName} ({f.Length} bytes, modified {f.LastWriteTime})");
 
-                return $"{files.Count()} results:\n{string.Join("\n", files)}";
+                var results = files.ToList();
+                var output = $"Found {results.Count} items:\n{string.Join("\n", results)}";
+                return results.Count >= maxItems ? $"{output}\n[Truncated]" : output;
             }
             catch (Exception ex)
             {
-                return $"Error searching for {filePattern}: {ex.Message}";
+                return $"Error: {ex.Message}";
             }
         }
 
@@ -111,7 +113,9 @@ namespace MindFlayer.saas.tools
                             .Select(m => $"{file}:{m.Index}: {m.Value.Trim()}");
                     });
 
-                return $"{matches.Count()} matches:\n{string.Join("\n", matches)}\n{(MaxLines == matches.Count() ? "\n\nResults likely truncated. Consider tweaking args. " : "")}";
+                var results = matches.ToList();
+                var output = $"Found {results.Count} items:\n{string.Join("\n", results)}";
+                return results.Count >= maxItems ? $"{output}\n[Truncated]" : output;
             }
             catch (Exception ex)
             {
@@ -222,7 +226,7 @@ namespace MindFlayer.saas.tools
 
                 if (!matchFound)
                 {
-                    throw new Exception($"Could not find exact match for edit:\n{edit.OldText}");
+                    throw new Exception("Could not find exact match for edit");
                 }
             }
 
