@@ -134,6 +134,12 @@ namespace MindFlayer.saas.tools
         {
             try
             {
+                if (string.IsNullOrEmpty(path)) throw new ArgumentException("Path is required");
+                if (string.IsNullOrEmpty(matchPattern)) throw new ArgumentException("match_pattern is required");
+                
+                try { Regex.Match("", matchPattern); }
+                catch (ArgumentException) { throw new ArgumentException("Invalid regex pattern"); }
+                
                 var filesToSearch = File.Exists(path) 
                     ? new[] { path }
                     : Directory.GetFiles(path, filePattern, SearchOption.AllDirectories);
@@ -176,14 +182,21 @@ namespace MindFlayer.saas.tools
         {
             try
             {
+                if (string.IsNullOrEmpty(path)) throw new ArgumentException("Path is required");
+                if (string.IsNullOrEmpty(matchPattern)) throw new ArgumentException("match_pattern is required");
+                if (!File.Exists(path)) throw new FileNotFoundException("File not found");
+                
+                try { Regex.Match("", matchPattern); }
+                catch (ArgumentException) { throw new ArgumentException("Invalid regex pattern"); }
+                
                 var text = File.ReadAllText(path);
-                var result = Regex.Replace(text, matchPattern, replacement);
+                var result = Regex.Replace(text, matchPattern, replacement ?? "");
                 File.WriteAllText(path, result);
-                return $"Replaced pattern '{matchPattern}' in {path}";
+                return "Done";
             }
             catch (Exception ex)
             {
-                return $"Error replacing in {path}: {ex.Message}";
+                return $"Error: {ex.Message}";
             }
         }
 
@@ -216,6 +229,16 @@ namespace MindFlayer.saas.tools
             [ToolParameter("edits", "Array of {oldText, newText} objects for replacements", "array")] List<FileEdit> edits,
             [ToolParameter("dry_run", "If true, don't write changes to disk", "boolean", "false")] bool dryRun = false)
         {
+            try
+            {
+                if (string.IsNullOrEmpty(path)) throw new ArgumentException("Path is required");
+                if (edits == null || !edits.Any()) throw new ArgumentException("At least one edit is required");
+                if (!File.Exists(path)) throw new FileNotFoundException("File not found");
+                foreach (var edit in edits)
+                {
+                    if (string.IsNullOrEmpty(edit.OldText)) throw new ArgumentException("old_text is required");
+                    if (edit.NewText == null) throw new ArgumentException("new_text is required");
+                }
             var content = NormalizeLineEndings(File.ReadAllText(path));
             var modifiedContent = content;
 
@@ -270,7 +293,7 @@ namespace MindFlayer.saas.tools
 
                 if (!matchFound)
                 {
-                    throw new Exception("Could not find exact match for edit");
+                    throw new ArgumentException($"Could not find text to replace: {edit.OldText.Substring(0, Math.Min(40, edit.OldText.Length))}...");
                 }
             }
 
@@ -289,6 +312,11 @@ namespace MindFlayer.saas.tools
             }
 
             return formattedDiff;
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
         }
     }
 
