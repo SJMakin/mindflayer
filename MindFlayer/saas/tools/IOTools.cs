@@ -18,20 +18,51 @@ namespace MindFlayer.saas.tools
 
         [Tool("read_file", "Read file content with position and length limits")]
         public static string Read(
-            [ToolParameter("path", "Path to the file to read")] string path,
+            [ToolParameter("path", "Path to file or directory to read")] string path,
             [ToolParameter("start_pos", "Starting position in file", "integer", 0)] int startPos = 0,
-            [ToolParameter("max_chars", "Maximum characters to read", "integer", MaxChars)] int maxChars = MaxChars)
+            [ToolParameter("max_chars", "Maximum characters to read per file", "integer", MaxChars)] int maxChars = MaxChars,
+            [ToolParameter("file_pattern", "Optional pattern to match multiple files. Supports * and ?", "string", null)] string filePattern = null,
+            [ToolParameter("max_items", "Maximum files to read when using pattern", "integer", 10)] int maxItems = 10)
         {
-            if (!File.Exists(path))
-                return "Error: File not found";
+            try {
+                var filesToRead = filePattern != null ?
+                    (Directory.Exists(path) ? 
+                        Directory.GetFiles(path, filePattern, SearchOption.AllDirectories).Take(maxItems) :
+                        throw new Exception("Path must be a directory when using file_pattern")
+                    ) :
+                    (File.Exists(path) ? 
+                        new[] { path } : 
+                        throw new Exception("File not found")
+                    );
 
-            var text = File.ReadAllText(path);
-            var available = text.Length - startPos;
-            if (available <= 0)
-                return "Error: Invalid start position";
+                var results = new List<string>();
+                foreach (var file in filesToRead)
+                {
+                    var text = File.ReadAllText(file);
+                    var available = text.Length - startPos;
+                    if (available <= 0) continue;
 
-            var chunk = text.Substring(startPos, Math.Min(maxChars, available));
-            return $"{chunk}{(available > chunk.Length ? $"\n\n[Truncated: {available} chars remaining]" : "")}";
+                    var chunk = text.Substring(startPos, Math.Min(maxChars, available));
+                    var content = chunk + (available > chunk.Length ? $"\n[Truncated: {available} chars remaining]" : "");
+                    
+                    if (filePattern != null)
+                    {
+                        results.Add($"==> {file} <==>\n{content}");
+                    }
+                    else
+                    {
+                        return content;
+                    }
+                }
+
+                return results.Count > 0 ? 
+                    string.Join("\n\n", results) : 
+                    "Error: No matching files found";
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
         }
 
         [Tool("write_file", "Write content to file, overwriting existing")]
