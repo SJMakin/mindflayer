@@ -19,18 +19,18 @@ namespace MindFlayer.saas.tools
         [Tool("read_file", "Read file content with position and length limits")]
         public static string Read(
             [ToolParameter("path", "Path to the file to read")] string path,
-            [ToolParameter("start", "Starting position in file", "integer", 0)] int start = 0,
-            [ToolParameter("maxChars", "Maximum characters to read", "integer", MaxChars)] int maxChars = MaxChars)
+            [ToolParameter("start_pos", "Starting position in file", "integer", 0)] int startPos = 0,
+            [ToolParameter("max_chars", "Maximum characters to read", "integer", MaxChars)] int maxChars = MaxChars)
         {
             if (!File.Exists(path))
                 return $"Error: File not found: {path}";
 
             var text = File.ReadAllText(path);
-            var available = text.Length - start;
+            var available = text.Length - startPos;
             if (available <= 0)
-                return $"Error: Start position {start} beyond file length {text.Length}";
+                return $"Error: Start position {startPos} beyond file length {text.Length}";
 
-            var chunk = text.Substring(start, Math.Min(maxChars, available));
+            var chunk = text.Substring(startPos, Math.Min(maxChars, available));
             return $"{chunk}{(available > chunk.Length ? $"\n\n[Truncated: {available} chars remaining]" : "")}";
         }
 
@@ -70,13 +70,13 @@ namespace MindFlayer.saas.tools
         [Tool("find_file", "Find files using glob patterns")]
         public static string Find(
             [ToolParameter("path", "Absolute path of the directory to search")] string path,
-            [ToolParameter("pattern", "Glob pattern (eg: *.cs)")] string pattern,
-            [ToolParameter("maxResults", "Maximum results to return", "integer", MaxLines)] int max = MaxLines)
+            [ToolParameter("file_pattern", "Glob pattern (eg: *.cs)")] string filePattern,
+            [ToolParameter("max_items", "Maximum results to return", "integer", MaxLines)] int maxItems = MaxLines)
         {
             try
             {
-                var files = Directory.GetFiles(path, pattern, SearchOption.AllDirectories)
-                    .Take(max)
+                var files = Directory.GetFiles(path, filePattern, SearchOption.AllDirectories)
+                    .Take(maxItems)
                     .Select(f => new FileInfo(f))
                     .Select(f => $"{f.FullName} ({f.Length} bytes, modified {f.LastWriteTime})");
 
@@ -84,7 +84,7 @@ namespace MindFlayer.saas.tools
             }
             catch (Exception ex)
             {
-                return $"Error searching for {pattern}: {ex.Message}";
+                return $"Error searching for {filePattern}: {ex.Message}";
             }
         }
 
@@ -92,22 +92,22 @@ namespace MindFlayer.saas.tools
         [Tool("grep", "Search file or directory contents using regex")]
         public static string Grep(
            [ToolParameter("path", "Path to file or directory to search")] string path,
-           [ToolParameter("searchPattern", "The search string to match against file names. Supports * (any characters) and ? (single character)")] string searchPattern,
-           [ToolParameter("content_pattern", "Regex pattern to search for")] string contentPattern,
-           [ToolParameter("maxResults", "Maximum results to return", "integer", MaxLines)] int max = MaxLines)
+           [ToolParameter("file_pattern", "The search string to match against file names. Supports * (any characters) and ? (single character)")] string filePattern,
+           [ToolParameter("match_pattern", "Regex pattern to search for")] string matchPattern,
+           [ToolParameter("max_items", "Maximum results to return", "integer", MaxLines)] int maxItems = MaxLines)
         {
             try
             {
                 var filesToSearch = File.Exists(path) 
                     ? new[] { path }
-                    : Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories);
+                    : Directory.GetFiles(path, filePattern, SearchOption.AllDirectories);
                 
                 var matches = filesToSearch
                     .SelectMany(file => {
                         var content = File.ReadAllText(file);
-                        return Regex.Matches(content, contentPattern)
+                        return Regex.Matches(content, matchPattern)
                             .Cast<Match>()
-                            .Take(max)
+                            .Take(maxItems)
                             .Select(m => $"{file}:{m.Index}: {m.Value.Trim()}");
                     });
 
@@ -123,15 +123,15 @@ namespace MindFlayer.saas.tools
         //[Tool("regex_replace", "Regex-based file content replacement")]
         public static string Replace(
             [ToolParameter("path", "Path to the file")] string path,
-            [ToolParameter("pattern", "Regex pattern to match")] string pattern,
+            [ToolParameter("match_pattern", "Regex pattern to match")] string matchPattern,
             [ToolParameter("replacement", "Replacement text")] string replacement)
         {
             try
             {
                 var text = File.ReadAllText(path);
-                var result = Regex.Replace(text, pattern, replacement);
+                var result = Regex.Replace(text, matchPattern, replacement);
                 File.WriteAllText(path, result);
-                return $"Replaced pattern '{pattern}' in {path}";
+                return $"Replaced pattern '{matchPattern}' in {path}";
             }
             catch (Exception ex)
             {
@@ -164,11 +164,11 @@ namespace MindFlayer.saas.tools
 
         [Tool("edit_file", "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made.")]
         public static string ApplyFileEdits(
-            [ToolParameter("filePath", "Path to the file to edit", "string")] string filePath,
+            [ToolParameter("path", "Path to the file to edit", "string")] string path,
             [ToolParameter("edits", "Array of {oldText, newText} objects for replacements", "array")] List<FileEdit> edits,
-            [ToolParameter("dryRun", "If true, don't write changes to disk", "boolean", "false")] bool dryRun = false)
+            [ToolParameter("dry_run", "If true, don't write changes to disk", "boolean", "false")] bool dryRun = false)
         {
-            var content = NormalizeLineEndings(File.ReadAllText(filePath));
+            var content = NormalizeLineEndings(File.ReadAllText(path));
             var modifiedContent = content;
 
             foreach (var edit in edits)
@@ -226,7 +226,7 @@ namespace MindFlayer.saas.tools
                 }
             }
 
-            var diff = CreateUnifiedDiff(content, modifiedContent, filePath);
+            var diff = CreateUnifiedDiff(content, modifiedContent, path);
 
             int numBackticks = 3;
             while (diff.Contains(new string('`', numBackticks)))
@@ -237,7 +237,7 @@ namespace MindFlayer.saas.tools
 
             if (!dryRun)
             {
-                File.WriteAllText(filePath, modifiedContent);
+                File.WriteAllText(path, modifiedContent);
             }
 
             return formattedDiff;
@@ -246,10 +246,10 @@ namespace MindFlayer.saas.tools
 
     public class FileEdit
     {
-        [ToolParameter("oldText", "Text to replace", "string")]
+        [ToolParameter("old_text", "Text to replace", "string")]
         public string OldText { get; set; }
 
-        [ToolParameter("newText", "New text to insert", "string")]
+        [ToolParameter("new_text", "New text to insert", "string")]
         public string NewText { get; set; }
     }
 }
