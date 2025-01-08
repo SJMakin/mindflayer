@@ -65,7 +65,7 @@ public static class CodeTools
                                 foreach (var type in types)
                                 {
                                     if (sb.Length >= MaxChars - 100) break;
-                                    sb.AppendLine($"{indent}  {type.Identifier}");
+                                    sb.AppendLine($"{indent}  {type.Modifiers} {type.Keyword} {type.Identifier}{TypeParams(type.TypeParameterList)} [{GetPosition(type)}]");
                                     
                                     foreach (var member in type.Members)
                                     {
@@ -76,8 +76,9 @@ public static class CodeTools
                                         }
                                         var memberText = member switch
                                         {
-                                            MethodDeclarationSyntax method => $"{GetMemberSignature(method)}",
-                                            PropertyDeclarationSyntax prop => prop.Identifier.ToString(),
+                                            MethodDeclarationSyntax method => $"{GetMemberSignature(method)} [{GetPosition(method)}]",
+                                            PropertyDeclarationSyntax prop => $"{prop.Modifiers} {prop.Type} {prop.Identifier} [{GetPosition(prop)}]",
+                                            FieldDeclarationSyntax field => $"{field.Modifiers} {field.Declaration.Type} {field.Declaration.Variables.First().Identifier} [{GetPosition(field)}]",
                                             _ => null
                                         };
                                         if (memberText != null)
@@ -175,7 +176,7 @@ public static class CodeTools
             if (node == null)
                 return $"Node '{identifier}' not found in {path}";
 
-            return $"Found node at line {GetLineNumber(node)}:\n{node}";
+            return $"Found node at {GetPosition(node)}:\n{node}";
         }
         catch (Exception ex)
         {
@@ -223,7 +224,7 @@ public static class CodeTools
     };
 
     // Execution
-    [Tool("runCommand", "Execute shell command with timeout")]
+    [Tool("run_command", "Execute shell command with timeout")]
     public static string RunCommand(
         [ToolParameter("cmd", "Command to execute")] string command,
         [ToolParameter("timeout", "Timeout in milliseconds", "integer", 30000)] int timeoutMs = 30000)
@@ -306,9 +307,10 @@ public static class CodeTools
     }
 
     // Helper methods
-    private static int GetLineNumber(SyntaxNode node)
+    private static string GetPosition(SyntaxNode node)
     {
-        return node.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+        var pos = node.GetLocation().SourceSpan.Start;
+        return $"@{pos}";
     }
 
     private static string GetMemberSignature(MemberDeclarationSyntax member)
