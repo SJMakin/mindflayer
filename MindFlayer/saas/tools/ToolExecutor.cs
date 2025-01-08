@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text.Json;
 
 namespace MindFlayer.saas.tools;
@@ -64,6 +64,30 @@ public class ToolExecutor
             var listType = targetType.GetGenericArguments()[0];
             var list = Activator.CreateInstance(targetType);
             var add = targetType.GetMethod("Add");
+
+            // Handle string that should be an array
+            if (element.ValueKind == JsonValueKind.String)
+            {
+                try
+                {
+                    // Try parse as JSON array
+                    using var arrayDoc = JsonDocument.Parse(element.GetString());
+                    if (arrayDoc.RootElement.ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (var item in arrayDoc.RootElement.EnumerateArray())
+                        {
+                            add.Invoke(list, new[] { ConvertJsonValue(item, listType) });
+                        }
+                        return list;
+                    }
+                }
+                catch
+                {
+                    // If parsing fails, treat as single item
+                    add.Invoke(list, new[] { ConvertJsonValue(element, listType) });
+                    return list;
+                }
+            }
 
             foreach (var item in element.EnumerateArray())
             {

@@ -24,45 +24,53 @@ public class AnthropicChatProvider : ChatProvider
     {
         if (callback is null) throw new ArgumentNullException(nameof(callback));
 
-        var response = new StringBuilder();
-        var request = CreateMessageParameters(messages, temp, model);
-
-        var toolCall = new ToolCall();
-        StringBuilder currentToolJson = new StringBuilder();
-        bool inToolCall = false;
-
-        await foreach (var chatResponse in ApiWrapper.AnthropicClient.Messages.StreamClaudeMessageAsync(request))
+        try
         {
-            if (chatResponse.Type == "content_block_start" && chatResponse.ContentBlock?.Type == "tool_use")
-            {
-                inToolCall = true;
-                currentToolJson.Clear();
-                // Capture the tool ID and name from the initial block
-                toolCall = new ToolCall
-                {
-                    ID = chatResponse.ContentBlock.Id,
-                    Name = chatResponse.ContentBlock.Name
-                };
-            }
-            else if (chatResponse.Delta?.PartialJson != null && inToolCall)
-            {
-                currentToolJson.Append(chatResponse.Delta.PartialJson);
-            }
-            else if (chatResponse.Type == "content_block_stop" && inToolCall)
-            {
-                inToolCall = false;
-                // The assembled JSON string is the parameters
-                toolCall.Parameters = currentToolJson.ToString();
-                toolCallback(toolCall);
-            }
-            else if (chatResponse?.Delta?.Text is not null)
-            {
-                response.Append(chatResponse.Delta.Text);
-                callback(chatResponse.Delta.Text);
-            }
-        }
+            var response = new StringBuilder();
+            var request = CreateMessageParameters(messages, temp, model);
 
-        log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={response}");
+            var toolCall = new ToolCall();
+            StringBuilder currentToolJson = new StringBuilder();
+            bool inToolCall = false;
+
+            await foreach (var chatResponse in ApiWrapper.AnthropicClient.Messages.StreamClaudeMessageAsync(request))
+            {
+                if (chatResponse.Type == "content_block_start" && chatResponse.ContentBlock?.Type == "tool_use")
+                {
+                    inToolCall = true;
+                    currentToolJson.Clear();
+                    // Capture the tool ID and name from the initial block
+                    toolCall = new ToolCall
+                    {
+                        ID = chatResponse.ContentBlock.Id,
+                        Name = chatResponse.ContentBlock.Name
+                    };
+                }
+                else if (chatResponse.Delta?.PartialJson != null && inToolCall)
+                {
+                    currentToolJson.Append(chatResponse.Delta.PartialJson);
+                }
+                else if (chatResponse.Type == "content_block_stop" && inToolCall)
+                {
+                    inToolCall = false;
+                    // The assembled JSON string is the parameters
+                    toolCall.Parameters = currentToolJson.ToString();
+                    toolCallback(toolCall);
+                }
+                else if (chatResponse?.Delta?.Text is not null)
+                {
+                    response.Append(chatResponse.Delta.Text);
+                    callback(chatResponse.Delta.Text);
+                }
+            }
+
+            log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={response}");
+        }
+        catch (Exception ex)
+        {
+            callback.Invoke($"\nError: {ex.Message}");
+            log.Error($"{nameof(ApiWrapper)}.{nameof(Chat)} {ex}");
+        }
     }
 
     [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Required to meet api specification.")]
@@ -115,7 +123,7 @@ public class AnthropicChatProvider : ChatProvider
             yield return new ImageContent() { Source = new ImageSource() { Data = image, MediaType = MediaTypes.FromBase64(image) } };
 
         foreach (var toolCall in message.ToolCalls)
-            yield return new ToolUseContent() { Id = toolCall.ID, Name = toolCall.Name, Input = JsonSerializer.Deserialize<JsonDocument>(toolCall.Parameters).RootElement};
+            yield return new ToolUseContent() { Id = toolCall.ID, Name = toolCall.Name, Input = JsonSerializer.Deserialize<JsonDocument>(toolCall.Parameters).RootElement };
     }
 
     private static IEnumerable<object> CreateToolResultContent(ChatMessage message)

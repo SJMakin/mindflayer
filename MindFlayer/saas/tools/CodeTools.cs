@@ -9,7 +9,7 @@ namespace MindFlayer.saas.tools;
 
 public static class CodeTools
 {
-    const int MaxChars = 3000;  // Output budget
+    const int MaxChars = 10000; // Output budget for map function  // Output budget
     const int MaxDepth = 5;     // Directory depth limit
 
     [Tool("map", "Analyze directory/file structure and code elements. Shows classes/methods/properties for code files using BFS traversal.")]
@@ -49,30 +49,76 @@ public static class CodeTools
                 else if (File.Exists(current))
                 {
                     var fi = new FileInfo(current);
-                    if (fi.Extension.ToLower() == ".cs" && sb.Length < MaxChars - 500)
+                    if ((fi.Extension.ToLower() == ".cs" || fi.Extension.ToLower() == ".go") && sb.Length < MaxChars - 500)
                     {
-                        var tree = CSharpSyntaxTree.ParseText(File.ReadAllText(current));
-                        var types = tree.GetRoot().DescendantNodes()
-                            .OfType<TypeDeclarationSyntax>()
-                            .Take(5);
-
-                        sb.AppendLine($"{indent} {fi.Name} ({FormatFileSize(fi.Length)})");
-                        foreach (var type in types)
+                        try
                         {
-                            sb.AppendLine($"{indent}  {type.Identifier}");
-                            var members = type.Members.Take(3)
-                                .Select(m => m switch
-                                {
-                                    MethodDeclarationSyntax method => $"{GetMemberSignature(method)}",
-                                    PropertyDeclarationSyntax prop => prop.Identifier.ToString(),
-                                    _ => null
-                                })
-                                .Where(m => m != null);
-                            foreach (var m in members)
-                                sb.AppendLine($"{indent}    {m}");
+                            string fileContent = File.ReadAllText(current);
+                            sb.AppendLine($"{indent} {fi.Name} ({FormatFileSize(fi.Length)})");
 
-                            if (type.Members.Count > 3)
-                                sb.AppendLine($"{indent}    + {type.Members.Count - 3} more members...");
+                            if (fi.Extension.ToLower() == ".cs")
+                            {
+                                var tree = CSharpSyntaxTree.ParseText(fileContent);
+                                var types = tree.GetRoot().DescendantNodes()
+                                    .OfType<TypeDeclarationSyntax>();
+
+                                foreach (var type in types)
+                                {
+                                    if (sb.Length >= MaxChars - 100) break;
+                                    sb.AppendLine($"{indent}  {type.Identifier}");
+                                    
+                                    foreach (var member in type.Members)
+                                    {
+                                        if (sb.Length >= MaxChars - 100)
+                                        {
+                                            sb.AppendLine($"{indent}    + more members truncated due to size limit...");
+                                            break;
+                                        }
+                                        var memberText = member switch
+                                        {
+                                            MethodDeclarationSyntax method => $"{GetMemberSignature(method)}",
+                                            PropertyDeclarationSyntax prop => prop.Identifier.ToString(),
+                                            _ => null
+                                        };
+                                        if (memberText != null)
+                                            sb.AppendLine($"{indent}    {memberText}");
+                                    }
+                                }
+                            }
+                            else // Go file
+                            {
+                                // Match type declarations
+                                var typeMatches = System.Text.RegularExpressions.Regex.Matches(fileContent, @"type\s+([^\s{]+)\s*{?");
+                                foreach (System.Text.RegularExpressions.Match typeMatch in typeMatches)
+                                {
+                                    if (sb.Length >= MaxChars - 100) break;
+                                    string typeName = typeMatch.Groups[1].Value;
+                                    sb.AppendLine($"{indent}  {typeName}");
+
+                                    // Match methods for this type
+                                    var methodMatches = System.Text.RegularExpressions.Regex.Matches(fileContent, 
+                                        $@"func\s+\([^)]+\s*{typeName}\)\s*([^(\s]+)\s*\([^)]*\)");
+                                    foreach (System.Text.RegularExpressions.Match methodMatch in methodMatches)
+                                    {
+                                        if (sb.Length >= MaxChars - 100) break;
+                                        sb.AppendLine($"{indent}    {methodMatch.Groups[1].Value}");
+                                    }
+                                }
+
+                                // Match standalone functions
+                                var funcMatches = System.Text.RegularExpressions.Regex.Matches(fileContent, @"func\s+([^(\s]+)\s*\([^)]*\)");
+                                foreach (System.Text.RegularExpressions.Match funcMatch in funcMatches)
+                                {
+                                    if (sb.Length >= MaxChars - 100) break;
+                                    string funcName = funcMatch.Groups[1].Value;
+                                    if (!funcName.Contains(")")) // Exclude method matches
+                                        sb.AppendLine($"{indent}  {funcName}");
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            sb.AppendLine($"{indent} Error processing file: {ex.Message}");
                         }
                     }
                     else
