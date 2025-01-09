@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace MindFlayer.saas.tools
 {
@@ -8,6 +9,9 @@ namespace MindFlayer.saas.tools
         public string ID { get; set; } = "";
         public string Name { get; set; } = "";
         public string Parameters { get; set; } = "";
+
+        [JsonIgnore]
+        public bool IsLoaded = false;
 
         private string _result;
         public string Result

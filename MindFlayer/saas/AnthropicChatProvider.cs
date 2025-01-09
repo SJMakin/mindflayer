@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using MindFlayer.intermutatio;
 using MindFlayer.saas.tools;
-using System.Reflection;
 
 namespace MindFlayer.saas;
 
@@ -23,6 +22,7 @@ public class AnthropicChatProvider : ChatProvider
     public override async Task ChatStream(IEnumerable<ChatMessage> messages, double? temp, Action<string> callback, string model, Action<tools.ToolCall> toolCallback)
     {
         if (callback is null) throw new ArgumentNullException(nameof(callback));
+        if (toolCallback is null) throw new ArgumentNullException(nameof(toolCallback));
 
         try
         {
@@ -45,17 +45,18 @@ public class AnthropicChatProvider : ChatProvider
                         ID = chatResponse.ContentBlock.Id,
                         Name = chatResponse.ContentBlock.Name
                     };
+
+                    toolCallback(toolCall);
                 }
                 else if (chatResponse.Delta?.PartialJson != null && inToolCall)
                 {
                     currentToolJson.Append(chatResponse.Delta.PartialJson);
+                    toolCall.Parameters = currentToolJson.ToString();
                 }
                 else if (chatResponse.Type == "content_block_stop" && inToolCall)
                 {
                     inToolCall = false;
-                    // The assembled JSON string is the parameters
-                    toolCall.Parameters = currentToolJson.ToString();
-                    toolCallback(toolCall);
+                    toolCall.IsLoaded = true;
                 }
                 else if (chatResponse?.Delta?.Text is not null)
                 {
@@ -88,7 +89,7 @@ public class AnthropicChatProvider : ChatProvider
         if (withTools)
         {
             request.ToolChoice = new ToolChoice() { Type = "auto" };
-            request.Tools = ToolMapper.MapToolsFromAssembly().ToArray();
+            request.Tools = ToolMapper.AnthropicTools().ToArray();
         }
 
         return request;
@@ -132,108 +133,5 @@ public class AnthropicChatProvider : ChatProvider
             yield return new ToolResultContent() { ToolUseId = toolCall.ID, Content = toolCall.Result };
 
         yield return new TextContent() { Text = "Tool call results:" };
-    }
-}
-public static class ToolMapper
-{
-    public static List<Anthropic.SDK.Messaging.Tool> MapToolsFromAssembly()
-    {
-        var tools = new List<Anthropic.SDK.Messaging.Tool>();
-
-        var methods = typeof(IOTools).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Concat(typeof(CodeTools).GetMethods(BindingFlags.Public | BindingFlags.Static))
-            .Where(m => m.GetCustomAttribute<ToolAttribute>() != null);
-
-        foreach (var method in methods)
-        {
-            var toolAttr = method.GetCustomAttribute<ToolAttribute>();
-            var parameters = method.GetParameters()
-                .Select(p =>
-                {
-                    var paramAttr = p.GetCustomAttribute<ToolParameterAttribute>();
-                    if (paramAttr == null) return null;
-
-                    return new
-                    {
-                        Parameter = paramAttr,
-                        IsArray = paramAttr.Type == "array",
-                        ArrayItemType = p.ParameterType.IsGenericType ?
-                            p.ParameterType.GetGenericArguments().FirstOrDefault() : null
-                    };
-                })
-                .Where(p => p != null)
-                .ToList();
-
-            var functionSchema = new
-            {
-                name = toolAttr.Name,
-                description = toolAttr.Description,
-
-                type = "object",
-                parameters = new
-                {
-                    type = "object",
-                    properties = parameters.ToDictionary(
-                        keySelector: p => p.Parameter.Name,
-                        elementSelector: p =>
-                        {
-                            if (p.IsArray && p.ArrayItemType != null)
-                            {
-                                var itemProperties = p.ArrayItemType.GetProperties()
-                                    .Select(prop => prop.GetCustomAttribute<ToolParameterAttribute>())
-                                    .Where(attr => attr != null)
-                                    .ToDictionary(
-                                        attr => attr.Name,
-                                        attr => new Dictionary<string, object>
-                                        {
-                                            { "type", attr.Type },
-                                            { "description", attr.Description },
-                                            { "default", attr.Default }
-                                        }
-                                    );
-
-                                return new Dictionary<string, object>
-                                {
-                                    { "type", "array" },
-                                    { "items", new Dictionary<string, object>
-                                        {
-                                            { "type", "object" },
-                                            { "properties", itemProperties },
-                                            { "required", p.ArrayItemType.GetProperties()
-                                                .Select(prop => prop.GetCustomAttribute<ToolParameterAttribute>())
-                                                .Where(attr => attr != null && attr.IsRequired)
-                                                .Select(attr => attr.Name)
-                                                .ToList()
-                                            }
-                                        }
-                                    },
-                                    { "description", p.Parameter.Description }
-                                };
-                            }
-                            return new Dictionary<string, object>
-                            {
-                                { "type", p.Parameter.Type },
-                                { "description", p.Parameter.Description },
-                                { "default", p.Parameter.Default }
-                            };
-                        }
-                    ),
-                    required = parameters.Where(p => p.Parameter.IsRequired)
-                                       .Select(p => p.Parameter.Name)
-                                       .ToList()
-                }
-            };
-
-            var tool = new Anthropic.SDK.Messaging.Tool()
-            {
-                Name = toolAttr.Name,
-                Description = toolAttr.Description,
-                InputSchema = functionSchema
-            };
-
-            tools.Add(tool);
-        }
-
-        return tools;
     }
 }
