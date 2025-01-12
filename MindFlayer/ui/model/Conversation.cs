@@ -143,8 +143,11 @@ public partial class Conversation : INotifyPropertyChanged
             Content = ""
         };
 
+        // Create a copy to avoid sending an empty assistant message.
+        var messagesToSend = ChatMessages.ToList();
+
         Task.Run(() => ApiWrapper.ChatStream(
-            ChatMessages.ToList(), _parent.Temperature,
+            messagesToSend, _parent.Temperature,
             (t) =>
             {
                 Application.Current.Dispatcher.Invoke(() =>

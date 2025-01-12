@@ -43,6 +43,8 @@ public class OpenAIChatProvider : ChatProvider
 
             await foreach (var chatResponse in client.ChatEndpoint.StreamCompletionEnumerableAsync(request))
             {
+                Debug.WriteLine(JsonSerializer.Serialize(chatResponse));
+
                 var call = chatResponse?.FirstChoice?.Delta?.ToolCalls?.FirstOrDefault();
 
                 if (call is not null)
@@ -97,7 +99,8 @@ public class OpenAIChatProvider : ChatProvider
 
     private static IEnumerable<Message> CreateMessages(ChatMessage message)
     {
-        yield return new Message(message.Role, CreateContent(message))
+        var content = CreateContent(message).ToList();
+        yield return new Message(message.Role, content)
         {
             ToolCalls = message.ToolCalls.Any() ? message.ToolCalls.Select(tc => {
                 var t = ToolMapper.OpenAiTools().First(ot => ot.Function.Name == tc.Name);
@@ -119,8 +122,7 @@ public class OpenAIChatProvider : ChatProvider
 
     private static IEnumerable<Content> CreateContent(ChatMessage message)
     {
-        if (!string.IsNullOrWhiteSpace(message.Content))
-            yield return new Content(ContentType.Text, message.Content);
+        yield return new Content(ContentType.Text, message.Content);
 
         if (message.Images is null) yield break;
 

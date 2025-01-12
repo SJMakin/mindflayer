@@ -152,8 +152,9 @@ public class ChatViewModel : INotifyPropertyChanged
         AnthropicModels.Claude3Sonnet,
         AnthropicModels.Claude3Opus,
         AnthropicModels.Claude35SonnetLatest,
-        GoogleModels.Gemini20FlashExp,
-        GoogleModels.GeminiExp1206,
+        OpenAiCompatilbleModels.Gemini20FlashExp,
+        OpenAiCompatilbleModels.GeminiExp1206,
+        OpenAiCompatilbleModels.DeepseekChat,
     ];
 
     private Model _selectedChatModel = Model.GPT4o;
@@ -275,7 +276,7 @@ public class ChatViewModel : INotifyPropertyChanged
             SendEnabled = true;
         }
 
-        _ = ApiWrapper.ChatStream(ActiveConversation.ChatMessages, Temperature, chatStreamCallback, SelectedChatModel, msg.ToolCalls.Add)
+        _ = ApiWrapper.ChatStream(ActiveConversation.ChatMessages.ToList(), Temperature, chatStreamCallback, SelectedChatModel, msg.ToolCalls.Add)
                       .ContinueWith(responseRecievedActions, TaskScheduler.Current);
 
         ActiveConversation.ChatMessages.Add(msg);
