@@ -1,6 +1,7 @@
 ﻿using log4net;
 using MindFlayer.saas.tools;
 using OpenAI.Chat;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace MindFlayer.saas;
@@ -29,34 +30,31 @@ public class OpenAIChatProvider : ChatProvider
             log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)}");
 
             var fullResponse = new StringBuilder();
-
-
-            var toolCall = new ToolCall();
+            ToolCall toolCall = null;
             StringBuilder currentToolJson = new StringBuilder();
-            bool inToolCall = false;
-
 
             await foreach (var chatResponse in ApiWrapper.OpenAiClient.ChatEndpoint.StreamCompletionEnumerableAsync(request))
             {
                 var call = chatResponse?.FirstChoice?.Delta?.ToolCalls?.FirstOrDefault();
 
                 if (call is not null)
-                {                    
-                    inToolCall = true;
-
+                {
+                    Debug.WriteLine(JsonSerializer.Serialize(call));
                     if (call.Function.Name is not null)
                     {
-                        toolCall = new ToolCall() { ID = call.Id, Name = call.Function.Name, Parameters = call.Function.Arguments.ToJsonString() };
+                        if (toolCall is not null)
+                        {
+                            toolCall = null;
+                            return;
+                        }
 
+                        toolCall = new ToolCall() { ID = call.Id, Name = call.Function.Name, Parameters = call.Function.Arguments.ToString() };
                         toolCallback(toolCall);
                     }
                     else
                     {
-
                         toolCall.Parameters += call.Function.Arguments.ToString();
                     }
-
-
                 }
 
                 if (chatResponse?.FirstChoice?.Delta?.Content is null) continue;
@@ -76,7 +74,7 @@ public class OpenAIChatProvider : ChatProvider
 
     private static ChatRequest CreateChatRequest(IEnumerable<ChatMessage> messages, double? temp, string model)
     {
-        var prompt = messages.Select(prompt => new Message(prompt.Role, CreateContent(prompt))).ToList();
+        var prompt = messages.SelectMany(CreateMessages).ToList();
         var tools = ToolMapper.OpenAiTools();
 
         // Handicap o1 for the time being.
@@ -87,6 +85,28 @@ public class OpenAIChatProvider : ChatProvider
         } 
 
         return new ChatRequest(messages: prompt, model: model, temperature: temp, tools: tools);
+    }
+
+    private static IEnumerable<Message> CreateMessages(ChatMessage message)
+    {
+        yield return new Message(message.Role, CreateContent(message))
+        {
+            ToolCalls = message.ToolCalls.Any() ? message.ToolCalls.Select(tc => {
+                var t = ToolMapper.OpenAiTools().First(ot => ot.Function.Name == tc.Name);
+                var result = new Tool() { Id = tc.ID, Type = t.Type, Function = new Function(t.Function) };
+                result.Function.Arguments = tc.Parameters;
+                return result;
+            }).ToList() : null
+        };
+
+        foreach (var tc in message.ToolCalls)
+        {
+            yield return new Message(Role.Tool, [new Content(ContentType.Text, tc.Result)], tc.Name)
+            {
+                ToolCallId = tc.ID
+            };
+        }
+
     }
 
     private static IEnumerable<Content> CreateContent(ChatMessage message)

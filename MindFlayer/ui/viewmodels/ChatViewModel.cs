@@ -153,7 +153,7 @@ public class ChatViewModel : INotifyPropertyChanged
         AnthropicModels.Claude35Sonnet,
     ];
 
-    private Model _selectedChatModel = AnthropicModels.Claude35Sonnet;
+    private Model _selectedChatModel = Model.GPT4o;
 
     public Model SelectedChatModel
     {

@@ -96,7 +96,7 @@ public class Function
 
             return arguments;
         }
-        private set => arguments = value;
+        set => arguments = value;
     }
 
     internal void CopyFrom(Function other)

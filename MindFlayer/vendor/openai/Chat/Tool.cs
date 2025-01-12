@@ -16,7 +16,7 @@ public sealed class Tool
 
     [JsonInclude]
     [JsonPropertyName("id")]
-    public string Id { get; private set; }
+    public string Id { get; set; }
 
     [JsonInclude]
     [JsonPropertyName("index")]
@@ -25,11 +25,11 @@ public sealed class Tool
 
     [JsonInclude]
     [JsonPropertyName("type")]
-    public string Type { get; private set; }
+    public string Type { get; set; }
 
     [JsonInclude]
     [JsonPropertyName("function")]
-    public Function Function { get; private set; }
+    public Function Function { get; set; }
 
     public static implicit operator Tool(Function function) => new Tool(function);
 
