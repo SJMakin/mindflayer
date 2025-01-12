@@ -25,7 +25,7 @@ public static class IOTools
     {
         try
         {
-            var filesToRead = filePattern != null ?
+            var filesToRead = !string.IsNullOrWhiteSpace(filePattern) ?
                 (Directory.Exists(path) ?
                     Directory.GetFiles(path, filePattern, SearchOption.AllDirectories).Take(maxItems) :
                     throw new Exception("Path must be a directory when using file_pattern")
@@ -45,7 +45,7 @@ public static class IOTools
                 var chunk = text.Substring(startPos, Math.Min(maxChars, available));
                 var content = chunk + (available > chunk.Length ? $"\n[Truncated: {available} chars remaining]" : "");
 
-                if (filePattern != null)
+                if (!string.IsNullOrWhiteSpace(filePattern))
                 {
                     results.Add($"==> {file} <==>\n{content}");
                 }

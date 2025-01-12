@@ -143,17 +143,14 @@ public partial class Conversation : INotifyPropertyChanged
             Content = ""
         };
 
-        ChatMessages.Add(msg);
-
         Task.Run(() => ApiWrapper.ChatStream(
-            ChatMessages, _parent.Temperature,
+            ChatMessages.ToList(), _parent.Temperature,
             (t) =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     if (t == null) return;
                     msg.Content = msg.Content + t;
-
                 });
             },
         _parent.SelectedChatModel,
@@ -165,6 +162,8 @@ public partial class Conversation : INotifyPropertyChanged
                 });
             }
         ));
+
+        ChatMessages.Add(msg);
     }
 
 

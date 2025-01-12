@@ -1,5 +1,6 @@
 ﻿using log4net;
 using MindFlayer.saas.tools;
+using OpenAI;
 using OpenAI.Chat;
 using System.Diagnostics;
 using System.Text.Json;
@@ -10,10 +11,17 @@ public class OpenAIChatProvider : ChatProvider
 {
     private static readonly ILog log = LogManager.GetLogger(typeof(OpenAIChatProvider));
 
+    private readonly OpenAIClient client;
+
+    public OpenAIChatProvider(OpenAIClient client)
+    {
+        this.client = client;
+    }
+
     public override async Task<string> Chat(IEnumerable<ChatMessage> messages, double? temp, string model)
     {
         var request = CreateChatRequest(messages, temp, model);
-        var result = await ApiWrapper.OpenAiClient.ChatEndpoint.GetCompletionAsync(request).ConfigureAwait(false);
+        var result = await client.ChatEndpoint.GetCompletionAsync(request).ConfigureAwait(false);
         log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={JsonSerializer.Serialize(result)}");
         return result.FirstChoice.Message.Content.ToString().Trim();
     }
@@ -33,7 +41,7 @@ public class OpenAIChatProvider : ChatProvider
             ToolCall toolCall = null;
             StringBuilder currentToolJson = new StringBuilder();
 
-            await foreach (var chatResponse in ApiWrapper.OpenAiClient.ChatEndpoint.StreamCompletionEnumerableAsync(request))
+            await foreach (var chatResponse in client.ChatEndpoint.StreamCompletionEnumerableAsync(request))
             {
                 var call = chatResponse?.FirstChoice?.Delta?.ToolCalls?.FirstOrDefault();
 

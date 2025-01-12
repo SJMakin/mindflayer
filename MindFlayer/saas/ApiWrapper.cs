@@ -12,6 +12,10 @@ public static class ApiWrapper
     private static readonly ILog log = LogManager.GetLogger(typeof(ApiWrapper));
 
     // To set this, simply execute the below...
+    // [Environment]::SetEnvironmentVariable('GEMINI_KEY', 'sk-here', 'Machine')
+    public static readonly OpenAIClient GeminiClient = new(new OpenAIAuthentication(Environment.GetEnvironmentVariable("GEMINI_KEY"), null), new OpenAIClientSettings("generativelanguage.googleapis.com", "v1beta/openai"));
+
+    // To set this, simply execute the below...
     // [Environment]::SetEnvironmentVariable('OPENAI_KEY', 'sk-here', 'Machine')
     public static readonly OpenAIClient OpenAiClient = new(OpenAIAuthentication.LoadFromEnv());
 
