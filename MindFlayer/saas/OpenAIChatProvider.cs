@@ -1,7 +1,10 @@
-﻿using log4net;
+﻿using System.Diagnostics;
+using System.Reflection.Metadata;
+using log4net;
 using MindFlayer.saas.tools;
 using OpenAI.Chat;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace MindFlayer.saas;
 
@@ -29,34 +32,32 @@ public class OpenAIChatProvider : ChatProvider
             log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)}");
 
             var fullResponse = new StringBuilder();
-
-
             var toolCall = new ToolCall();
-            StringBuilder currentToolJson = new StringBuilder();
-            bool inToolCall = false;
-
 
             await foreach (var chatResponse in ApiWrapper.OpenAiClient.ChatEndpoint.StreamCompletionEnumerableAsync(request))
             {
                 var call = chatResponse?.FirstChoice?.Delta?.ToolCalls?.FirstOrDefault();
 
                 if (call is not null)
-                {                    
-                    inToolCall = true;
-
-                    if (call.Function.Name is not null)
+                {        
+                    Debug.WriteLine($"Call part: id:{call.Id} name:{call.Function.Name} args:{call.Function.Arguments}");
+                    if (call.Function.Name is not null && call.Id != toolCall.ID)
                     {
-                        toolCall = new ToolCall() { ID = call.Id, Name = call.Function.Name, Parameters = call.Function.Arguments.ToJsonString() };
-
+                        Debug.WriteLine($"Created new tool call.");
+                        toolCall = new ToolCall() { ID = call.Id, Name = call.Function.Name, Parameters = call.Function.Arguments.ToString() };
                         toolCallback(toolCall);
+                    }
+                    else if (!string.IsNullOrWhiteSpace(call.Function.Arguments.ToString()))
+                    {
+                        toolCall.Parameters += call.Function.Arguments.ToString();
+                        Debug.WriteLine($"Call args:{toolCall.Parameters}");
                     }
                     else
                     {
-
-                        toolCall.Parameters += call.Function.Arguments.ToString();
+                        Debug.WriteLine($"Tool call complete.");
+                        toolCall.IsLoaded = true;
+                        toolCall = new ToolCall();
                     }
-
-
                 }
 
                 if (chatResponse?.FirstChoice?.Delta?.Content is null) continue;
@@ -76,7 +77,7 @@ public class OpenAIChatProvider : ChatProvider
 
     private static ChatRequest CreateChatRequest(IEnumerable<ChatMessage> messages, double? temp, string model)
     {
-        var prompt = messages.Select(prompt => new Message(prompt.Role, CreateContent(prompt))).ToList();
+        var prompt = messages.SelectMany(CreateMessages).ToList();
         var tools = ToolMapper.OpenAiTools();
 
         // Handicap o1 for the time being.
@@ -87,6 +88,41 @@ public class OpenAIChatProvider : ChatProvider
         } 
 
         return new ChatRequest(messages: prompt, model: model, temperature: temp, tools: tools);
+    }
+
+    private static IEnumerable<Message> CreateMessages(ChatMessage msg)
+    {
+        var tools = ToolMapper.OpenAiTools();
+
+        var toolCalls = msg.ToolCalls
+            .Select(t =>
+            {
+                var tool = tools.First(oit => oit.Function.Name == t.Name);
+                return new Tool(new Function(
+                    tool.Function.Name, 
+                    tool.Function.Description, 
+                    tool.Function.Parameters,
+                    t.Parameters)) { Id = t.ID };
+            })
+            .ToList();
+
+        var message = new Message(
+            msg.Role,
+            CreateContent(msg));
+
+        if (toolCalls.Count > 0) message.ToolCalls = toolCalls;
+
+        yield return message;
+
+        foreach (var call in msg.ToolCalls)
+        {
+            if (call.Result is null) continue;
+
+            var toolMsg = new Message(Role.Tool, call.Result, call.Name);
+            toolMsg.ToolCallId = call.ID;
+
+            yield return toolMsg;
+        }
     }
 
     private static IEnumerable<Content> CreateContent(ChatMessage message)

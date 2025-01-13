@@ -8,7 +8,7 @@ public sealed class Tool
 
     public Tool(Tool other) => CopyFrom(other);
 
-    public Tool(Function function)
+    public Tool(Function function )
     {
         Function = function;
         Type = nameof(function);
@@ -16,7 +16,7 @@ public sealed class Tool
 
     [JsonInclude]
     [JsonPropertyName("id")]
-    public string Id { get; private set; }
+    public string Id { get; set; }
 
     [JsonInclude]
     [JsonPropertyName("index")]

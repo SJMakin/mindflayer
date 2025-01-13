@@ -8,8 +8,18 @@ namespace MindFlayer.saas.tools
     {
         public string ID { get; set; } = "";
         public string Name { get; set; } = "";
-        public string Parameters { get; set; } = "";
 
+        private string _parameters;
+        public string Parameters
+        {
+            get => _parameters;
+            set
+            {
+                _parameters = value;
+                OnPropertyChanged(nameof(Parameters));
+            }
+        }
+        
         [JsonIgnore]
         public bool IsLoaded = false;
 
