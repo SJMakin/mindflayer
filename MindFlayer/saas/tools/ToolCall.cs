@@ -33,6 +33,16 @@ namespace MindFlayer.saas.tools
                 OnPropertyChanged(nameof(Result));
             }
         }
+        private string _parameters = "";
+        public string Parameters
+        {
+            get => _parameters;
+            set
+            {
+                _parameters = value;
+                OnPropertyChanged(nameof(Parameters));
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName)

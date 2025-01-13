@@ -143,17 +143,17 @@ public partial class Conversation : INotifyPropertyChanged
             Content = ""
         };
 
-        ChatMessages.Add(msg);
+        // Create a copy to avoid sending an empty assistant message.
+        var messagesToSend = ChatMessages.ToList();
 
         Task.Run(() => ApiWrapper.ChatStream(
-            ChatMessages, _parent.Temperature,
+            messagesToSend, _parent.Temperature,
             (t) =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     if (t == null) return;
                     msg.Content = msg.Content + t;
-
                 });
             },
         _parent.SelectedChatModel,
@@ -165,6 +165,8 @@ public partial class Conversation : INotifyPropertyChanged
                 });
             }
         ));
+
+        ChatMessages.Add(msg);
     }
 
 

@@ -2,7 +2,9 @@
 using System.Reflection.Metadata;
 using log4net;
 using MindFlayer.saas.tools;
+using OpenAI;
 using OpenAI.Chat;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -12,10 +14,17 @@ public class OpenAIChatProvider : ChatProvider
 {
     private static readonly ILog log = LogManager.GetLogger(typeof(OpenAIChatProvider));
 
+    private readonly OpenAIClient client;
+
+    public OpenAIChatProvider(OpenAIClient client)
+    {
+        this.client = client;
+    }
+
     public override async Task<string> Chat(IEnumerable<ChatMessage> messages, double? temp, string model)
     {
         var request = CreateChatRequest(messages, temp, model);
-        var result = await ApiWrapper.OpenAiClient.ChatEndpoint.GetCompletionAsync(request).ConfigureAwait(false);
+        var result = await client.ChatEndpoint.GetCompletionAsync(request).ConfigureAwait(false);
         log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={JsonSerializer.Serialize(result)}");
         return result.FirstChoice.Message.Content.ToString().Trim();
     }
@@ -36,6 +45,8 @@ public class OpenAIChatProvider : ChatProvider
 
             await foreach (var chatResponse in ApiWrapper.OpenAiClient.ChatEndpoint.StreamCompletionEnumerableAsync(request))
             {
+                Debug.WriteLine(JsonSerializer.Serialize(chatResponse));
+
                 var call = chatResponse?.FirstChoice?.Delta?.ToolCalls?.FirstOrDefault();
 
                 if (call is not null)
@@ -127,8 +138,7 @@ public class OpenAIChatProvider : ChatProvider
 
     private static IEnumerable<Content> CreateContent(ChatMessage message)
     {
-        if (!string.IsNullOrWhiteSpace(message.Content))
-            yield return new Content(ContentType.Text, message.Content);
+        yield return new Content(ContentType.Text, message.Content);
 
         if (message.Images is null) yield break;
 

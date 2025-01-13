@@ -31,7 +31,7 @@ public sealed class Message
     public Message(Role role, IEnumerable<Content> content, string name = null)
     {
         Role = role;
-        Content = content.ToList();
+        Content = content?.ToList();
         Name = name;
     }
 
@@ -96,7 +96,7 @@ public sealed class Message
     public List<Tool> ToolCalls
     {
         get => toolCalls;
-        set => toolCalls = value.ToList();
+        set => toolCalls = value;
     }
 
     [JsonInclude]

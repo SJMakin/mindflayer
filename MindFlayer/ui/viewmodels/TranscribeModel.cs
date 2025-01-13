@@ -1,4 +1,4 @@
-﻿using MindFlayer.audio;
+using MindFlayer.audio;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -11,9 +11,74 @@ internal class TranscribeModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler PropertyChanged;
 
+    // New properties for prompts management
+    public ObservableCollection<string> PromptsCollection { get; set; } = new ObservableCollection<string>();
+
+    private string _newPromptText;
+    public string NewPromptText
+    {
+        get => _newPromptText;
+        set
+        {
+            if (_newPromptText != value)
+            {
+                _newPromptText = value;
+                OnPropertyChanged(nameof(NewPromptText));
+            }
+        }
+    }
+
+    private string _promptExecutionResult;
+    public string PromptExecutionResult
+    {
+        get => _promptExecutionResult;
+        set
+        {
+            if (_promptExecutionResult != value)
+            {
+                _promptExecutionResult = value;
+                OnPropertyChanged(nameof(PromptExecutionResult));
+            }
+        }
+    }
+
+    private string _selectedPrompt;
+    public string SelectedPrompt
+    {
+        get => _selectedPrompt;
+        set
+        {
+            if (_selectedPrompt != value)
+            {
+                _selectedPrompt = value;
+                OnPropertyChanged(nameof(SelectedPrompt));
+            }
+        }
+    }
+
     public ObservableCollection<AudioSegment> AudioSegments { get; set; } = [];
 
     public ObservableCollection<AudioSegment> SelectedItems { get; set; } = [];
+
+    public ICommand AddPromptCommand => new RelayCommand(AddPrompt);
+    public ICommand RemovePromptCommand => new RelayCommand(RemovePrompt);
+
+    private void AddPrompt()
+    {
+        if (!string.IsNullOrEmpty(NewPromptText))
+        {
+            PromptsCollection.Add(NewPromptText);
+            NewPromptText = string.Empty;
+        }
+    }
+
+    private void RemovePrompt()
+    {
+        if (SelectedPrompt != null)
+        {
+            PromptsCollection.Remove(SelectedPrompt);
+        }
+    }
 
     private RelayCommand startCommand;
     public ICommand StartCommand => startCommand ??= new RelayCommand(Start);
@@ -65,5 +130,9 @@ internal class TranscribeModel : INotifyPropertyChanged
         {
             AudioSegments.Remove(selected);
         }
+    }
+    protected void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
