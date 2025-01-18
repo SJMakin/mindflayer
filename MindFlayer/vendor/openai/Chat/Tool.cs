@@ -8,7 +8,7 @@ public sealed class Tool
 
     public Tool(Tool other) => CopyFrom(other);
 
-    public Tool(Function function)
+    public Tool(Function function )
     {
         Function = function;
         Type = nameof(function);

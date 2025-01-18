@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using MindFlayer.saas.tools;
 
 namespace OpenAI.Chat;
 
@@ -26,6 +27,7 @@ public sealed class Message
     /// The contents of the message.
     /// </param>
     /// <param name="name"></param>
+    /// <param name="toolCalls"></param>
     public Message(Role role, IEnumerable<Content> content, string name = null)
     {
         Role = role;
