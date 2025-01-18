@@ -43,18 +43,18 @@ public class OpenAIChatProvider : ChatProvider
             log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)}");
 
             var fullResponse = new StringBuilder();
-            var toolCall = new ToolCall();
+            ToolCall toolCall = null;
 
-            await foreach (var chatResponse in ApiWrapper.OpenAiClient.ChatEndpoint.StreamCompletionEnumerableAsync(request))
+            await foreach (var chatResponse in client.ChatEndpoint.StreamCompletionEnumerableAsync(request))
             {
-                Debug.WriteLine(JsonSerializer.Serialize(chatResponse));
+                log.Debug($"{nameof(ApiWrapper)}.{nameof(Chat)} response={JsonSerializer.Serialize(chatResponse)}");
 
                 var call = chatResponse?.FirstChoice?.Delta?.ToolCalls?.FirstOrDefault();
 
                 if (call is not null)
                 {        
                     Debug.WriteLine($"Call part: id:{call.Id} name:{call.Function.Name} args:{call.Function.Arguments}");
-                    if (call.Function.Name is not null && call.Id != toolCall.ID)
+                    if (call.Function.Name is not null && toolCall is null)
                     {
                         Debug.WriteLine($"Created new tool call.");
                         toolCall = new ToolCall() { ID = call.Id, Name = call.Function.Name, Parameters = call.Function.Arguments.ToString() };
@@ -69,13 +69,20 @@ public class OpenAIChatProvider : ChatProvider
                     {
                         Debug.WriteLine($"Tool call complete.");
                         toolCall.IsLoaded = true;
-                        toolCall = new ToolCall();
+                        toolCall = null;
                     }
+                }
+
+                // Gemini returns the whole message at the end, with a delta, so need to bail if it says its done.
+                if (chatResponse.FirstChoice?.FinishReason is not null)
+                {
+                    if (toolCall is not null) toolCall.IsLoaded = true;
+                    break;
                 }
 
                 if (chatResponse?.FirstChoice?.Delta?.Content is null) continue;
                 fullResponse.Append(chatResponse.FirstChoice.Delta.Content);
-                chat.Callback(chatResponse.FirstChoice.Delta.Content);
+                chat.Callback(chatResponse.FirstChoice.Delta.Content);                
             }
 
             log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} result={fullResponse}");
@@ -140,7 +147,8 @@ public class OpenAIChatProvider : ChatProvider
 
     private static IEnumerable<Content> CreateContent(ChatMessage message)
     {
-        yield return new Content(ContentType.Text, message.Content);
+        if (!string.IsNullOrWhiteSpace(message.Content))
+            yield return new Content(ContentType.Text, message.Content);
 
         if (message.Images is null) yield break;
 
