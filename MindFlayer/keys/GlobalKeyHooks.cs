@@ -115,7 +115,7 @@ internal class GlobalKeyHooks
             var clonedChat = op.Messages.Select(m => new ChatMessage { Role = m.Role, Content = m.Content, Images = m.Images }).ToList();
             var lastMessage = clonedChat.Last();
             lastMessage.Content = lastMessage.Content.Replace("<{input}>", input, StringComparison.OrdinalIgnoreCase);
-            var result = ApiWrapper.Chat(clonedChat, 0.1, Model.GPT4o).Result;
+            var result = ApiWrapper.Chat(new ChatContext() { Messages = clonedChat, Temperature = 0.1, Model = Model.GPT4o }).Result;
             SetText(result);
 
             toast.UpdateThenClose("Huzzah!", Brushes.LightGreen, 1500);

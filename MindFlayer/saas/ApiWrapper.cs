@@ -34,7 +34,7 @@ public static class ApiWrapper
         }
 
         var provider = ChatProviderFactory.CreateProvider(chat.Model);
-        return await provider.Chat(chat.Messages, chat.Temperature, chat.Model).ConfigureAwait(false);
+        return await provider.Chat(chat).ConfigureAwait(false);
     }
 
     public static async Task ChatStream(ChatContext chat)
@@ -45,7 +45,7 @@ public static class ApiWrapper
         }
 
         var provider = ChatProviderFactory.CreateProvider(chat.Model);
-        await provider.ChatStream(chat.Messages, chat.Temperature, chat.Callback, chat.Model, chat.ToolCallback).ConfigureAwait(false);
+        await provider.ChatStream(chat).ConfigureAwait(false);
     }
 
     public static string Transcribe(string file)

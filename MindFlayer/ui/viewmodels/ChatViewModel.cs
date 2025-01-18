@@ -278,8 +278,14 @@ public class ChatViewModel : INotifyPropertyChanged
             SendEnabled = true;
         }
 
-        _ = ApiWrapper.ChatStream(ActiveConversation.ChatMessages.ToList(), Temperature, chatStreamCallback, SelectedChatModel, msg.ToolCalls.Add)
-                      .ContinueWith(responseRecievedActions, TaskScheduler.Current);
+        _ = ApiWrapper.ChatStream(new ChatContext()
+        {
+            Messages = ActiveConversation.ChatMessages.ToList(),
+            Temperature = Temperature,
+            Callback = chatStreamCallback,
+            Model = SelectedChatModel,
+            ToolCallback = msg.ToolCalls.Add
+        }).ContinueWith(responseRecievedActions, TaskScheduler.Current);
 
         ActiveConversation.ChatMessages.Add(msg);
     }
@@ -292,7 +298,7 @@ public class ChatViewModel : INotifyPropertyChanged
             new() { Role = OpenAI.Chat.Role.User, Content = $"Think of a topic name for this. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
         };
 
-        var chatResult = await ApiWrapper.Chat(prompt, Temperature, SelectedChatModel).ConfigureAwait(false);
+        var chatResult = await ApiWrapper.Chat(new ChatContext() { Messages = prompt, Temperature = Temperature, Model = SelectedChatModel }).ConfigureAwait(false);
 
         activeConversation.Name = chatResult.Split(Environment.NewLine.ToCharArray())[0].Trim();
     }
@@ -333,7 +339,7 @@ public class ChatViewModel : INotifyPropertyChanged
     {
         var convo = string.Join(Environment.NewLine, ActiveConversation.ChatMessages.Skip(1).Select(m => $"[{m.Role}]: {m.Content}"));
         var (literal, question) = suggestion.Query(convo);
-        var result = literal ?? ApiWrapper.Chat(question, Temperature, SelectedChatModel).Result;
+        var result = literal ?? ApiWrapper.Chat(new ChatContext() { Messages = question, Temperature = Temperature, Model = SelectedChatModel }).Result;
         NewMessageContent = result;
     }
 

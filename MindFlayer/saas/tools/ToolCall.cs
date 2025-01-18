@@ -21,7 +21,7 @@ namespace MindFlayer.saas.tools
         }
         
         [JsonIgnore]
-        public bool IsLoaded = false;
+        public bool IsLoaded { get; set; }
 
         private string _result;
         public string Result
@@ -31,16 +31,6 @@ namespace MindFlayer.saas.tools
             {
                 _result = value;
                 OnPropertyChanged(nameof(Result));
-            }
-        }
-        private string _parameters = "";
-        public string Parameters
-        {
-            get => _parameters;
-            set
-            {
-                _parameters = value;
-                OnPropertyChanged(nameof(Parameters));
             }
         }
 
