@@ -11,6 +11,12 @@
             IsEditable="True"
             ItemsSource="{Binding ChatModels}"
             SelectedValue="{Binding SelectedChatModel}" />
+
+        <CheckBox
+            materialDesign:HintAssist.Hint="Free text or select"
+            materialDesign:HintAssist.HintOpacity=".26"
+            IsChecked="{Binding ToolsEnabled}"
+            Content="Tools Enabled" />
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
             <Button
                 Margin="0,8,8,0"

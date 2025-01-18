@@ -2,6 +2,6 @@
 
 public abstract class ChatProvider
 {
-    public abstract Task<string> Chat(IEnumerable<ChatMessage> messages, double? temp, string model);
-    public abstract Task ChatStream(IEnumerable<ChatMessage> messages, double? temp, Action<string> callback, string model, Action<tools.ToolCall> toolCallback);
+    public abstract Task<string> Chat(ChatContext chatl);
+    public abstract Task ChatStream(ChatContext chat);
 }

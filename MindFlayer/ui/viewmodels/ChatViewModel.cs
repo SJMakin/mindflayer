@@ -1,6 +1,7 @@
 ﻿using Anthropic.SDK.Constants;
 using MindFlayer.audio;
 using MindFlayer.saas;
+using MindFlayer.saas.tools;
 using MindFlayer.ui.model;
 using NAudio.Wave;
 using OpenAI.Models;
@@ -9,6 +10,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Net.Mail;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -346,6 +348,19 @@ public class ChatViewModel : INotifyPropertyChanged
             TokenCount = _tokenCalculator.NumTokensFromMessage("You are a helpful concise assistant.")
         });
         return newConvo;
+    }
+
+
+    private bool _toolsEnabled = true;
+
+    public bool ToolsEnabled
+    {
+        get => _toolsEnabled;
+        set
+        {
+            _toolsEnabled = value;
+            OnPropertyChanged(nameof(ToolsEnabled));
+        }
     }
 
     protected void OnPropertyChanged(string propertyName)

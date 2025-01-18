@@ -12,22 +12,19 @@ public class AnthropicChatProvider : ChatProvider
 {
     private static readonly ILog log = LogManager.GetLogger(typeof(AnthropicChatProvider));
 
-    public override async Task<string> Chat(IEnumerable<ChatMessage> messages, double? temp, string model)
+    public override async Task<string> Chat(ChatContext chat)
     {
-        var request = CreateMessageParameters(messages, temp, model, false);
+        var request = CreateMessageParameters(chat.Messages, chat.Temperature, chat.Model, false);
         var result = await ApiWrapper.AnthropicClient.Messages.GetClaudeMessageAsync(request).ConfigureAwait(false);
         return result.Content.Last(c => c.Text is not null).Text.Trim();
     }
 
-    public override async Task ChatStream(IEnumerable<ChatMessage> messages, double? temp, Action<string> callback, string model, Action<tools.ToolCall> toolCallback)
+    public override async Task ChatStream(ChatContext chat)
     {
-        if (callback is null) throw new ArgumentNullException(nameof(callback));
-        if (toolCallback is null) throw new ArgumentNullException(nameof(toolCallback));
-
         try
         {
             var response = new StringBuilder();
-            var request = CreateMessageParameters(messages, temp, model);
+            var request = CreateMessageParameters(chat.Messages, chat.Temperature, chat.Model);
 
             var toolCall = new ToolCall();
             StringBuilder currentToolJson = new StringBuilder();
@@ -46,7 +43,7 @@ public class AnthropicChatProvider : ChatProvider
                         Name = chatResponse.ContentBlock.Name
                     };
 
-                    toolCallback(toolCall);
+                    chat.ToolCallback(toolCall);
                 }
                 else if (chatResponse.Delta?.PartialJson != null && inToolCall)
                 {
@@ -61,7 +58,7 @@ public class AnthropicChatProvider : ChatProvider
                 else if (chatResponse?.Delta?.Text is not null)
                 {
                     response.Append(chatResponse.Delta.Text);
-                    callback(chatResponse.Delta.Text);
+                    chat.Callback(chatResponse.Delta.Text);
                 }
             }
 
@@ -69,7 +66,7 @@ public class AnthropicChatProvider : ChatProvider
         }
         catch (Exception ex)
         {
-            callback.Invoke($"\nError: {ex.Message}");
+            chat.Callback.Invoke($"\nError: {ex.Message}");
             log.Error($"{nameof(ApiWrapper)}.{nameof(Chat)} {ex}");
         }
     }

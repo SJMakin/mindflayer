@@ -26,16 +26,26 @@ public static class ApiWrapper
     // [Environment]::SetEnvironmentVariable('ANTHROPIC_API_KEY', 'sk-here', 'Machine')
     public static readonly AnthropicClient AnthropicClient = new();
 
-    public static async Task<string> Chat(IEnumerable<ChatMessage> messages, double? temp, string model)
+    public static async Task<string> Chat(ChatContext chat)
     {
-        var provider = ChatProviderFactory.CreateProvider(model);
-        return await provider.Chat(messages, temp, model).ConfigureAwait(false);
+        if (chat is null)
+        {
+            throw new ArgumentNullException(nameof(chat));
+        }
+
+        var provider = ChatProviderFactory.CreateProvider(chat.Model);
+        return await provider.Chat(chat.Messages, chat.Temperature, chat.Model).ConfigureAwait(false);
     }
 
-    public static async Task ChatStream(IEnumerable<ChatMessage> messages, double? temp, Action<string> callback, string model, Action<ToolCall> toolCallback)
+    public static async Task ChatStream(ChatContext chat)
     {
-        var provider = ChatProviderFactory.CreateProvider(model);
-        await provider.ChatStream(messages, temp, callback, model, toolCallback).ConfigureAwait(false);
+        if (chat is null)
+        {
+            throw new ArgumentNullException(nameof(chat));
+        }
+
+        var provider = ChatProviderFactory.CreateProvider(chat.Model);
+        await provider.ChatStream(chat.Messages, chat.Temperature, chat.Callback, chat.Model, chat.ToolCallback).ConfigureAwait(false);
     }
 
     public static string Transcribe(string file)
@@ -45,4 +55,14 @@ public static class ApiWrapper
         log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request=AudioRequest result={JsonSerializer.Serialize(result)}");
         return result.Trim();
     }
+}
+
+
+public class ChatContext
+{
+    public IEnumerable<ChatMessage> Messages { get; set; }
+    public double? Temperature { get; set; }
+    public Action<string> Callback { get; set; }
+    public string Model { get; set; }
+    public Action<ToolCall> ToolCallback { get; set; }
 }

@@ -18,22 +18,24 @@ public class OpenAIChatProvider : ChatProvider
         this.client = client;
     }
 
-    public override async Task<string> Chat(IEnumerable<ChatMessage> messages, double? temp, string model)
+    public override async Task<string> Chat(ChatContext chat)
     {
-        var request = CreateChatRequest(messages, temp, model);
+        if (chat is null)
+        {
+            throw new ArgumentNullException(nameof(chat));
+        }
+
+        var request = CreateChatRequest(chat.Messages, chat.Temperature, chat.Model);
         var result = await client.ChatEndpoint.GetCompletionAsync(request).ConfigureAwait(false);
         log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={JsonSerializer.Serialize(result)}");
         return result.FirstChoice.Message.Content.ToString().Trim();
     }
 
-    public override async Task ChatStream(IEnumerable<ChatMessage> messages, double? temp, Action<string> callback, string model, Action<tools.ToolCall> toolCallback)
+    public override async Task ChatStream(ChatContext chat)
     {
-        if (callback is null) throw new ArgumentNullException(nameof(callback));
-        if (toolCallback is null) throw new ArgumentNullException(nameof(toolCallback));
-
         try
         {
-            var request = CreateChatRequest(messages, temp, model);
+            var request = CreateChatRequest(chat.Messages, chat.Temperature, chat.Model);
 
             log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)}");
 
@@ -59,7 +61,7 @@ public class OpenAIChatProvider : ChatProvider
                         }
 
                         toolCall = new ToolCall() { ID = call.Id, Name = call.Function.Name, Parameters = call.Function.Arguments.ToString() };
-                        toolCallback(toolCall);
+                        chat.ToolCallback(toolCall);
                     }
                     else
                     {
@@ -69,14 +71,14 @@ public class OpenAIChatProvider : ChatProvider
 
                 if (chatResponse?.FirstChoice?.Delta?.Content is null) continue;
                 fullResponse.Append(chatResponse.FirstChoice.Delta.Content);
-                callback(chatResponse.FirstChoice.Delta.Content);
+                chat.Callback(chatResponse.FirstChoice.Delta.Content);
             }
 
             log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} result={fullResponse}");
         }
         catch (Exception ex)
         {
-            callback.Invoke($"\nError: {ex.Message}");
+            chat.Callback.Invoke($"\nError: {ex.Message}");
             log.Error($"{nameof(ApiWrapper)}.{nameof(Chat)} {ex}");
         }
 
