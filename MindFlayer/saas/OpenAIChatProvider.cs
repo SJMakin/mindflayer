@@ -60,7 +60,7 @@ public class OpenAIChatProvider : ChatProvider
                         toolCall = new ToolCall() { ID = call.Id, Name = call.Function.Name, Parameters = call.Function.Arguments.ToString() };
                         chat.ToolCallback(toolCall);
                     }
-                    else if (!string.IsNullOrWhiteSpace(call.Function.Arguments.ToString()))
+                    else if (!string.IsNullOrEmpty(call.Function.Arguments.ToString()))
                     {
                         toolCall.Parameters += call.Function.Arguments.ToString();
                         Debug.WriteLine($"Call args:{toolCall.Parameters}");
