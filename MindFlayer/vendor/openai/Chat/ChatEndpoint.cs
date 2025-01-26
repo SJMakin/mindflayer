@@ -99,7 +99,8 @@ public sealed class ChatEndpoint : BaseEndPoint
     public async IAsyncEnumerable<ChatResponse> StreamCompletionEnumerableAsync(ChatRequest chatRequest, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         chatRequest.Stream = true;
-        var jsonContent = JsonSerializer.Serialize(chatRequest, OpenAIClient.JsonSerializationOptions).ToJsonStringContent(EnableDebug);
+        var json = JsonSerializer.Serialize(chatRequest, OpenAIClient.JsonSerializationOptions);
+        var jsonContent = json.ToJsonStringContent(EnableDebug);
         using var request = new HttpRequestMessage(HttpMethod.Post, GetUrl("/completions"));
         request.Content = jsonContent;
         var response = await Api.Client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
@@ -113,7 +114,7 @@ public sealed class ChatEndpoint : BaseEndPoint
             cancellationToken.ThrowIfCancellationRequested();
 
             if (!streamData.TryGetEventStreamData(out var eventData)) { continue; }
-            if (string.IsNullOrWhiteSpace(eventData)) { continue; }
+            if (string.IsNullOrEmpty(eventData)) { continue; }
 
             if (EnableDebug)
             {

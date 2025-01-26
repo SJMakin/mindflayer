@@ -78,6 +78,8 @@ public sealed class OpenAIClient
             client.DefaultRequestHeaders.Add("OpenAI-Organization", OpenAIAuthentication.OrganizationId);
         }
 
+        client.Timeout = TimeSpan.FromMinutes(10);
+
         return client;
     }
 

@@ -148,7 +148,10 @@ public class OpenAIChatProvider : ChatProvider
     private static IEnumerable<Content> CreateContent(ChatMessage message)
     {
         if (!string.IsNullOrWhiteSpace(message.Content))
+        {
             yield return new Content(ContentType.Text, message.Content);
+        }
+        
 
         if (message.Images is null) yield break;
 

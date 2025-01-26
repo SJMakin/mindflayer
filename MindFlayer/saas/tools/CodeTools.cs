@@ -35,7 +35,8 @@ public static class CodeTools
                     if (depth < MaxDepth)
                     {
                         foreach (var entry in Directory.EnumerateFileSystemEntries(current)
-                            .Where(entry => !entry.Contains("node_modules", StringComparison.OrdinalIgnoreCase)))
+                            .Where(entry => !entry.Contains("node_modules", StringComparison.OrdinalIgnoreCase))
+                            .Where(entry => !entry.Contains(".git", StringComparison.OrdinalIgnoreCase)))
                         {
                             queue.Enqueue((entry, depth + 1));
                             if (queue.Count > 100) // Prevent queue explosion
