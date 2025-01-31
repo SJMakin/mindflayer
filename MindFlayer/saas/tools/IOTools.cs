@@ -178,7 +178,7 @@ public static class IOTools
     [Tool("edit_file", "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made.")]
     public static string ApplyFileEdits(
         [ToolParameter("path", "Path to the file to edit", "string")] string path,
-        [ToolParameter("edits", "Array of {oldText, newText} objects for replacements", "array")] List<FileEdit> edits,
+        [ToolParameter("edits", "Array of edits", "array")] List<FileEdit> edits,
         [ToolParameter("dry_run", "If true, don't write changes to disk", "boolean", "false")] bool dryRun = false)
     {
         try

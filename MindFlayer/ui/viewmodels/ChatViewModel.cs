@@ -151,6 +151,7 @@ public class ChatViewModel : INotifyPropertyChanged
         Model.GPT4o,
         Model.O1Mini,
         Model.O1,
+        Model.O3Mini,
         AnthropicModels.Claude3Sonnet,
         AnthropicModels.Claude3Opus,
         AnthropicModels.Claude35SonnetLatest,
@@ -241,7 +242,7 @@ public class ChatViewModel : INotifyPropertyChanged
 
         var newMessage = new ChatMessage(ActiveConversation)
         {
-            Role = OpenAI.Chat.Role.User,
+            Role = OpenAI.Role.User,
             Content = NewMessageContent,
             TokenCount = _tokenCalculator.NumTokensFromMessage(NewMessageContent)            
         };
@@ -262,7 +263,7 @@ public class ChatViewModel : INotifyPropertyChanged
 
         var msg = new ChatMessage(ActiveConversation)
         {
-            Role = OpenAI.Chat.Role.Assistant,
+            Role = OpenAI.Role.Assistant,
             Content = ""
         };
 
@@ -294,8 +295,8 @@ public class ChatViewModel : INotifyPropertyChanged
     {
         var prompt = new List<ChatMessage>
         {
-            new() { Role = OpenAI.Chat.Role.System, Content = "Be terse, but smart. Always be concise; prioritize clarity and brevity. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
-            new() { Role = OpenAI.Chat.Role.User, Content = $"Think of a topic name for this. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
+            new() { Role = OpenAI.Role.System, Content = "Be terse, but smart. Always be concise; prioritize clarity and brevity. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize." },
+            new() { Role = OpenAI.Role.User, Content = $"Think of a topic name for this. As terse as possible. Be general. No punctuation.\r\n\r\n'{activeConversation.ChatMessages[1].Content}'" }
         };
 
         var chatResult = await ApiWrapper.Chat(new ChatContext() { Messages = prompt, Temperature = Temperature, Model = SelectedChatModel }).ConfigureAwait(false);
@@ -349,7 +350,7 @@ public class ChatViewModel : INotifyPropertyChanged
         var newConvo = new Conversation(this) { Name = $"Chat {Conversations.Count(c => c != _addNewConvoButton) + 1}" };
         newConvo.ChatMessages.Add(new ChatMessage
         {
-            Role = OpenAI.Chat.Role.System,
+            Role = OpenAI.Role.System,
             Content = "Be terse and helpful. Do not offer unprompted advice or clarifications. Remain neutral on all topics. Never apologize.",
             TokenCount = _tokenCalculator.NumTokensFromMessage("You are a helpful concise assistant.")
         });

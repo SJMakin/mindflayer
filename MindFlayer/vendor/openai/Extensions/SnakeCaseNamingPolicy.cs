@@ -1,9 +1,12 @@
-﻿using System.Text.Json;
+﻿// Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace OpenAI.Extensions;
+using System.Text.Json;
 
-internal sealed class SnakeCaseNamingPolicy : JsonNamingPolicy
+namespace OpenAI.Extensions
 {
-    public override string ConvertName(string name)
-        => StringExtensions.ToSnakeCase(name);
+    internal sealed class SnakeCaseNamingPolicy : JsonNamingPolicy
+    {
+        public override string ConvertName(string name)
+            => StringExtensions.ToSnakeCase(name);
+    }
 }

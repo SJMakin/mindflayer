@@ -34,17 +34,21 @@ public static class CodeTools
 
                     if (depth < MaxDepth)
                     {
-                        foreach (var entry in Directory.EnumerateFileSystemEntries(current)
-                            .Where(entry => !entry.Contains("node_modules", StringComparison.OrdinalIgnoreCase))
-                            .Where(entry => !entry.Contains(".git", StringComparison.OrdinalIgnoreCase)))
+                        var entries = Directory.EnumerateFileSystemEntries(current)
+                        .Where(e => !e.Contains("node_modules", StringComparison.OrdinalIgnoreCase))
+                        .Where(e => !e.Contains(".git", StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(e => Path.GetFileName(e))
+                        .ToList();
+
+                    for (int i = 0; i < entries.Count; i++)
+                    {
+                        if (queue.Count > 100) // Prevent queue explosion
                         {
-                            queue.Enqueue((entry, depth + 1));
-                            if (queue.Count > 100) // Prevent queue explosion
-                            {
-                                skipped += Directory.GetFileSystemEntries(current).Length - 100;
-                                break;
-                            }
+                            skipped += entries.Count - i;
+                            break;
                         }
+                        queue.Enqueue((entries[i], depth + 1));
+                    }
                     }
                     else skipped++;
                 }

@@ -1,18 +1,22 @@
-﻿using System.Text.Json.Serialization;
+﻿// Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace OpenAI.Embeddings;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
-public sealed class Datum
+namespace OpenAI.Embeddings
 {
-    [JsonInclude]
-    [JsonPropertyName("object")]
-    public string Object { get; private set; }
+    public sealed class Datum
+    {
+        [JsonInclude]
+        [JsonPropertyName("object")]
+        public string Object { get; private set; }
 
-    [JsonInclude]
-    [JsonPropertyName("embedding")]
-    public IReadOnlyList<double> Embedding { get; private set; }
+        [JsonInclude]
+        [JsonPropertyName("embedding")]
+        public IReadOnlyList<double> Embedding { get; private set; }
 
-    [JsonInclude]
-    [JsonPropertyName("index")]
-    public int Index { get; private set; }
+        [JsonInclude]
+        [JsonPropertyName("index")]
+        public int Index { get; private set; }
+    }
 }

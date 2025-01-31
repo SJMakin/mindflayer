@@ -102,8 +102,8 @@ For clarity, your entire response should be in a markdown table. The question is
     {
         return (null,
         [
-            new ChatMessage { Role = OpenAI.Chat.Role.System, Content = systemPrompt },
-            new ChatMessage { Role = OpenAI.Chat.Role.User, Content = userPrompt }
+            new ChatMessage { Role = OpenAI.Role.System, Content = systemPrompt },
+            new ChatMessage { Role = OpenAI.Role.User, Content = userPrompt }
         ]);
     }
 

@@ -43,7 +43,7 @@ public class OpenAIChatProvider : ChatProvider
             log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)}");
 
             var fullResponse = new StringBuilder();
-            ToolCall toolCall = null;
+            tools.ToolCall toolCall = null;
 
             await foreach (var chatResponse in client.ChatEndpoint.StreamCompletionEnumerableAsync(request))
             {
@@ -57,7 +57,7 @@ public class OpenAIChatProvider : ChatProvider
                     if (call.Function.Name is not null && toolCall is null)
                     {
                         Debug.WriteLine($"Created new tool call.");
-                        toolCall = new ToolCall() { ID = call.Id, Name = call.Function.Name, Parameters = call.Function.Arguments.ToString() };
+                        toolCall = new tools.ToolCall() { ID = call.Id, Name = call.Function.Name, Parameters = call.Function.Arguments.ToString() };
                         chat.ToolCallback(toolCall);
                     }
                     else if (!string.IsNullOrEmpty(call.Function.Arguments.ToString()))
@@ -100,14 +100,7 @@ public class OpenAIChatProvider : ChatProvider
         var prompt = messages.SelectMany(CreateMessages).ToList();
         var tools = ToolMapper.OpenAiTools();
 
-        // Handicap o1 for the time being.
-        if (model.StartsWith("o1", StringComparison.OrdinalIgnoreCase))
-        {
-            prompt = prompt.Where(m => m.Role != Role.System).ToList();
-            tools = null;
-        } 
-
-        return new ChatRequest(messages: prompt, model: model, temperature: temp, tools: tools);
+        return new ChatRequest(messages: prompt, model: model, temperature: temp, tools: tools, reasoningEffort: model.StartsWith("o") ? ReasoningEffort.High : null);
     }
 
     private static IEnumerable<Message> CreateMessages(ChatMessage msg)
@@ -118,17 +111,18 @@ public class OpenAIChatProvider : ChatProvider
             .Select(t =>
             {
                 var tool = tools.First(oit => oit.Function.Name == t.Name);
-                return new Tool(new Function(
-                    tool.Function.Name, 
-                    tool.Function.Description, 
-                    tool.Function.Parameters,
-                    t.Parameters)) { Id = t.ID };
-            })
-            .ToList();
+                return new OpenAI.ToolCall(t.ID, t.Name, t.Parameters);
+            }).ToList();
 
-        var message = new Message(
-            msg.Role,
-            CreateContent(msg));
+        Message message;
+        if (msg.Role == Role.Assistant) // Deepseek doesnt work with 
+        {
+            message = new Message(msg.Role, msg.Content);
+        }
+        else
+        {
+            message = new Message(msg.Role, CreateContent(msg));
+        }        
 
         if (toolCalls.Count > 0) message.ToolCalls = toolCalls;
 
@@ -145,17 +139,21 @@ public class OpenAIChatProvider : ChatProvider
         }
     }
 
-    private static IEnumerable<Content> CreateContent(ChatMessage message)
+    private static List<Content> CreateContent(ChatMessage message)
     {
+        var result = new List<Content>();
+
         if (!string.IsNullOrWhiteSpace(message.Content))
         {
-            yield return new Content(ContentType.Text, message.Content);
+            result.Add(new Content(ContentType.Text, message.Content));
         }
-        
 
-        if (message.Images is null) yield break;
+        if (message.Images is not null)
+        {
+            foreach (var image in message.Images)
+                result.Add(new Content(ContentType.ImageUrl, $"data:image/jpeg;base64,{image}"));
+        }
 
-        foreach (var image in message.Images)
-            yield return new Content(ContentType.ImageUrl, $"data:image/jpeg;base64,{image}");
+        return result;        
     }
 }

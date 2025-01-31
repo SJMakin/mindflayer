@@ -51,7 +51,7 @@ public static class ApiWrapper
     public static string Transcribe(string file)
     {
         var request = new AudioTranscriptionRequest(audioPath: file, responseFormat: AudioResponseFormat.Text);
-        var result = OpenAiClient.AudioEndpoint.CreateTranscriptionAsync(request).Result;
+        var result = OpenAiClient.AudioEndpoint.CreateTranscriptionTextAsync(request).Result;
         log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request=AudioRequest result={JsonSerializer.Serialize(result)}");
         return result.Trim();
     }
@@ -64,5 +64,5 @@ public class ChatContext
     public double? Temperature { get; set; }
     public Action<string> Callback { get; set; }
     public string Model { get; set; }
-    public Action<ToolCall> ToolCallback { get; set; }
+    public Action<tools.ToolCall> ToolCallback { get; set; }
 }

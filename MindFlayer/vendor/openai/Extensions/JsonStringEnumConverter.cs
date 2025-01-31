@@ -1,58 +1,62 @@
-﻿using System.Runtime.Serialization;
+﻿// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace OpenAI.Extensions;
-
-/// <summary>
-/// https://github.com/dotnet/runtime/issues/74385#issuecomment-1456725149
-/// </summary>
-internal sealed class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum : struct, Enum
+namespace OpenAI.Extensions
 {
-    private readonly JsonNamingPolicy namingPolicy;
-    private readonly Dictionary<int, TEnum> numberToEnum = [];
-    private readonly Dictionary<TEnum, string> enumToString = [];
-    private readonly Dictionary<string, TEnum> stringToEnum = [];
-
-    public JsonStringEnumConverter()
+    /// <summary>
+    /// https://github.com/dotnet/runtime/issues/74385#issuecomment-1456725149
+    /// </summary>
+    internal sealed class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum : struct, Enum
     {
-        // We assume everything from OpenAI is snake case
-        namingPolicy = new SnakeCaseNamingPolicy();
-        var type = typeof(TEnum);
+        private const string ValueField = "value__";
+        private readonly JsonNamingPolicy namingPolicy;
+        private readonly Dictionary<int, TEnum> numberToEnum = new();
+        private readonly Dictionary<TEnum, string> enumToString = new();
+        private readonly Dictionary<string, TEnum> stringToEnum = new();
 
-        foreach (var value in Enum.GetValues<TEnum>())
+        public JsonStringEnumConverter()
         {
-            var enumMember = type.GetMember(value.ToString())[0];
-            var attribute = enumMember.GetCustomAttributes(typeof(EnumMemberAttribute), false)
-                .Cast<EnumMemberAttribute>()
-                .FirstOrDefault();
-            var index = Convert.ToInt32(type.GetField("value__")?.GetValue(value));
+            // We assume everything from OpenAI is snake case
+            namingPolicy = new SnakeCaseNamingPolicy();
+            var type = typeof(TEnum);
 
-            if (attribute?.Value != null)
+            foreach (var value in Enum.GetValues<TEnum>())
             {
-                numberToEnum.Add(index, value);
-                enumToString.Add(value, attribute.Value);
-                stringToEnum.Add(attribute.Value, value);
-            }
-            else
-            {
-                var convertedName = namingPolicy != null
-                    ? namingPolicy.ConvertName(value.ToString())
-                    : value.ToString();
-                numberToEnum.Add(index, value);
-                enumToString.Add(value, convertedName);
-                stringToEnum.Add(convertedName, value);
+                var enumMember = type.GetMember(value.ToString())[0];
+                var attribute = enumMember.GetCustomAttributes(typeof(EnumMemberAttribute), false)
+                    .Cast<EnumMemberAttribute>()
+                    .FirstOrDefault();
+                var index = Convert.ToInt32(type.GetField(ValueField)?.GetValue(value));
+
+                if (attribute?.Value != null)
+                {
+                    numberToEnum.TryAdd(index, value);
+                    enumToString.TryAdd(value, attribute.Value);
+                    stringToEnum.TryAdd(attribute.Value, value);
+                }
+                else
+                {
+                    var convertedName = namingPolicy != null
+                        ? namingPolicy.ConvertName(value.ToString())
+                        : value.ToString();
+                    numberToEnum.TryAdd(index, value);
+                    enumToString.TryAdd(value, convertedName);
+                    stringToEnum.TryAdd(convertedName, value);
+                }
             }
         }
-    }
 
-    public override TEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        var type = reader.TokenType;
-
-        switch (type)
+        public override TEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            case JsonTokenType.String:
+            switch (reader.TokenType)
+            {
+                case JsonTokenType.String:
                 {
                     var stringValue = reader.GetString();
 
@@ -68,19 +72,20 @@ internal sealed class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> wher
                         }
                     }
 
-                    break;
+                    return default;
                 }
-            case JsonTokenType.Number:
+                case JsonTokenType.Number:
                 {
                     var numValue = reader.GetInt32();
                     numberToEnum.TryGetValue(numValue, out var enumValue);
                     return enumValue;
                 }
+                default:
+                    return default;
+            }
         }
 
-        return default;
+        public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
+            => writer.WriteStringValue(enumToString[value]);
     }
-
-    public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
-        => writer.WriteStringValue(enumToString[value]);
 }

@@ -64,7 +64,7 @@ internal class ImageViewerModel : INotifyPropertyChanged
         var pd = new PromptDialog(LastPrompt);
         if (!pd.ShowDialog().GetValueOrDefault()) return;
         LastPrompt = pd.PromptResult;
-        var result = Client.ImagesEndPoint.GenerateImageAsync(new ImageGenerationRequest(pd.PromptResult, model: OpenAI.Models.Model.DallE_3, responseFormat: ResponseFormat.Url)).Result;
+        var result = Client.ImagesEndPoint.GenerateImageAsync(new ImageGenerationRequest(pd.PromptResult, model: OpenAI.Models.Model.DallE_3, responseFormat: ImageResponseFormat.Url)).Result;
         var images = result.Select(DownloadImage).ToList();
         CurrentImage = images.FirstOrDefault();
     }
@@ -96,9 +96,9 @@ internal class ImageViewerModel : INotifyPropertyChanged
         Clipboard.SetImage(CurrentImage);
     }
 
-    public BitmapSource DownloadImage(string url)
+    public BitmapSource DownloadImage(ImageResult ir)
     {
-        return new BitmapImage(new Uri(url));
+        return new BitmapImage(new Uri(ir.Url));
     }
 
     protected void OnPropertyChanged(string propertyName)

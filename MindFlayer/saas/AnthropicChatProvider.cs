@@ -78,8 +78,8 @@ public class AnthropicChatProvider : ChatProvider
         {
             Model = model,
             Temperature = Convert.ToDecimal(temp.GetValueOrDefault() / 2),
-            SystemMessage = messages.FirstOrDefault(m => m.Role == Role.System).Content,
-            Messages = messages.SkipWhile(m => m.Role == Role.System).SelectMany(CreateMessages).ToList(),
+            SystemMessage = messages.FirstOrDefault(m => m.Role == OpenAI.Role.System).Content,
+            Messages = messages.SkipWhile(m => m.Role == OpenAI.Role.System).SelectMany(CreateMessages).ToList(),
             MaxTokens = 8192,
         };
 
@@ -104,7 +104,7 @@ public class AnthropicChatProvider : ChatProvider
         {
             yield return new Anthropic.SDK.Messaging.Message()
             {
-                Role = Role.User.ToString().ToLowerInvariant(),
+                Role = OpenAI.Role.User.ToString().ToLowerInvariant(),
                 Content = CreateToolResultContent(message).ToArray()
             };
         }

@@ -139,7 +139,7 @@ public partial class Conversation : INotifyPropertyChanged
     {
         var msg = new ChatMessage(this)
         {
-            Role = OpenAI.Chat.Role.Assistant,
+            Role = OpenAI.Role.Assistant,
             Content = ""
         };
 

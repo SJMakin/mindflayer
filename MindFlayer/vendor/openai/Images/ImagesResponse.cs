@@ -1,14 +1,18 @@
-﻿using System.Text.Json.Serialization;
+﻿// Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace OpenAI.Images;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
-internal class ImagesResponse : BaseResponse
+namespace OpenAI.Images
 {
-    [JsonInclude]
-    [JsonPropertyName("created")]
-    public int Created { get; private set; }
+    internal sealed class ImagesResponse : BaseResponse
+    {
+        [JsonInclude]
+        [JsonPropertyName("created")]
+        public int Created { get; private set; }
 
-    [JsonInclude]
-    [JsonPropertyName("data")]
-    public IReadOnlyList<ImageResult> Results { get; private set; }
+        [JsonInclude]
+        [JsonPropertyName("data")]
+        public IReadOnlyList<ImageResult> Results { get; private set; }
+    }
 }

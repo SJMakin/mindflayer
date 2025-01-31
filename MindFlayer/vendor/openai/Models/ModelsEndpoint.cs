@@ -1,104 +1,93 @@
-﻿using OpenAI.Extensions;
-using System.Net.Http;
+﻿// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using OpenAI.Extensions;
+using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace OpenAI.Models;
-
-/// <summary>
-/// List and describe the various models available in the API.
-/// You can refer to the Models documentation to understand what <see href="https://platform.openai.com/docs/models"/> are available and the differences between them.<br/>
-/// <see href="https://platform.openai.com/docs/api-reference/models"/>
-/// </summary>
-public sealed class ModelsEndpoint : BaseEndPoint
+namespace OpenAI.Models
 {
-    private sealed class ModelsList
-    {
-        [JsonInclude]
-        [JsonPropertyName("data")]
-        public List<Model> Models { get; private set; }
-    }
-
-    private sealed class DeleteModelResponse
-    {
-        [JsonInclude]
-        [JsonPropertyName("id")]
-        public string Id { get; private set; }
-
-        [JsonInclude]
-        [JsonPropertyName("object")]
-        public string Object { get; private set; }
-
-        [JsonInclude]
-        [JsonPropertyName("deleted")]
-        public bool Deleted { get; private set; }
-    }
-
-    /// <inheritdoc />
-    public ModelsEndpoint(OpenAIClient api) : base(api) { }
-
-    /// <inheritdoc />
-    protected override string Root => "models";
-
     /// <summary>
-    /// List all models via the API
+    /// List and describe the various models available in the API.
+    /// You can refer to the Models documentation to understand which models are available for certain endpoints: <see href="https://platform.openai.com/docs/models/model-endpoint-compatibility"/>.<br/>
+    /// <see href="https://platform.openai.com/docs/api-reference/models"/>
     /// </summary>
-    /// <param name="cancellationToken">Optional, <see cref="CancellationToken"/></param>
-    /// <returns>Asynchronously returns the list of all <see cref="Model"/>s</returns>
-    /// <exception cref="HttpRequestException">Raised when the HTTP request fails</exception>
-    public async Task<IReadOnlyList<Model>> GetModelsAsync(CancellationToken cancellationToken = default)
+    public sealed class ModelsEndpoint : OpenAIBaseEndpoint
     {
-        var response = await Api.Client.GetAsync(GetUrl(), cancellationToken).ConfigureAwait(false);
-        var responseAsString = await response.ReadAsStringAsync(EnableDebug, cancellationToken).ConfigureAwait(false);
-        return JsonSerializer.Deserialize<ModelsList>(responseAsString, OpenAIClient.JsonSerializationOptions)?.Models;
-    }
-
-    /// <summary>
-    /// Get the details about a particular Model from the API
-    /// </summary>
-    /// <param name="id">The id/name of the model to get more details about</param>
-    /// <param name="cancellationToken">Optional, <see cref="CancellationToken"/></param>
-    /// <returns>Asynchronously returns the <see cref="Model"/> with all available properties</returns>
-    /// <exception cref="HttpRequestException">Raised when the HTTP request fails</exception>
-    public async Task<Model> GetModelDetailsAsync(string id, CancellationToken cancellationToken = default)
-    {
-        var response = await Api.Client.GetAsync(GetUrl($"/{id}"), cancellationToken).ConfigureAwait(false);
-        var responseAsString = await response.ReadAsStringAsync(EnableDebug, cancellationToken).ConfigureAwait(false);
-        return JsonSerializer.Deserialize<Model>(responseAsString, OpenAIClient.JsonSerializationOptions);
-    }
-
-    /// <summary>
-    /// Delete a fine-tuned model. You must have the Owner role in your organization.
-    /// </summary>
-    /// <param name="modelId">The <see cref="Model"/> to delete.</param>
-    /// <param name="cancellationToken">Optional, <see cref="CancellationToken"/></param>
-    /// <returns>True, if fine-tuned model was successfully deleted.</returns>
-    /// <exception cref="HttpRequestException"></exception>
-    public async Task<bool> DeleteFineTuneModelAsync(string modelId, CancellationToken cancellationToken = default)
-    {
-        var model = await GetModelDetailsAsync(modelId, cancellationToken).ConfigureAwait(false);
-
-        if (model == null)
+        private sealed class ModelsList : BaseResponse
         {
-            throw new Exception($"Failed to get {modelId} info!");
+            [JsonInclude]
+            [JsonPropertyName("data")]
+            public List<Model> Models { get; private set; }
         }
 
-        // Don't check ownership as API does it for us.
+        /// <inheritdoc />
+        public ModelsEndpoint(OpenAIClient client) : base(client) { }
 
-        try
+        /// <inheritdoc />
+        protected override string Root => "models";
+
+        /// <summary>
+        /// List all models via the API
+        /// </summary>
+        /// <param name="cancellationToken">Optional, <see cref="CancellationToken"/>.</param>
+        /// <returns>Asynchronously returns the list of all <see cref="Model"/>s</returns>
+        public async Task<IReadOnlyList<Model>> GetModelsAsync(CancellationToken cancellationToken = default)
         {
-            var response = await Api.Client.DeleteAsync(GetUrl($"/{model.Id}"), cancellationToken).ConfigureAwait(false);
-            var responseAsString = await response.ReadAsStringAsync(EnableDebug, cancellationToken).ConfigureAwait(false);
-            return JsonSerializer.Deserialize<DeleteModelResponse>(responseAsString, OpenAIClient.JsonSerializationOptions)?.Deleted ?? false;
+            using var response = await client.Client.GetAsync(GetUrl(), cancellationToken).ConfigureAwait(false);
+            var responseAsString = await response.ReadAsStringAsync(EnableDebug, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return response.Deserialize<ModelsList>(responseAsString, client)?.Models;
         }
-        catch (Exception e)
+
+        /// <summary>
+        /// Get the details about a particular Model from the API
+        /// </summary>
+        /// <param name="id">The id/name of the model to get more details about</param>
+        /// <param name="cancellationToken">Optional, <see cref="CancellationToken"/>.</param>
+        /// <returns>Asynchronously returns the <see cref="Model"/> with all available properties</returns>
+        public async Task<Model> GetModelDetailsAsync(string id, CancellationToken cancellationToken = default)
         {
-            if (e.Message.Contains("You have insufficient permissions for this operation. You need to be this role: Owner."))
+            using var response = await client.Client.GetAsync(GetUrl($"/{id}"), cancellationToken).ConfigureAwait(false);
+            var responseAsString = await response.ReadAsStringAsync(EnableDebug, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return JsonSerializer.Deserialize<Model>(responseAsString, OpenAIClient.JsonSerializationOptions);
+        }
+
+        /// <summary>
+        /// Delete a fine-tuned model. You must have the Owner role in your organization.
+        /// </summary>
+        /// <param name="modelId">The <see cref="Model"/> to delete.</param>
+        /// <param name="cancellationToken">Optional, <see cref="CancellationToken"/>.</param>
+        /// <returns>True, if fine-tuned model was successfully deleted.</returns>
+        public async Task<bool> DeleteFineTuneModelAsync(string modelId, CancellationToken cancellationToken = default)
+        {
+            var model = await GetModelDetailsAsync(modelId, cancellationToken).ConfigureAwait(false);
+
+            if (model == null ||
+                string.IsNullOrWhiteSpace(model))
             {
-                throw new UnauthorizedAccessException($"You have insufficient permissions for this operation. You need to be this role: Owner.\n{e}");
+                throw new Exception($"Failed to get {modelId} info!");
             }
 
-            throw;
+            // Don't check ownership as API does it for us.
+
+            try
+            {
+                using var response = await client.Client.DeleteAsync(GetUrl($"/{model.Id}"), cancellationToken).ConfigureAwait(false);
+                var responseAsString = await response.ReadAsStringAsync(EnableDebug, cancellationToken: cancellationToken).ConfigureAwait(false);
+                return response.Deserialize<DeletedResponse>(responseAsString, client)?.Deleted ?? false;
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("You have insufficient permissions for this operation. You need to be this role: Owner."))
+                {
+                    throw new UnauthorizedAccessException($"You have insufficient permissions for this operation. You need to be this role: Owner.\n{e}");
+                }
+
+                throw;
+            }
         }
     }
 }

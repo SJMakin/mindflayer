@@ -18,7 +18,7 @@ public class ChatMessage : INotifyPropertyChanged
 {
     [JsonInclude]
     [JsonPropertyName("role")]
-    public Role Role { get; set; }
+    public OpenAI.Role Role { get; set; }
 
     [JsonInclude]
     [JsonPropertyName("content")]
@@ -116,7 +116,7 @@ public class ChatMessage : INotifyPropertyChanged
     }
 
     public Visibility MessageButtonVisibility => Visibility.Visible;  // Role == Role.Assistant ? Visibility.Visible : Visibility.Collapsed;
-    public Visibility ChangePromptButtonVisibility => Role == Role.System ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility ChangePromptButtonVisibility => Role == OpenAI.Role.System ? Visibility.Visible : Visibility.Collapsed;
 
     private ICommand _replayCommand;
     private ICommand _copyCommand;
@@ -146,7 +146,7 @@ public class ChatMessage : INotifyPropertyChanged
 
     private void Replay()
     {
-        if (Role == Role.System)
+        if (Role == OpenAI.Role.System)
         {
             // TODO: Open prompt dialog.
 

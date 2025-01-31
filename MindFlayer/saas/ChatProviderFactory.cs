@@ -9,6 +9,7 @@ public static class ChatProviderFactory
         if (model.StartsWith("gemini", StringComparison.OrdinalIgnoreCase)) return new OpenAIChatProvider(ApiWrapper.GeminiClient);
         if (model.StartsWith("gpt", StringComparison.OrdinalIgnoreCase)) return new OpenAIChatProvider(ApiWrapper.OpenAiClient);
         if (model.StartsWith("o1", StringComparison.OrdinalIgnoreCase)) return new OpenAIChatProvider(ApiWrapper.OpenAiClient);
+        if (model.StartsWith("o3", StringComparison.OrdinalIgnoreCase)) return new OpenAIChatProvider(ApiWrapper.OpenAiClient);
         if (model.StartsWith("claude", StringComparison.OrdinalIgnoreCase)) return new AnthropicChatProvider();
         throw new InvalidOperationException("Unexpected model.");
     }

@@ -1,18 +1,21 @@
-﻿using System.Text.Json.Serialization;
+﻿// Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace OpenAI.FineTuning;
+using System.Text.Json.Serialization;
 
-public sealed class HyperParams
+namespace OpenAI.FineTuning
 {
-    [JsonInclude]
-    [JsonPropertyName("n_epochs")]
-    public object Epochs { get; private set; }
+    public sealed class HyperParams
+    {
+        [JsonInclude]
+        [JsonPropertyName("n_epochs")]
+        public object Epochs { get; private set; }
 
-    [JsonInclude]
-    [JsonPropertyName("batch_size")]
-    public object BatchSize { get; private set; }
+        [JsonInclude]
+        [JsonPropertyName("batch_size")]
+        public object BatchSize { get; private set; }
 
-    [JsonInclude]
-    [JsonPropertyName("learning_rate_multiplier")]
-    public object LearningRateMultiplier { get; private set; }
+        [JsonInclude]
+        [JsonPropertyName("learning_rate_multiplier")]
+        public object LearningRateMultiplier { get; private set; }
+    }
 }

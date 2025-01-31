@@ -12,9 +12,9 @@ public static class ToolMapper
         return MapToolsFromAssembly((name, desc, schema) => new Anthropic.SDK.Messaging.Tool() { Name = name, Description = desc, InputSchema = schema });
     }
 
-    public static List<OpenAI.Chat.Tool> OpenAiTools()
+    public static List<OpenAI.Tool> OpenAiTools()
     {
-        return MapToolsFromAssembly((name, desc, schema) => new OpenAI.Chat.Tool(new OpenAI.Chat.Function(name, desc, ConvertObjectToJsonNode(schema.parameters))));
+        return MapToolsFromAssembly((name, desc, schema) => new OpenAI.Tool(new OpenAI.Function(name, desc, ConvertObjectToJsonNode(schema.parameters))));
     }
 
     private static JsonNode ConvertObjectToJsonNode(object obj)
