@@ -237,6 +237,8 @@ namespace OpenAI
                 isCustomClient = true;
             }
 
+            client.Timeout = TimeSpan.FromMinutes(10);
+
             client.DefaultRequestHeaders.Add("User-Agent", "OpenAI-DotNet");
             client.DefaultRequestHeaders.Add("OpenAI-Beta", "assistants=v2");
 

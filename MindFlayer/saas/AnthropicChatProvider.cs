@@ -24,7 +24,7 @@ public class AnthropicChatProvider : ChatProvider
         try
         {
             var response = new StringBuilder();
-            var request = CreateMessageParameters(chat.Messages, chat.Temperature, chat.Model);
+            var request = CreateMessageParameters(chat.Messages, chat.Temperature, chat.Model, chat.ToolCallback != null);
 
             var toolCall = new ToolCall();
             StringBuilder currentToolJson = new StringBuilder();

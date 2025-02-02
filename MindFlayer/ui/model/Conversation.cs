@@ -143,30 +143,42 @@ public partial class Conversation : INotifyPropertyChanged
             Content = ""
         };
 
+
+
         // Create a copy to avoid sending an empty assistant message.
         var messagesToSend = ChatMessages.ToList();
 
-        Task.Run(() => ApiWrapper.ChatStream(new ChatContext()
+        Task.Run(() =>
         {
-            Messages = messagesToSend,
-            Temperature = _parent.Temperature,
-            Model = _parent.SelectedChatModel,
-            Callback = (t) =>
+            Action<saas.tools.ToolCall> toolCallback = null;
+            
+            if (_parent.ToolsEnabled)
             {
-                Application.Current.Dispatcher.Invoke(() =>
+                toolCallback = (t) =>
                 {
-                    if (t == null) return;
-                    msg.Content = msg.Content + t;
-                });
-            },
-            ToolCallback = (t) =>
-            {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    msg.ToolCalls.Add(t);
-                });
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        msg.ToolCalls.Add(t);
+                    });
+                };
             }
-        }));
+
+            return ApiWrapper.ChatStream(new ChatContext()
+            {
+                Messages = messagesToSend,
+                Temperature = _parent.Temperature,
+                Model = _parent.SelectedChatModel,
+                Callback = (t) =>
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        if (t == null) return;
+                        msg.Content = msg.Content + t;
+                    });
+                },
+                ToolCallback = toolCallback
+            });
+        });
 
         ChatMessages.Add(msg);
     }

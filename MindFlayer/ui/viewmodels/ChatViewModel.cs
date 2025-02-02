@@ -160,7 +160,7 @@ public class ChatViewModel : INotifyPropertyChanged
         OpenAiCompatilbleModels.DeepseekChat,
     ];
 
-    private Model _selectedChatModel = Model.GPT4o;
+    private Model _selectedChatModel = Model.O3Mini;
 
     public Model SelectedChatModel
     {
@@ -285,7 +285,7 @@ public class ChatViewModel : INotifyPropertyChanged
             Temperature = Temperature,
             Callback = chatStreamCallback,
             Model = SelectedChatModel,
-            ToolCallback = msg.ToolCalls.Add
+            ToolCallback = ToolsEnabled ? msg.ToolCalls.Add : null
         }).ContinueWith(responseRecievedActions, TaskScheduler.Current);
 
         ActiveConversation.ChatMessages.Add(msg);

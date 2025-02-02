@@ -546,7 +546,7 @@
                         Name="InputBox"
                         Grid.Row="0"
                         Grid.Column="0"
-                        Height="Auto"
+                        MinHeight="80" MaxHeight="250"
                         Padding="0"
                         VerticalContentAlignment="Top"
                         materialDesign:HintAssist.Hint="Enter message..."
@@ -555,7 +555,7 @@
                         SpellCheck.IsEnabled="{Binding IsChecked, ElementName=SpellCheckToggleButton}"
                         Text="{Binding NewMessageContent, UpdateSourceTrigger=PropertyChanged}"
                         TextWrapping="Wrap"
-                        VerticalScrollBarVisibility="Visible">
+                        VerticalScrollBarVisibility="Auto">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter" Command="{Binding Path=SendMessageCommand}" />
                         </TextBox.InputBindings>

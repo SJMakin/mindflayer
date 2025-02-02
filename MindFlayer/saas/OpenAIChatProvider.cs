@@ -28,7 +28,7 @@ public class OpenAIChatProvider : ChatProvider
             throw new ArgumentNullException(nameof(chat));
         }
 
-        var request = CreateChatRequest(chat.Messages, chat.Temperature, chat.Model);
+        var request = CreateChatRequest(chat);
         var result = await client.ChatEndpoint.GetCompletionAsync(request).ConfigureAwait(false);
         log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={JsonSerializer.Serialize(result)}");
         return result.FirstChoice.Message.Content.ToString().Trim();
@@ -38,45 +38,39 @@ public class OpenAIChatProvider : ChatProvider
     {
         try
         {
-            var request = CreateChatRequest(chat.Messages, chat.Temperature, chat.Model);
+            var request = CreateChatRequest(chat);
 
             log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)}");
 
+            if (chat.ToolCallback != null)
+            {
+                var result = await client.ChatEndpoint.GetCompletionAsync(request);
+                log.Info($"{nameof(ApiWrapper)}.{nameof(Chat)} request={JsonSerializer.Serialize(request)} result={JsonSerializer.Serialize(result)}");
+                chat.Callback.Invoke(result.FirstChoice.Message.Content?.ToString().Trim());
+                var toolCalls = result.FirstChoice.Message.ToolCalls;
+                if (toolCalls is null) return;
+                foreach (var toolCall in toolCalls)
+                {
+                    chat.ToolCallback.Invoke(new tools.ToolCall()
+                    {
+                        ID = toolCall.Id,
+                        Name = toolCall.Function.Name,
+                        Parameters = toolCall.Function.Arguments.ToString()
+                    });
+                }
+                return;
+            }
+
+
             var fullResponse = new StringBuilder();
-            tools.ToolCall toolCall = null;
 
             await foreach (var chatResponse in client.ChatEndpoint.StreamCompletionEnumerableAsync(request))
             {
                 log.Debug($"{nameof(ApiWrapper)}.{nameof(Chat)} response={JsonSerializer.Serialize(chatResponse)}");
 
-                var call = chatResponse?.FirstChoice?.Delta?.ToolCalls?.FirstOrDefault();
-
-                if (call is not null)
-                {        
-                    Debug.WriteLine($"Call part: id:{call.Id} name:{call.Function.Name} args:{call.Function.Arguments}");
-                    if (call.Function.Name is not null && toolCall is null)
-                    {
-                        Debug.WriteLine($"Created new tool call.");
-                        toolCall = new tools.ToolCall() { ID = call.Id, Name = call.Function.Name, Parameters = call.Function.Arguments.ToString() };
-                        chat.ToolCallback(toolCall);
-                    }
-                    else if (!string.IsNullOrEmpty(call.Function.Arguments.ToString()))
-                    {
-                        toolCall.Parameters += call.Function.Arguments.ToString();
-                        Debug.WriteLine($"Call args:{toolCall.Parameters}");
-                    }
-                    else
-                    {
-                        Debug.WriteLine($"Tool call complete.");
-                        toolCall.IsLoaded = true;
-                        toolCall = null;
-                    }
-                }
-
                 // Gemini returns the whole message at the end, with a delta, so need to bail if it says its done.
                 if (chatResponse.FirstChoice?.FinishReason is not null)
                 {
-                    if (toolCall is not null) toolCall.IsLoaded = true;
                     break;
                 }
 
@@ -95,12 +89,12 @@ public class OpenAIChatProvider : ChatProvider
 
     }
 
-    private static ChatRequest CreateChatRequest(IEnumerable<ChatMessage> messages, double? temp, string model)
+    private static ChatRequest CreateChatRequest(ChatContext context)
     {
-        var prompt = messages.SelectMany(CreateMessages).ToList();
-        var tools = ToolMapper.OpenAiTools();
+        var prompt = context.Messages.SelectMany(CreateMessages).ToList();
+        var tools = context.ToolCallback is null ? null : ToolMapper.OpenAiTools();
 
-        return new ChatRequest(messages: prompt, model: model, temperature: temp, tools: tools, reasoningEffort: model.StartsWith("o") ? ReasoningEffort.High : null);
+        return new ChatRequest(messages: prompt, model: context.Model, temperature: context.Temperature, tools: tools, reasoningEffort: context.Model.StartsWith("o") ? ReasoningEffort.High : null);
     }
 
     private static IEnumerable<Message> CreateMessages(ChatMessage msg)
