@@ -68,5 +68,10 @@
         /// Claude 3.5 Sonnet
         /// </summary>
         public const string Claude35SonnetLatest = "claude-3-5-sonnet-latest";
+
+        /// <summary>
+        /// Claude 3.5 Sonnet
+        /// </summary>
+        public const string Claude37SonnetLatest = "claude-3-7-sonnet-latest";
     }
 }

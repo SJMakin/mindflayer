@@ -155,6 +155,7 @@ public class ChatViewModel : INotifyPropertyChanged
         AnthropicModels.Claude3Sonnet,
         AnthropicModels.Claude3Opus,
         AnthropicModels.Claude35SonnetLatest,
+        AnthropicModels.Claude37SonnetLatest,
         OpenAiCompatilbleModels.Gemini20FlashExp,
         OpenAiCompatilbleModels.GeminiExp1206,
         OpenAiCompatilbleModels.DeepseekChat,
