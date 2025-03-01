@@ -81,6 +81,8 @@ namespace OpenAI.Models
 
         public static Model GPT4oRealtime { get; } = new("gpt-4o-realtime-preview", "openai");
 
+        public static Model GPT45Preview { get; } = new("gpt-4.5-preview", "openai");
+
         /// <summary>
         /// GPT-4o ("o" for "omni") is our most advanced model.
         /// It is multimodal (accepting text or image inputs and outputting text),

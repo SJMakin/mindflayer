@@ -152,6 +152,7 @@ public class ChatViewModel : INotifyPropertyChanged
         Model.O1Mini,
         Model.O1,
         Model.O3Mini,
+        Model.GPT45Preview,
         AnthropicModels.Claude3Sonnet,
         AnthropicModels.Claude3Opus,
         AnthropicModels.Claude35SonnetLatest,
