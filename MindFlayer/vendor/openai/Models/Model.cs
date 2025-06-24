@@ -73,11 +73,13 @@ namespace OpenAI.Models
         [JsonPropertyName("parent")]
         public string Parent { get; private set; }
 
-        public static Model O1 { get; } = new("o1-preview", "openai");
+        public static Model O1 { get; } = new("o1", "openai");
+        public static Model O3 { get; } = new("o3", "openai");
 
         public static Model O1Mini { get; } = new("o1-mini", "openai");
 
         public static Model O3Mini { get; } = new("o3-mini", "openai");
+        public static Model O4Mini { get; } = new("o4-mini", "openai");
 
         public static Model GPT4oRealtime { get; } = new("gpt-4o-realtime-preview", "openai");
 

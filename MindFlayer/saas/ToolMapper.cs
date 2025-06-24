@@ -7,10 +7,6 @@ namespace MindFlayer.saas;
 
 public static class ToolMapper
 {
-    public static List<Anthropic.SDK.Messaging.Tool> AnthropicTools()
-    {
-        return MapToolsFromAssembly((name, desc, schema) => new Anthropic.SDK.Messaging.Tool() { Name = name, Description = desc, InputSchema = schema });
-    }
 
     public static List<OpenAI.Tool> OpenAiTools()
     {

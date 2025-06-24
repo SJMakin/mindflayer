@@ -1,5 +1,4 @@
-﻿using Anthropic.SDK.Constants;
-using MindFlayer.audio;
+﻿using MindFlayer.audio;
 using MindFlayer.saas;
 using MindFlayer.saas.tools;
 using MindFlayer.ui.model;
@@ -30,9 +29,59 @@ public class ChatViewModel : INotifyPropertyChanged
 
     public ChatViewModel()
     {
+        InitializeChatModels();
         Conversations.Add(NewConversation());
         Conversations.Add(_addNewConvoButton);
         PasteCommand = new RelayCommand(OnPaste);
+    }
+
+    private void InitializeChatModels()
+    {
+        // Add existing models
+        var existingModels = new string[]
+        {
+            Model.GPT3_5_Turbo,
+            Model.GPT3_5_Turbo_16K,
+            Model.GPT4,
+            Model.GPT4oMini,
+            Model.GPT4o,
+            Model.O1Mini,
+            Model.O1,
+            Model.O3,
+            Model.O3Mini,
+            Model.O4Mini,
+            Model.GPT45Preview,
+        };
+
+        foreach (var model in existingModels)
+        {
+            ChatModels.Add(model);
+        }
+
+        // Load OpenRouter models asynchronously
+        Task.Run(async () =>
+        {
+            try
+            {
+                var openRouterModelIds = await OpenRouterModelRepository.GetModelIdsAsync();
+                var sortedModels = openRouterModelIds
+                    .OrderBy(m => m)
+                    .ToList();
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    foreach (var model in sortedModels)
+                    {
+                        ChatModels.Add(model);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't crash the UI
+                System.Diagnostics.Debug.WriteLine($"Failed to load OpenRouter models: {ex.Message}");
+            }
+        });
     }
 
     private void OnPaste()
@@ -142,29 +191,11 @@ public class ChatViewModel : INotifyPropertyChanged
         }
     }
 
-    public ObservableCollection<Model> ChatModels { get; } =
-    [
-        Model.GPT3_5_Turbo,
-        Model.GPT3_5_Turbo_16K,
-        Model.GPT4,
-        Model.GPT4oMini,
-        Model.GPT4o,
-        Model.O1Mini,
-        Model.O1,
-        Model.O3Mini,
-        Model.GPT45Preview,
-        AnthropicModels.Claude3Sonnet,
-        AnthropicModels.Claude3Opus,
-        AnthropicModels.Claude35SonnetLatest,
-        AnthropicModels.Claude37SonnetLatest,
-        OpenAiCompatilbleModels.Gemini20FlashExp,
-        OpenAiCompatilbleModels.GeminiExp1206,
-        OpenAiCompatilbleModels.DeepseekChat,
-    ];
+    public ObservableCollection<string> ChatModels { get; } = new();
 
-    private Model _selectedChatModel = Model.O3Mini;
+    private string _selectedChatModel = Model.GPT4o;
 
-    public Model SelectedChatModel
+    public string SelectedChatModel
     {
         get => _selectedChatModel;
         set

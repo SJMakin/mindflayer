@@ -1,5 +1,4 @@
-﻿using Anthropic.SDK;
-using log4net;
+﻿using log4net;
 using MindFlayer.saas.tools;
 using OpenAI;
 using OpenAI.Audio;
@@ -12,19 +11,12 @@ public static class ApiWrapper
     private static readonly ILog log = LogManager.GetLogger(typeof(ApiWrapper));
 
     // To set this, simply execute the below...
-    // [Environment]::SetEnvironmentVariable('DEEPSEEK_KEY', 'sk-here', 'Machine')
-    public static readonly OpenAIClient DeepseekClient = new(new OpenAIAuthentication(Environment.GetEnvironmentVariable("DEEPSEEK_KEY"), null), new OpenAIClientSettings("api.deepseek.com", "v1"));
-
-    // To set this, simply execute the below...
-    // [Environment]::SetEnvironmentVariable('GEMINI_KEY', 'sk-here', 'Machine')
-    public static readonly OpenAIClient GeminiClient = new(new OpenAIAuthentication(Environment.GetEnvironmentVariable("GEMINI_KEY"), null), new OpenAIClientSettings("generativelanguage.googleapis.com", "v1beta/openai"));
-
-    // To set this, simply execute the below...
     // [Environment]::SetEnvironmentVariable('OPENAI_KEY', 'sk-here', 'Machine')
     public static readonly OpenAIClient OpenAiClient = new(OpenAIAuthentication.LoadFromEnv());
 
-    // [Environment]::SetEnvironmentVariable('ANTHROPIC_API_KEY', 'sk-here', 'Machine')
-    public static readonly AnthropicClient AnthropicClient = new();
+    // To set this, simply execute the below...
+    // [Environment]::SetEnvironmentVariable('OPENROUTER_KEY', 'sk-here', 'Machine')
+    public static readonly OpenAIClient OpenRouterClient = new(new OpenAIAuthentication(Environment.GetEnvironmentVariable("OPENROUTER_KEY"), null), new OpenAIClientSettings("openrouter.ai", "api/v1"));
 
     public static async Task<string> Chat(ChatContext chat)
     {
